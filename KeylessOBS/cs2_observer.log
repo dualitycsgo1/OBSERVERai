@@ -1,0 +1,1474 @@
+2025-08-23 16:20:37,871 - INFO - Konfiguration indlæst fra config.json
+2025-08-23 16:20:37,882 - INFO - Server startet på port 8082
+2025-08-23 16:20:37,882 - INFO - Venter på CS2 gamestate data...
+2025-08-23 16:22:03,686 - INFO - Skiftede til spiller slot 5 (tast '5')
+2025-08-23 16:22:19,071 - INFO - Auto-switch INAKTIVT
+2025-08-23 16:22:23,516 - INFO - Auto-switch AKTIVT
+2025-08-23 16:29:02,242 - INFO - Konfiguration indlæst fra config.json
+2025-08-23 16:29:02,253 - INFO - Server startet på port 8082
+2025-08-23 16:29:02,254 - INFO - Venter på CS2 gamestate data...
+2025-08-23 16:29:02,597 - INFO - Ny bedste spiller: Panama (Score: 0.57)
+2025-08-23 16:29:02,845 - INFO - Ny bedste spiller: Wesley (Score: 0.57)
+2025-08-23 16:29:04,436 - INFO - Skiftede til spiller slot 1 (tast '1')
+2025-08-23 16:29:06,513 - INFO - Skiftede til spiller slot 1 (tast '1')
+2025-08-23 16:29:06,735 - INFO - Ny bedste spiller: Niles (Score: 0.57)
+2025-08-23 16:29:08,547 - INFO - Skiftede til spiller slot 10 (tast '0')
+2025-08-23 16:29:08,841 - INFO - Ny bedste spiller: Mayer (Score: 0.57)
+2025-08-23 16:29:10,674 - INFO - Skiftede til spiller slot 7 (tast '7')
+2025-08-23 16:29:11,190 - INFO - Ny bedste spiller: Wesley (Score: 0.57)
+2025-08-23 16:29:12,740 - INFO - Skiftede til spiller slot 1 (tast '1')
+2025-08-23 16:29:14,839 - INFO - Skiftede til spiller slot 1 (tast '1')
+2025-08-23 16:29:16,870 - INFO - Skiftede til spiller slot 1 (tast '1')
+2025-08-23 16:29:18,895 - INFO - Skiftede til spiller slot 1 (tast '1')
+2025-08-23 16:29:20,942 - INFO - Skiftede til spiller slot 1 (tast '1')
+2025-08-23 16:29:23,009 - INFO - Skiftede til spiller slot 1 (tast '1')
+2025-08-23 16:29:25,088 - INFO - Skiftede til spiller slot 1 (tast '1')
+2025-08-23 16:29:27,160 - INFO - Skiftede til spiller slot 1 (tast '1')
+2025-08-23 16:29:29,235 - INFO - Skiftede til spiller slot 1 (tast '1')
+2025-08-23 16:29:31,263 - INFO - Skiftede til spiller slot 1 (tast '1')
+2025-08-23 16:29:33,497 - INFO - Skiftede til spiller slot 1 (tast '1')
+2025-08-23 16:29:35,622 - INFO - Skiftede til spiller slot 1 (tast '1')
+2025-08-23 16:29:37,703 - INFO - Skiftede til spiller slot 1 (tast '1')
+2025-08-23 16:29:39,827 - INFO - Skiftede til spiller slot 1 (tast '1')
+2025-08-23 16:29:42,056 - INFO - Skiftede til spiller slot 1 (tast '1')
+2025-08-23 16:29:44,057 - INFO - Skiftede til spiller slot 1 (tast '1')
+2025-08-23 16:29:46,088 - INFO - Skiftede til spiller slot 1 (tast '1')
+2025-08-23 16:29:48,199 - INFO - Skiftede til spiller slot 1 (tast '1')
+2025-08-23 16:29:50,229 - INFO - Skiftede til spiller slot 1 (tast '1')
+2025-08-23 16:29:52,261 - INFO - Skiftede til spiller slot 1 (tast '1')
+2025-08-23 16:29:54,337 - INFO - Skiftede til spiller slot 1 (tast '1')
+2025-08-23 16:29:56,378 - INFO - Skiftede til spiller slot 1 (tast '1')
+2025-08-23 16:29:58,446 - INFO - Skiftede til spiller slot 1 (tast '1')
+2025-08-23 16:30:00,479 - INFO - Skiftede til spiller slot 1 (tast '1')
+2025-08-23 16:30:02,548 - INFO - Skiftede til spiller slot 1 (tast '1')
+2025-08-23 16:30:04,638 - INFO - Skiftede til spiller slot 1 (tast '1')
+2025-08-23 16:30:06,653 - INFO - Skiftede til spiller slot 1 (tast '1')
+2025-08-23 16:30:08,733 - INFO - Skiftede til spiller slot 1 (tast '1')
+2025-08-23 16:30:10,773 - INFO - Skiftede til spiller slot 1 (tast '1')
+2025-08-23 16:30:12,841 - INFO - Skiftede til spiller slot 1 (tast '1')
+2025-08-23 16:30:14,917 - INFO - Skiftede til spiller slot 1 (tast '1')
+2025-08-23 16:30:16,994 - INFO - Skiftede til spiller slot 1 (tast '1')
+2025-08-23 16:30:19,072 - INFO - Skiftede til spiller slot 1 (tast '1')
+2025-08-23 16:33:54,623 - INFO - Konfiguration indlæst fra config.json
+2025-08-23 16:33:54,636 - INFO - Server startet på port 8082
+2025-08-23 16:33:54,636 - INFO - Venter på CS2 gamestate data...
+2025-08-23 16:33:55,041 - INFO - Ny bedste spiller: Panama (Score: 0.61)
+2025-08-23 16:33:57,865 - INFO - Skiftede til spiller slot 6 (tast '6')
+2025-08-23 16:34:00,886 - INFO - Skiftede til spiller slot 6 (tast '6')
+2025-08-23 16:34:02,691 - INFO - Ny bedste spiller: Niles (Score: 0.61)
+2025-08-23 16:34:04,007 - INFO - Skiftede til spiller slot 10 (tast '0')
+2025-08-23 16:34:07,232 - INFO - Skiftede til spiller slot 10 (tast '0')
+2025-08-23 16:34:10,395 - INFO - Skiftede til spiller slot 10 (tast '0')
+2025-08-23 16:34:12,884 - INFO - Ny bedste spiller: Dios (Score: 0.61)
+2025-08-23 16:34:13,434 - INFO - Skiftede til spiller slot 9 (tast '9')
+2025-08-23 16:34:16,441 - INFO - Skiftede til spiller slot 9 (tast '9')
+2025-08-23 16:34:19,199 - INFO - Ny bedste spiller: Niles (Score: 0.61)
+2025-08-23 16:34:19,501 - INFO - Skiftede til spiller slot 10 (tast '0')
+2025-08-23 16:34:22,535 - INFO - Skiftede til spiller slot 10 (tast '0')
+2025-08-23 16:34:28,172 - INFO - Ny bedste spiller: K0NDR1X (Score: 0.30)
+2025-08-23 16:34:28,223 - INFO - Skiftede til spiller slot 1 (tast '1')
+2025-08-23 16:34:31,319 - INFO - Skiftede til spiller slot 1 (tast '1')
+2025-08-23 16:34:34,345 - INFO - Ny bedste spiller: hamruz (Score: 0.84)
+2025-08-23 16:34:34,396 - INFO - Skiftede til spiller slot 6 (tast '6')
+2025-08-23 16:34:37,520 - INFO - Skiftede til spiller slot 6 (tast '6')
+2025-08-23 16:34:41,020 - INFO - Skiftede til spiller slot 6 (tast '6')
+2025-08-23 16:34:44,051 - INFO - Skiftede til spiller slot 6 (tast '6')
+2025-08-23 16:34:44,553 - INFO - Ny bedste spiller: RS7- (Score: 0.84)
+2025-08-23 16:34:47,120 - INFO - Skiftede til spiller slot 8 (tast '8')
+2025-08-23 16:34:50,190 - INFO - Skiftede til spiller slot 8 (tast '8')
+2025-08-23 16:34:51,936 - INFO - Ny bedste spiller: hamruz (Score: 0.84)
+2025-08-23 16:34:53,221 - INFO - Skiftede til spiller slot 6 (tast '6')
+2025-08-23 16:34:55,287 - INFO - Ny bedste spiller: RS7- (Score: 0.84)
+2025-08-23 16:34:56,329 - INFO - Skiftede til spiller slot 8 (tast '8')
+2025-08-23 16:34:58,854 - INFO - Ny bedste spiller: hamruz (Score: 0.81)
+2025-08-23 16:34:59,401 - INFO - Skiftede til spiller slot 6 (tast '6')
+2025-08-23 16:35:02,482 - INFO - Skiftede til spiller slot 6 (tast '6')
+2025-08-23 16:35:05,547 - INFO - Skiftede til spiller slot 6 (tast '6')
+2025-08-23 16:35:08,615 - INFO - Skiftede til spiller slot 6 (tast '6')
+2025-08-23 16:35:11,438 - INFO - Ny bedste spiller: RS7- (Score: 0.84)
+2025-08-23 16:35:11,695 - INFO - Skiftede til spiller slot 8 (tast '8')
+2025-08-23 16:35:14,724 - INFO - Skiftede til spiller slot 8 (tast '8')
+2025-08-23 16:35:17,769 - INFO - Ny bedste spiller: hamruz (Score: 0.81)
+2025-08-23 16:35:17,820 - INFO - Skiftede til spiller slot 6 (tast '6')
+2025-08-23 16:35:20,892 - INFO - Skiftede til spiller slot 6 (tast '6')
+2025-08-23 16:46:21,031 - INFO - Konfiguration indlæst fra config.json
+2025-08-23 16:46:21,043 - INFO - Server startet på port 8082
+2025-08-23 16:46:21,044 - INFO - Venter på CS2 gamestate data...
+2025-08-23 16:46:21,294 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:21,295 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:21,295 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:21,295 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:21,295 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:21,295 - INFO - === KILL PREDICTION RANKING ===
+2025-08-23 16:46:21,296 - INFO -   1. K0NDR1X (CT): 0.000 DEAD
+2025-08-23 16:46:21,296 - INFO -   2. hamruz (T): 0.000 HP100
+2025-08-23 16:46:21,296 - INFO -   3. Reqless (CT): 0.000 HP30
+2025-08-23 16:46:21,296 - INFO -   4. ergoJJ (T): 0.000 HP59
+2025-08-23 16:46:21,296 - INFO -   5. _duality- (CT): 0.000 DEAD
+2025-08-23 16:46:21,296 - INFO - No player above threshold (0.25)
+2025-08-23 16:46:21,592 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:21,592 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:21,592 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:21,593 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:21,593 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:21,593 - INFO - === KILL PREDICTION RANKING ===
+2025-08-23 16:46:21,593 - INFO -   1. K0NDR1X (CT): 0.000 DEAD
+2025-08-23 16:46:21,593 - INFO -   2. hamruz (T): 0.000 HP100
+2025-08-23 16:46:21,593 - INFO -   3. Reqless (CT): 0.000 HP30
+2025-08-23 16:46:21,593 - INFO -   4. ergoJJ (T): 0.000 HP59
+2025-08-23 16:46:21,594 - INFO -   5. _duality- (CT): 0.000 DEAD
+2025-08-23 16:46:21,594 - INFO - No player above threshold (0.25)
+2025-08-23 16:46:24,321 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:24,321 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:24,321 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:24,321 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:24,322 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:24,322 - INFO - === KILL PREDICTION RANKING ===
+2025-08-23 16:46:24,322 - INFO -   1. K0NDR1X (CT): 0.000 DEAD
+2025-08-23 16:46:24,322 - INFO -   2. hamruz (T): 0.000 HP100
+2025-08-23 16:46:24,322 - INFO -   3. Reqless (CT): 0.000 HP30
+2025-08-23 16:46:24,322 - INFO -   4. ergoJJ (T): 0.000 HP59
+2025-08-23 16:46:24,322 - INFO -   5. _duality- (CT): 0.000 DEAD
+2025-08-23 16:46:24,323 - INFO - No player above threshold (0.25)
+2025-08-23 16:46:26,400 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:26,400 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:26,401 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:26,401 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:26,401 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:26,401 - INFO - === KILL PREDICTION RANKING ===
+2025-08-23 16:46:26,401 - INFO -   1. K0NDR1X (CT): 0.000 DEAD
+2025-08-23 16:46:26,401 - INFO -   2. hamruz (T): 0.000 HP100
+2025-08-23 16:46:26,401 - INFO -   3. Reqless (CT): 0.000 HP30
+2025-08-23 16:46:26,401 - INFO -   4. ergoJJ (T): 0.000 HP59
+2025-08-23 16:46:26,402 - INFO -   5. _duality- (CT): 0.000 DEAD
+2025-08-23 16:46:26,402 - INFO - No player above threshold (0.25)
+2025-08-23 16:46:26,658 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:26,658 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:26,658 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:26,658 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:26,658 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:26,659 - INFO - === KILL PREDICTION RANKING ===
+2025-08-23 16:46:26,659 - INFO -   1. K0NDR1X (CT): 0.000 DEAD
+2025-08-23 16:46:26,659 - INFO -   2. hamruz (T): 0.000 HP100
+2025-08-23 16:46:26,659 - INFO -   3. Reqless (CT): 0.000 HP30
+2025-08-23 16:46:26,659 - INFO -   4. ergoJJ (T): 0.000 HP59
+2025-08-23 16:46:26,659 - INFO -   5. _duality- (CT): 0.000 DEAD
+2025-08-23 16:46:26,659 - INFO - No player above threshold (0.25)
+2025-08-23 16:46:26,943 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:26,944 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:26,944 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:26,944 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:26,944 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:26,945 - INFO - === KILL PREDICTION RANKING ===
+2025-08-23 16:46:26,945 - INFO -   1. K0NDR1X (CT): 0.000 DEAD
+2025-08-23 16:46:26,945 - INFO -   2. hamruz (T): 0.000 HP100
+2025-08-23 16:46:26,945 - INFO -   3. Reqless (CT): 0.000 HP30
+2025-08-23 16:46:26,945 - INFO -   4. ergoJJ (T): 0.000 HP59
+2025-08-23 16:46:26,945 - INFO -   5. _duality- (CT): 0.000 DEAD
+2025-08-23 16:46:26,945 - INFO - No player above threshold (0.25)
+2025-08-23 16:46:27,191 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:27,191 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:27,191 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:27,192 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:27,192 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:27,192 - INFO - === KILL PREDICTION RANKING ===
+2025-08-23 16:46:27,192 - INFO -   1. K0NDR1X (CT): 0.000 DEAD
+2025-08-23 16:46:27,192 - INFO -   2. hamruz (T): 0.000 HP100
+2025-08-23 16:46:27,192 - INFO -   3. Reqless (CT): 0.000 HP30
+2025-08-23 16:46:27,192 - INFO -   4. ergoJJ (T): 0.000 HP59
+2025-08-23 16:46:27,192 - INFO -   5. _duality- (CT): 0.000 DEAD
+2025-08-23 16:46:27,193 - INFO - No player above threshold (0.25)
+2025-08-23 16:46:27,439 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:27,439 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:27,439 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:27,439 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:27,439 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:27,439 - INFO - === KILL PREDICTION RANKING ===
+2025-08-23 16:46:27,439 - INFO -   1. K0NDR1X (CT): 0.000 DEAD
+2025-08-23 16:46:27,440 - INFO -   2. hamruz (T): 0.000 HP100
+2025-08-23 16:46:27,440 - INFO -   3. Reqless (CT): 0.000 HP30
+2025-08-23 16:46:27,440 - INFO -   4. ergoJJ (T): 0.000 HP59
+2025-08-23 16:46:27,440 - INFO -   5. _duality- (CT): 0.000 DEAD
+2025-08-23 16:46:27,440 - INFO - No player above threshold (0.25)
+2025-08-23 16:46:27,687 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:27,687 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:27,688 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:27,688 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:27,688 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:27,688 - INFO - === KILL PREDICTION RANKING ===
+2025-08-23 16:46:27,688 - INFO -   1. K0NDR1X (CT): 0.000 DEAD
+2025-08-23 16:46:27,688 - INFO -   2. hamruz (T): 0.000 HP100
+2025-08-23 16:46:27,688 - INFO -   3. Reqless (CT): 0.000 HP30
+2025-08-23 16:46:27,689 - INFO -   4. ergoJJ (T): 0.000 HP59
+2025-08-23 16:46:27,689 - INFO -   5. _duality- (CT): 0.000 DEAD
+2025-08-23 16:46:27,689 - INFO - No player above threshold (0.25)
+2025-08-23 16:46:27,934 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:27,934 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:27,935 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:27,935 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:27,935 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:27,935 - INFO - === KILL PREDICTION RANKING ===
+2025-08-23 16:46:27,935 - INFO -   1. K0NDR1X (CT): 0.000 DEAD
+2025-08-23 16:46:27,935 - INFO -   2. hamruz (T): 0.000 HP100
+2025-08-23 16:46:27,936 - INFO -   3. Reqless (CT): 0.000 HP30
+2025-08-23 16:46:27,936 - INFO -   4. ergoJJ (T): 0.000 HP59
+2025-08-23 16:46:27,936 - INFO -   5. _duality- (CT): 0.000 DEAD
+2025-08-23 16:46:27,936 - INFO - No player above threshold (0.25)
+2025-08-23 16:46:28,183 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:28,183 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:28,184 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:28,184 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:28,184 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:28,184 - INFO - === KILL PREDICTION RANKING ===
+2025-08-23 16:46:28,184 - INFO -   1. K0NDR1X (CT): 0.000 DEAD
+2025-08-23 16:46:28,184 - INFO -   2. hamruz (T): 0.000 HP100
+2025-08-23 16:46:28,184 - INFO -   3. Reqless (CT): 0.000 HP30
+2025-08-23 16:46:28,185 - INFO -   4. ergoJJ (T): 0.000 HP59
+2025-08-23 16:46:28,185 - INFO -   5. _duality- (CT): 0.000 DEAD
+2025-08-23 16:46:28,185 - INFO - No player above threshold (0.25)
+2025-08-23 16:46:28,444 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:28,445 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:28,445 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:28,445 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:28,445 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:28,445 - INFO - === KILL PREDICTION RANKING ===
+2025-08-23 16:46:28,445 - INFO -   1. K0NDR1X (CT): 0.000 DEAD
+2025-08-23 16:46:28,446 - INFO -   2. hamruz (T): 0.000 HP100
+2025-08-23 16:46:28,446 - INFO -   3. Reqless (CT): 0.000 HP30
+2025-08-23 16:46:28,446 - INFO -   4. ergoJJ (T): 0.000 HP59
+2025-08-23 16:46:28,446 - INFO -   5. _duality- (CT): 0.000 DEAD
+2025-08-23 16:46:28,446 - INFO - No player above threshold (0.25)
+2025-08-23 16:46:28,727 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:28,727 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:28,727 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:28,728 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:28,728 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:28,728 - INFO - === KILL PREDICTION RANKING ===
+2025-08-23 16:46:28,728 - INFO -   1. K0NDR1X (CT): 0.000 DEAD
+2025-08-23 16:46:28,728 - INFO -   2. hamruz (T): 0.000 HP100
+2025-08-23 16:46:28,728 - INFO -   3. Reqless (CT): 0.000 HP30
+2025-08-23 16:46:28,729 - INFO -   4. ergoJJ (T): 0.000 HP59
+2025-08-23 16:46:28,729 - INFO -   5. _duality- (CT): 0.000 DEAD
+2025-08-23 16:46:28,729 - INFO - No player above threshold (0.25)
+2025-08-23 16:46:28,973 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:28,974 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:28,974 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:28,974 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:28,974 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:28,974 - INFO - === KILL PREDICTION RANKING ===
+2025-08-23 16:46:28,975 - INFO -   1. K0NDR1X (CT): 0.000 DEAD
+2025-08-23 16:46:28,975 - INFO -   2. hamruz (T): 0.000 HP100
+2025-08-23 16:46:28,975 - INFO -   3. Reqless (CT): 0.000 HP30
+2025-08-23 16:46:28,975 - INFO -   4. ergoJJ (T): 0.000 HP59
+2025-08-23 16:46:28,975 - INFO -   5. _duality- (CT): 0.000 DEAD
+2025-08-23 16:46:28,975 - INFO - No player above threshold (0.25)
+2025-08-23 16:46:29,191 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:29,191 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:29,191 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:29,192 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:29,192 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:29,192 - INFO - === KILL PREDICTION RANKING ===
+2025-08-23 16:46:29,192 - INFO -   1. K0NDR1X (CT): 0.000 DEAD
+2025-08-23 16:46:29,192 - INFO -   2. hamruz (T): 0.000 HP100
+2025-08-23 16:46:29,192 - INFO -   3. Reqless (CT): 0.000 HP30
+2025-08-23 16:46:29,192 - INFO -   4. ergoJJ (T): 0.000 HP59
+2025-08-23 16:46:29,193 - INFO -   5. _duality- (CT): 0.000 DEAD
+2025-08-23 16:46:29,193 - INFO - No player above threshold (0.25)
+2025-08-23 16:46:29,467 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:29,468 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:29,468 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:29,468 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:29,469 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:29,469 - INFO - === KILL PREDICTION RANKING ===
+2025-08-23 16:46:29,469 - INFO -   1. K0NDR1X (CT): 0.000 DEAD
+2025-08-23 16:46:29,469 - INFO -   2. hamruz (T): 0.000 HP100
+2025-08-23 16:46:29,469 - INFO -   3. Reqless (CT): 0.000 HP30
+2025-08-23 16:46:29,469 - INFO -   4. ergoJJ (T): 0.000 HP59
+2025-08-23 16:46:29,469 - INFO -   5. _duality- (CT): 0.000 DEAD
+2025-08-23 16:46:29,470 - INFO - No player above threshold (0.25)
+2025-08-23 16:46:29,714 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:29,714 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:29,714 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:29,714 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:29,715 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:29,715 - INFO - === KILL PREDICTION RANKING ===
+2025-08-23 16:46:29,715 - INFO -   1. K0NDR1X (CT): 0.000 DEAD
+2025-08-23 16:46:29,715 - INFO -   2. hamruz (T): 0.000 HP100
+2025-08-23 16:46:29,715 - INFO -   3. Reqless (CT): 0.000 HP30
+2025-08-23 16:46:29,715 - INFO -   4. ergoJJ (T): 0.000 HP59
+2025-08-23 16:46:29,716 - INFO -   5. _duality- (CT): 0.000 DEAD
+2025-08-23 16:46:29,716 - INFO - No player above threshold (0.25)
+2025-08-23 16:46:29,933 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:29,934 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:29,934 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:29,935 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:29,935 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:29,935 - INFO - === KILL PREDICTION RANKING ===
+2025-08-23 16:46:29,935 - INFO -   1. K0NDR1X (CT): 0.000 DEAD
+2025-08-23 16:46:29,935 - INFO -   2. hamruz (T): 0.000 HP100
+2025-08-23 16:46:29,935 - INFO -   3. Reqless (CT): 0.000 HP30
+2025-08-23 16:46:29,935 - INFO -   4. ergoJJ (T): 0.000 HP59
+2025-08-23 16:46:29,936 - INFO -   5. _duality- (CT): 0.000 DEAD
+2025-08-23 16:46:29,936 - INFO - No player above threshold (0.25)
+2025-08-23 16:46:30,169 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:30,169 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:30,170 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:30,170 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:30,170 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:30,170 - INFO - === KILL PREDICTION RANKING ===
+2025-08-23 16:46:30,170 - INFO -   1. K0NDR1X (CT): 0.000 DEAD
+2025-08-23 16:46:30,170 - INFO -   2. hamruz (T): 0.000 HP100
+2025-08-23 16:46:30,171 - INFO -   3. Reqless (CT): 0.000 HP30
+2025-08-23 16:46:30,171 - INFO -   4. ergoJJ (T): 0.000 HP59
+2025-08-23 16:46:30,171 - INFO -   5. _duality- (CT): 0.000 DEAD
+2025-08-23 16:46:30,171 - INFO - No player above threshold (0.25)
+2025-08-23 16:46:30,457 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:30,458 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:30,458 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:30,458 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:30,459 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:30,459 - INFO - === KILL PREDICTION RANKING ===
+2025-08-23 16:46:30,459 - INFO -   1. K0NDR1X (CT): 0.000 DEAD
+2025-08-23 16:46:30,459 - INFO -   2. hamruz (T): 0.000 HP100
+2025-08-23 16:46:30,459 - INFO -   3. Reqless (CT): 0.000 HP30
+2025-08-23 16:46:30,459 - INFO -   4. ergoJJ (T): 0.000 HP59
+2025-08-23 16:46:30,459 - INFO -   5. _duality- (CT): 0.000 DEAD
+2025-08-23 16:46:30,460 - INFO - No player above threshold (0.25)
+2025-08-23 16:46:30,673 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:30,673 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:30,673 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:30,673 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:30,674 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:30,674 - INFO - === KILL PREDICTION RANKING ===
+2025-08-23 16:46:30,674 - INFO -   1. K0NDR1X (CT): 0.000 DEAD
+2025-08-23 16:46:30,674 - INFO -   2. hamruz (T): 0.000 HP100
+2025-08-23 16:46:30,674 - INFO -   3. Reqless (CT): 0.000 HP30
+2025-08-23 16:46:30,674 - INFO -   4. ergoJJ (T): 0.000 HP59
+2025-08-23 16:46:30,674 - INFO -   5. _duality- (CT): 0.000 DEAD
+2025-08-23 16:46:30,675 - INFO - No player above threshold (0.25)
+2025-08-23 16:46:30,910 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:30,911 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:30,911 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:30,911 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:30,911 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:30,911 - INFO - === KILL PREDICTION RANKING ===
+2025-08-23 16:46:30,911 - INFO -   1. K0NDR1X (CT): 0.000 DEAD
+2025-08-23 16:46:30,911 - INFO -   2. hamruz (T): 0.000 HP100
+2025-08-23 16:46:30,912 - INFO -   3. Reqless (CT): 0.000 HP30
+2025-08-23 16:46:30,912 - INFO -   4. ergoJJ (T): 0.000 HP59
+2025-08-23 16:46:30,912 - INFO -   5. _duality- (CT): 0.000 DEAD
+2025-08-23 16:46:30,912 - INFO - No player above threshold (0.25)
+2025-08-23 16:46:31,199 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:31,199 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:31,199 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:31,200 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:31,200 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:31,200 - INFO - === KILL PREDICTION RANKING ===
+2025-08-23 16:46:31,200 - INFO -   1. K0NDR1X (CT): 0.000 DEAD
+2025-08-23 16:46:31,200 - INFO -   2. hamruz (T): 0.000 HP100
+2025-08-23 16:46:31,201 - INFO -   3. Reqless (CT): 0.000 HP30
+2025-08-23 16:46:31,201 - INFO -   4. ergoJJ (T): 0.000 HP59
+2025-08-23 16:46:31,201 - INFO -   5. _duality- (CT): 0.000 DEAD
+2025-08-23 16:46:31,201 - INFO - No player above threshold (0.25)
+2025-08-23 16:46:31,445 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:31,446 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:31,446 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:31,446 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:31,446 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:31,446 - INFO - === KILL PREDICTION RANKING ===
+2025-08-23 16:46:31,446 - INFO -   1. K0NDR1X (CT): 0.000 DEAD
+2025-08-23 16:46:31,447 - INFO -   2. hamruz (T): 0.000 HP100
+2025-08-23 16:46:31,447 - INFO -   3. Reqless (CT): 0.000 HP30
+2025-08-23 16:46:31,447 - INFO -   4. ergoJJ (T): 0.000 HP59
+2025-08-23 16:46:31,447 - INFO -   5. _duality- (CT): 0.000 DEAD
+2025-08-23 16:46:31,447 - INFO - No player above threshold (0.25)
+2025-08-23 16:46:31,659 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:31,659 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:31,659 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:31,660 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:31,660 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:31,660 - INFO - === KILL PREDICTION RANKING ===
+2025-08-23 16:46:31,660 - INFO -   1. K0NDR1X (CT): 0.000 DEAD
+2025-08-23 16:46:31,660 - INFO -   2. hamruz (T): 0.000 HP100
+2025-08-23 16:46:31,660 - INFO -   3. Reqless (CT): 0.000 HP30
+2025-08-23 16:46:31,660 - INFO -   4. ergoJJ (T): 0.000 HP59
+2025-08-23 16:46:31,661 - INFO -   5. _duality- (CT): 0.000 DEAD
+2025-08-23 16:46:31,661 - INFO - No player above threshold (0.25)
+2025-08-23 16:46:31,938 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:31,938 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:31,938 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:31,939 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:31,939 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:31,939 - INFO - === KILL PREDICTION RANKING ===
+2025-08-23 16:46:31,939 - INFO -   1. K0NDR1X (CT): 0.000 DEAD
+2025-08-23 16:46:31,939 - INFO -   2. hamruz (T): 0.000 HP100
+2025-08-23 16:46:31,939 - INFO -   3. Reqless (CT): 0.000 HP30
+2025-08-23 16:46:31,939 - INFO -   4. ergoJJ (T): 0.000 HP59
+2025-08-23 16:46:31,940 - INFO -   5. _duality- (CT): 0.000 DEAD
+2025-08-23 16:46:31,940 - INFO - No player above threshold (0.25)
+2025-08-23 16:46:32,153 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:32,153 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:32,153 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:32,153 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:32,154 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:32,154 - INFO - === KILL PREDICTION RANKING ===
+2025-08-23 16:46:32,154 - INFO -   1. K0NDR1X (CT): 0.000 DEAD
+2025-08-23 16:46:32,154 - INFO -   2. hamruz (T): 0.000 HP100
+2025-08-23 16:46:32,154 - INFO -   3. Reqless (CT): 0.000 HP30
+2025-08-23 16:46:32,155 - INFO -   4. ergoJJ (T): 0.000 HP59
+2025-08-23 16:46:32,155 - INFO -   5. _duality- (CT): 0.000 DEAD
+2025-08-23 16:46:32,155 - INFO - No player above threshold (0.25)
+2025-08-23 16:46:32,395 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:32,396 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:32,396 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:32,396 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:32,396 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:32,396 - INFO - === KILL PREDICTION RANKING ===
+2025-08-23 16:46:32,396 - INFO -   1. K0NDR1X (CT): 0.000 DEAD
+2025-08-23 16:46:32,397 - INFO -   2. hamruz (T): 0.000 HP100
+2025-08-23 16:46:32,397 - INFO -   3. Reqless (CT): 0.000 HP30
+2025-08-23 16:46:32,397 - INFO -   4. ergoJJ (T): 0.000 HP59
+2025-08-23 16:46:32,397 - INFO -   5. _duality- (CT): 0.000 DEAD
+2025-08-23 16:46:32,397 - INFO - No player above threshold (0.25)
+2025-08-23 16:46:32,679 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:32,679 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:32,679 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:32,679 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:32,679 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:32,679 - INFO - === KILL PREDICTION RANKING ===
+2025-08-23 16:46:32,680 - INFO -   1. K0NDR1X (CT): 0.000 DEAD
+2025-08-23 16:46:32,680 - INFO -   2. hamruz (T): 0.000 HP100
+2025-08-23 16:46:32,680 - INFO -   3. Reqless (CT): 0.000 HP30
+2025-08-23 16:46:32,680 - INFO -   4. ergoJJ (T): 0.000 HP59
+2025-08-23 16:46:32,680 - INFO -   5. _duality- (CT): 0.000 DEAD
+2025-08-23 16:46:32,680 - INFO - No player above threshold (0.25)
+2025-08-23 16:46:32,892 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:32,892 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:32,892 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:32,893 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:32,893 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:32,893 - INFO - === KILL PREDICTION RANKING ===
+2025-08-23 16:46:32,893 - INFO -   1. K0NDR1X (CT): 0.000 DEAD
+2025-08-23 16:46:32,893 - INFO -   2. hamruz (T): 0.000 HP100
+2025-08-23 16:46:32,893 - INFO -   3. Reqless (CT): 0.000 HP30
+2025-08-23 16:46:32,894 - INFO -   4. ergoJJ (T): 0.000 HP59
+2025-08-23 16:46:32,894 - INFO -   5. _duality- (CT): 0.000 DEAD
+2025-08-23 16:46:32,894 - INFO - No player above threshold (0.25)
+2025-08-23 16:46:33,171 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:33,172 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:33,172 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:33,172 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:33,172 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:33,172 - INFO - === KILL PREDICTION RANKING ===
+2025-08-23 16:46:33,173 - INFO -   1. K0NDR1X (CT): 0.000 DEAD
+2025-08-23 16:46:33,173 - INFO -   2. hamruz (T): 0.000 HP100
+2025-08-23 16:46:33,173 - INFO -   3. Reqless (CT): 0.000 HP30
+2025-08-23 16:46:33,173 - INFO -   4. ergoJJ (T): 0.000 HP59
+2025-08-23 16:46:33,173 - INFO -   5. _duality- (CT): 0.000 DEAD
+2025-08-23 16:46:33,173 - INFO - No player above threshold (0.25)
+2025-08-23 16:46:33,468 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:33,469 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:33,469 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:33,469 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:33,469 - INFO - === KILL PREDICTION RANKING ===
+2025-08-23 16:46:33,469 - INFO -   1. K0NDR1X (CT): 0.000 DEAD
+2025-08-23 16:46:33,469 - INFO -   2. hamruz (T): 0.000 HP100
+2025-08-23 16:46:33,469 - INFO -   3. Reqless (CT): 0.000 HP30
+2025-08-23 16:46:33,470 - INFO -   4. ergoJJ (T): 0.000 HP59
+2025-08-23 16:46:33,470 - INFO -   5. _duality- (CT): 0.000 DEAD
+2025-08-23 16:46:33,470 - INFO - No player above threshold (0.25)
+2025-08-23 16:46:33,716 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:33,716 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:33,716 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:33,717 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:33,717 - INFO - === KILL PREDICTION RANKING ===
+2025-08-23 16:46:33,717 - INFO -   1. K0NDR1X (CT): 0.000 DEAD
+2025-08-23 16:46:33,717 - INFO -   2. hamruz (T): 0.000 HP100
+2025-08-23 16:46:33,717 - INFO -   3. Reqless (CT): 0.000 HP30
+2025-08-23 16:46:33,717 - INFO -   4. ergoJJ (T): 0.000 HP59
+2025-08-23 16:46:33,718 - INFO -   5. _duality- (CT): 0.000 DEAD
+2025-08-23 16:46:33,718 - INFO - No player above threshold (0.25)
+2025-08-23 16:46:33,965 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:33,965 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:33,965 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:33,966 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:33,966 - INFO - === KILL PREDICTION RANKING ===
+2025-08-23 16:46:33,966 - INFO -   1. K0NDR1X (CT): 0.000 DEAD
+2025-08-23 16:46:33,966 - INFO -   2. hamruz (T): 0.000 HP100
+2025-08-23 16:46:33,966 - INFO -   3. Reqless (CT): 0.000 HP30
+2025-08-23 16:46:33,967 - INFO -   4. ergoJJ (T): 0.000 HP59
+2025-08-23 16:46:33,967 - INFO -   5. _duality- (CT): 0.000 DEAD
+2025-08-23 16:46:33,967 - INFO - No player above threshold (0.25)
+2025-08-23 16:46:34,184 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:34,185 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:34,185 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:34,185 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:34,185 - INFO - === KILL PREDICTION RANKING ===
+2025-08-23 16:46:34,185 - INFO -   1. K0NDR1X (CT): 0.000 DEAD
+2025-08-23 16:46:34,185 - INFO -   2. hamruz (T): 0.000 HP100
+2025-08-23 16:46:34,185 - INFO -   3. Reqless (CT): 0.000 HP30
+2025-08-23 16:46:34,186 - INFO -   4. ergoJJ (T): 0.000 HP59
+2025-08-23 16:46:34,186 - INFO -   5. _duality- (CT): 0.000 DEAD
+2025-08-23 16:46:34,186 - INFO - No player above threshold (0.25)
+2025-08-23 16:46:34,460 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:34,460 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:34,461 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:34,461 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:34,461 - INFO - === KILL PREDICTION RANKING ===
+2025-08-23 16:46:34,461 - INFO -   1. K0NDR1X (CT): 0.000 DEAD
+2025-08-23 16:46:34,461 - INFO -   2. hamruz (T): 0.000 HP100
+2025-08-23 16:46:34,461 - INFO -   3. Reqless (CT): 0.000 HP30
+2025-08-23 16:46:34,461 - INFO -   4. ergoJJ (T): 0.000 HP59
+2025-08-23 16:46:34,462 - INFO -   5. _duality- (CT): 0.000 DEAD
+2025-08-23 16:46:34,462 - INFO - No player above threshold (0.25)
+2025-08-23 16:46:34,708 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:34,709 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:34,709 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:34,709 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:34,709 - INFO - === KILL PREDICTION RANKING ===
+2025-08-23 16:46:34,709 - INFO -   1. K0NDR1X (CT): 0.000 DEAD
+2025-08-23 16:46:34,709 - INFO -   2. hamruz (T): 0.000 HP100
+2025-08-23 16:46:34,710 - INFO -   3. Reqless (CT): 0.000 HP30
+2025-08-23 16:46:34,710 - INFO -   4. ergoJJ (T): 0.000 HP59
+2025-08-23 16:46:34,710 - INFO -   5. _duality- (CT): 0.000 DEAD
+2025-08-23 16:46:34,710 - INFO - No player above threshold (0.25)
+2025-08-23 16:46:34,957 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:34,957 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:34,957 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:34,957 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:34,957 - INFO - === KILL PREDICTION RANKING ===
+2025-08-23 16:46:34,957 - INFO -   1. K0NDR1X (CT): 0.000 DEAD
+2025-08-23 16:46:34,958 - INFO -   2. hamruz (T): 0.000 HP100
+2025-08-23 16:46:34,958 - INFO -   3. Reqless (CT): 0.000 HP30
+2025-08-23 16:46:34,958 - INFO -   4. ergoJJ (T): 0.000 HP59
+2025-08-23 16:46:34,958 - INFO -   5. _duality- (CT): 0.000 DEAD
+2025-08-23 16:46:34,958 - INFO - No player above threshold (0.25)
+2025-08-23 16:46:35,253 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:35,253 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:35,254 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:35,254 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:35,254 - INFO - === KILL PREDICTION RANKING ===
+2025-08-23 16:46:35,254 - INFO -   1. K0NDR1X (CT): 0.000 DEAD
+2025-08-23 16:46:35,254 - INFO -   2. hamruz (T): 0.000 HP100
+2025-08-23 16:46:35,254 - INFO -   3. Reqless (CT): 0.000 HP30
+2025-08-23 16:46:35,254 - INFO -   4. ergoJJ (T): 0.000 HP59
+2025-08-23 16:46:35,255 - INFO -   5. _duality- (CT): 0.000 DEAD
+2025-08-23 16:46:35,255 - INFO - No player above threshold (0.25)
+2025-08-23 16:46:35,498 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:35,499 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:35,499 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:35,499 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:35,500 - INFO - === KILL PREDICTION RANKING ===
+2025-08-23 16:46:35,500 - INFO -   1. K0NDR1X (CT): 0.000 DEAD
+2025-08-23 16:46:35,500 - INFO -   2. hamruz (T): 0.000 HP100
+2025-08-23 16:46:35,500 - INFO -   3. Reqless (CT): 0.000 HP30
+2025-08-23 16:46:35,500 - INFO -   4. ergoJJ (T): 0.000 HP59
+2025-08-23 16:46:35,500 - INFO -   5. _duality- (CT): 0.000 DEAD
+2025-08-23 16:46:35,500 - INFO - No player above threshold (0.25)
+2025-08-23 16:46:35,745 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:35,745 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:35,745 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:35,745 - INFO - === KILL PREDICTION RANKING ===
+2025-08-23 16:46:35,745 - INFO -   1. K0NDR1X (CT): 0.000 DEAD
+2025-08-23 16:46:35,746 - INFO -   2. hamruz (T): 0.000 HP100
+2025-08-23 16:46:35,746 - INFO -   3. Reqless (CT): 0.000 DEAD
+2025-08-23 16:46:35,746 - INFO -   4. ergoJJ (T): 0.000 HP59
+2025-08-23 16:46:35,746 - INFO -   5. _duality- (CT): 0.000 DEAD
+2025-08-23 16:46:35,746 - INFO - No player above threshold (0.25)
+2025-08-23 16:46:35,991 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:35,992 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:35,992 - INFO - === KILL PREDICTION RANKING ===
+2025-08-23 16:46:35,992 - INFO -   1. K0NDR1X (CT): 0.000 DEAD
+2025-08-23 16:46:35,992 - INFO -   2. hamruz (T): 0.000 HP73
+2025-08-23 16:46:35,992 - INFO -   3. Reqless (CT): 0.000 DEAD
+2025-08-23 16:46:35,992 - INFO -   4. ergoJJ (T): 0.000 DEAD
+2025-08-23 16:46:35,993 - INFO -   5. _duality- (CT): 0.000 DEAD
+2025-08-23 16:46:35,993 - INFO - No player above threshold (0.25)
+2025-08-23 16:46:36,242 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:36,242 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:36,242 - INFO - === KILL PREDICTION RANKING ===
+2025-08-23 16:46:36,242 - INFO -   1. K0NDR1X (CT): 0.000 DEAD
+2025-08-23 16:46:36,243 - INFO -   2. hamruz (T): 0.000 HP73
+2025-08-23 16:46:36,243 - INFO -   3. Reqless (CT): 0.000 DEAD
+2025-08-23 16:46:36,243 - INFO -   4. ergoJJ (T): 0.000 DEAD
+2025-08-23 16:46:36,243 - INFO -   5. _duality- (CT): 0.000 DEAD
+2025-08-23 16:46:36,243 - INFO - No player above threshold (0.25)
+2025-08-23 16:46:36,489 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:36,490 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:36,490 - INFO - === KILL PREDICTION RANKING ===
+2025-08-23 16:46:36,491 - INFO -   1. K0NDR1X (CT): 0.000 DEAD
+2025-08-23 16:46:36,491 - INFO -   2. hamruz (T): 0.000 HP73
+2025-08-23 16:46:36,491 - INFO -   3. Reqless (CT): 0.000 DEAD
+2025-08-23 16:46:36,491 - INFO -   4. ergoJJ (T): 0.000 DEAD
+2025-08-23 16:46:36,491 - INFO -   5. _duality- (CT): 0.000 DEAD
+2025-08-23 16:46:36,491 - INFO - No player above threshold (0.25)
+2025-08-23 16:46:36,738 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:36,739 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:36,739 - INFO - === KILL PREDICTION RANKING ===
+2025-08-23 16:46:36,739 - INFO -   1. K0NDR1X (CT): 0.000 DEAD
+2025-08-23 16:46:36,739 - INFO -   2. hamruz (T): 0.000 HP73
+2025-08-23 16:46:36,739 - INFO -   3. Reqless (CT): 0.000 DEAD
+2025-08-23 16:46:36,739 - INFO -   4. ergoJJ (T): 0.000 DEAD
+2025-08-23 16:46:36,739 - INFO -   5. _duality- (CT): 0.000 DEAD
+2025-08-23 16:46:36,740 - INFO - No player above threshold (0.25)
+2025-08-23 16:46:36,984 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:36,984 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:36,985 - INFO - === KILL PREDICTION RANKING ===
+2025-08-23 16:46:36,985 - INFO -   1. K0NDR1X (CT): 0.000 DEAD
+2025-08-23 16:46:36,985 - INFO -   2. hamruz (T): 0.000 HP73
+2025-08-23 16:46:36,985 - INFO -   3. Reqless (CT): 0.000 DEAD
+2025-08-23 16:46:36,985 - INFO -   4. ergoJJ (T): 0.000 DEAD
+2025-08-23 16:46:36,986 - INFO -   5. _duality- (CT): 0.000 DEAD
+2025-08-23 16:46:36,986 - INFO - No player above threshold (0.25)
+2025-08-23 16:46:37,283 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:37,283 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:37,284 - INFO - === KILL PREDICTION RANKING ===
+2025-08-23 16:46:37,284 - INFO -   1. K0NDR1X (CT): 0.000 DEAD
+2025-08-23 16:46:37,284 - INFO -   2. hamruz (T): 0.000 HP73
+2025-08-23 16:46:37,284 - INFO -   3. Reqless (CT): 0.000 DEAD
+2025-08-23 16:46:37,284 - INFO -   4. ergoJJ (T): 0.000 DEAD
+2025-08-23 16:46:37,284 - INFO -   5. _duality- (CT): 0.000 DEAD
+2025-08-23 16:46:37,284 - INFO - No player above threshold (0.25)
+2025-08-23 16:46:37,529 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:37,530 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:37,530 - INFO - === KILL PREDICTION RANKING ===
+2025-08-23 16:46:37,530 - INFO -   1. K0NDR1X (CT): 0.000 DEAD
+2025-08-23 16:46:37,530 - INFO -   2. hamruz (T): 0.000 HP73
+2025-08-23 16:46:37,530 - INFO -   3. Reqless (CT): 0.000 DEAD
+2025-08-23 16:46:37,530 - INFO -   4. ergoJJ (T): 0.000 DEAD
+2025-08-23 16:46:37,531 - INFO -   5. _duality- (CT): 0.000 DEAD
+2025-08-23 16:46:37,531 - INFO - No player above threshold (0.25)
+2025-08-23 16:46:37,777 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:37,778 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:37,778 - INFO - === KILL PREDICTION RANKING ===
+2025-08-23 16:46:37,778 - INFO -   1. K0NDR1X (CT): 0.000 DEAD
+2025-08-23 16:46:37,778 - INFO -   2. hamruz (T): 0.000 HP73
+2025-08-23 16:46:37,778 - INFO -   3. Reqless (CT): 0.000 DEAD
+2025-08-23 16:46:37,778 - INFO -   4. ergoJJ (T): 0.000 DEAD
+2025-08-23 16:46:37,779 - INFO -   5. _duality- (CT): 0.000 DEAD
+2025-08-23 16:46:37,779 - INFO - No player above threshold (0.25)
+2025-08-23 16:46:38,026 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:38,027 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:38,027 - INFO - === KILL PREDICTION RANKING ===
+2025-08-23 16:46:38,027 - INFO -   1. K0NDR1X (CT): 0.000 DEAD
+2025-08-23 16:46:38,027 - INFO -   2. hamruz (T): 0.000 HP73
+2025-08-23 16:46:38,027 - INFO -   3. Reqless (CT): 0.000 DEAD
+2025-08-23 16:46:38,027 - INFO -   4. ergoJJ (T): 0.000 DEAD
+2025-08-23 16:46:38,028 - INFO -   5. _duality- (CT): 0.000 DEAD
+2025-08-23 16:46:38,028 - INFO - No player above threshold (0.25)
+2025-08-23 16:46:38,275 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:38,276 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:38,276 - INFO - === KILL PREDICTION RANKING ===
+2025-08-23 16:46:38,276 - INFO -   1. K0NDR1X (CT): 0.000 DEAD
+2025-08-23 16:46:38,276 - INFO -   2. hamruz (T): 0.000 HP73
+2025-08-23 16:46:38,276 - INFO -   3. Reqless (CT): 0.000 DEAD
+2025-08-23 16:46:38,276 - INFO -   4. ergoJJ (T): 0.000 DEAD
+2025-08-23 16:46:38,277 - INFO -   5. _duality- (CT): 0.000 DEAD
+2025-08-23 16:46:38,277 - INFO - No player above threshold (0.25)
+2025-08-23 16:46:38,573 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:38,574 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:38,574 - INFO - === KILL PREDICTION RANKING ===
+2025-08-23 16:46:38,574 - INFO -   1. K0NDR1X (CT): 0.000 DEAD
+2025-08-23 16:46:38,574 - INFO -   2. hamruz (T): 0.000 HP73
+2025-08-23 16:46:38,574 - INFO -   3. Reqless (CT): 0.000 DEAD
+2025-08-23 16:46:38,575 - INFO -   4. ergoJJ (T): 0.000 DEAD
+2025-08-23 16:46:38,575 - INFO -   5. _duality- (CT): 0.000 DEAD
+2025-08-23 16:46:38,575 - INFO - No player above threshold (0.25)
+2025-08-23 16:46:38,821 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:38,821 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:38,821 - INFO - === KILL PREDICTION RANKING ===
+2025-08-23 16:46:38,821 - INFO -   1. K0NDR1X (CT): 0.000 DEAD
+2025-08-23 16:46:38,821 - INFO -   2. hamruz (T): 0.000 HP73
+2025-08-23 16:46:38,822 - INFO -   3. Reqless (CT): 0.000 DEAD
+2025-08-23 16:46:38,822 - INFO -   4. ergoJJ (T): 0.000 DEAD
+2025-08-23 16:46:38,822 - INFO -   5. _duality- (CT): 0.000 DEAD
+2025-08-23 16:46:38,822 - INFO - No player above threshold (0.25)
+2025-08-23 16:46:39,068 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:39,068 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:39,068 - INFO - === KILL PREDICTION RANKING ===
+2025-08-23 16:46:39,069 - INFO -   1. K0NDR1X (CT): 0.000 DEAD
+2025-08-23 16:46:39,069 - INFO -   2. hamruz (T): 0.000 HP73
+2025-08-23 16:46:39,069 - INFO -   3. Reqless (CT): 0.000 DEAD
+2025-08-23 16:46:39,069 - INFO -   4. ergoJJ (T): 0.000 DEAD
+2025-08-23 16:46:39,069 - INFO -   5. _duality- (CT): 0.000 DEAD
+2025-08-23 16:46:39,069 - INFO - No player above threshold (0.25)
+2025-08-23 16:46:39,365 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:39,366 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:39,366 - INFO - === KILL PREDICTION RANKING ===
+2025-08-23 16:46:39,366 - INFO -   1. K0NDR1X (CT): 0.000 DEAD
+2025-08-23 16:46:39,366 - INFO -   2. hamruz (T): 0.000 HP73
+2025-08-23 16:46:39,366 - INFO -   3. Reqless (CT): 0.000 DEAD
+2025-08-23 16:46:39,366 - INFO -   4. ergoJJ (T): 0.000 DEAD
+2025-08-23 16:46:39,367 - INFO -   5. _duality- (CT): 0.000 DEAD
+2025-08-23 16:46:39,367 - INFO - No player above threshold (0.25)
+2025-08-23 16:46:39,612 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:39,613 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:39,613 - INFO - === KILL PREDICTION RANKING ===
+2025-08-23 16:46:39,613 - INFO -   1. K0NDR1X (CT): 0.000 DEAD
+2025-08-23 16:46:39,613 - INFO -   2. hamruz (T): 0.000 HP73
+2025-08-23 16:46:39,613 - INFO -   3. Reqless (CT): 0.000 DEAD
+2025-08-23 16:46:39,613 - INFO -   4. ergoJJ (T): 0.000 DEAD
+2025-08-23 16:46:39,613 - INFO -   5. _duality- (CT): 0.000 DEAD
+2025-08-23 16:46:39,614 - INFO - No player above threshold (0.25)
+2025-08-23 16:46:39,860 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:39,860 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:39,860 - INFO - === KILL PREDICTION RANKING ===
+2025-08-23 16:46:39,860 - INFO -   1. K0NDR1X (CT): 0.000 DEAD
+2025-08-23 16:46:39,861 - INFO -   2. hamruz (T): 0.000 HP73
+2025-08-23 16:46:39,861 - INFO -   3. Reqless (CT): 0.000 DEAD
+2025-08-23 16:46:39,861 - INFO -   4. ergoJJ (T): 0.000 DEAD
+2025-08-23 16:46:39,861 - INFO -   5. _duality- (CT): 0.000 DEAD
+2025-08-23 16:46:39,861 - INFO - No player above threshold (0.25)
+2025-08-23 16:46:40,106 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:40,107 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:40,107 - INFO - === KILL PREDICTION RANKING ===
+2025-08-23 16:46:40,107 - INFO -   1. K0NDR1X (CT): 0.000 DEAD
+2025-08-23 16:46:40,107 - INFO -   2. hamruz (T): 0.000 HP73
+2025-08-23 16:46:40,107 - INFO -   3. Reqless (CT): 0.000 DEAD
+2025-08-23 16:46:40,107 - INFO -   4. ergoJJ (T): 0.000 DEAD
+2025-08-23 16:46:40,108 - INFO -   5. _duality- (CT): 0.000 DEAD
+2025-08-23 16:46:40,108 - INFO - No player above threshold (0.25)
+2025-08-23 16:46:40,334 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:40,335 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:40,335 - INFO - === KILL PREDICTION RANKING ===
+2025-08-23 16:46:40,335 - INFO -   1. K0NDR1X (CT): 0.000 DEAD
+2025-08-23 16:46:40,335 - INFO -   2. hamruz (T): 0.000 HP73
+2025-08-23 16:46:40,335 - INFO -   3. Reqless (CT): 0.000 DEAD
+2025-08-23 16:46:40,336 - INFO -   4. ergoJJ (T): 0.000 DEAD
+2025-08-23 16:46:40,336 - INFO -   5. _duality- (CT): 0.000 DEAD
+2025-08-23 16:46:40,336 - INFO - No player above threshold (0.25)
+2025-08-23 16:46:40,603 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:40,604 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:40,604 - INFO - === KILL PREDICTION RANKING ===
+2025-08-23 16:46:40,604 - INFO -   1. K0NDR1X (CT): 0.000 DEAD
+2025-08-23 16:46:40,604 - INFO -   2. hamruz (T): 0.000 HP73
+2025-08-23 16:46:40,604 - INFO -   3. Reqless (CT): 0.000 DEAD
+2025-08-23 16:46:40,605 - INFO -   4. ergoJJ (T): 0.000 DEAD
+2025-08-23 16:46:40,605 - INFO -   5. _duality- (CT): 0.000 DEAD
+2025-08-23 16:46:40,605 - INFO - No player above threshold (0.25)
+2025-08-23 16:46:40,851 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:40,851 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:40,851 - INFO - === KILL PREDICTION RANKING ===
+2025-08-23 16:46:40,851 - INFO -   1. K0NDR1X (CT): 0.000 DEAD
+2025-08-23 16:46:40,851 - INFO -   2. hamruz (T): 0.000 HP73
+2025-08-23 16:46:40,851 - INFO -   3. Reqless (CT): 0.000 DEAD
+2025-08-23 16:46:40,852 - INFO -   4. ergoJJ (T): 0.000 DEAD
+2025-08-23 16:46:40,852 - INFO -   5. _duality- (CT): 0.000 DEAD
+2025-08-23 16:46:40,852 - INFO - No player above threshold (0.25)
+2025-08-23 16:46:41,064 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:41,065 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:41,065 - INFO - === KILL PREDICTION RANKING ===
+2025-08-23 16:46:41,065 - INFO -   1. K0NDR1X (CT): 0.000 DEAD
+2025-08-23 16:46:41,065 - INFO -   2. hamruz (T): 0.000 HP73
+2025-08-23 16:46:41,065 - INFO -   3. Reqless (CT): 0.000 DEAD
+2025-08-23 16:46:41,065 - INFO -   4. ergoJJ (T): 0.000 DEAD
+2025-08-23 16:46:41,066 - INFO -   5. _duality- (CT): 0.000 DEAD
+2025-08-23 16:46:41,066 - INFO - No player above threshold (0.25)
+2025-08-23 16:46:41,303 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:41,303 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:41,303 - INFO - === KILL PREDICTION RANKING ===
+2025-08-23 16:46:41,303 - INFO -   1. K0NDR1X (CT): 0.000 DEAD
+2025-08-23 16:46:41,303 - INFO -   2. hamruz (T): 0.000 HP73
+2025-08-23 16:46:41,304 - INFO -   3. Reqless (CT): 0.000 DEAD
+2025-08-23 16:46:41,304 - INFO -   4. ergoJJ (T): 0.000 DEAD
+2025-08-23 16:46:41,304 - INFO -   5. _duality- (CT): 0.000 DEAD
+2025-08-23 16:46:41,304 - INFO - No player above threshold (0.25)
+2025-08-23 16:46:41,591 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:41,591 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:41,591 - INFO - === KILL PREDICTION RANKING ===
+2025-08-23 16:46:41,592 - INFO -   1. K0NDR1X (CT): 0.000 DEAD
+2025-08-23 16:46:41,592 - INFO -   2. hamruz (T): 0.000 HP73
+2025-08-23 16:46:41,592 - INFO -   3. Reqless (CT): 0.000 DEAD
+2025-08-23 16:46:41,592 - INFO -   4. ergoJJ (T): 0.000 DEAD
+2025-08-23 16:46:41,592 - INFO -   5. _duality- (CT): 0.000 DEAD
+2025-08-23 16:46:41,592 - INFO - No player above threshold (0.25)
+2025-08-23 16:46:41,837 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:41,838 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:41,838 - INFO - === KILL PREDICTION RANKING ===
+2025-08-23 16:46:41,838 - INFO -   1. K0NDR1X (CT): 0.000 DEAD
+2025-08-23 16:46:41,838 - INFO -   2. hamruz (T): 0.000 HP73
+2025-08-23 16:46:41,838 - INFO -   3. Reqless (CT): 0.000 DEAD
+2025-08-23 16:46:41,838 - INFO -   4. ergoJJ (T): 0.000 DEAD
+2025-08-23 16:46:41,839 - INFO -   5. _duality- (CT): 0.000 DEAD
+2025-08-23 16:46:41,839 - INFO - No player above threshold (0.25)
+2025-08-23 16:46:42,084 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:42,085 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:42,085 - INFO - === KILL PREDICTION RANKING ===
+2025-08-23 16:46:42,085 - INFO -   1. K0NDR1X (CT): 0.000 DEAD
+2025-08-23 16:46:42,085 - INFO -   2. hamruz (T): 0.000 HP73
+2025-08-23 16:46:42,085 - INFO -   3. Reqless (CT): 0.000 DEAD
+2025-08-23 16:46:42,085 - INFO -   4. ergoJJ (T): 0.000 DEAD
+2025-08-23 16:46:42,086 - INFO -   5. _duality- (CT): 0.000 DEAD
+2025-08-23 16:46:42,086 - INFO - No player above threshold (0.25)
+2025-08-23 16:46:42,304 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:42,305 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:42,305 - INFO - === KILL PREDICTION RANKING ===
+2025-08-23 16:46:42,305 - INFO -   1. K0NDR1X (CT): 0.000 DEAD
+2025-08-23 16:46:42,305 - INFO -   2. hamruz (T): 0.000 HP73
+2025-08-23 16:46:42,305 - INFO -   3. Reqless (CT): 0.000 DEAD
+2025-08-23 16:46:42,305 - INFO -   4. ergoJJ (T): 0.000 DEAD
+2025-08-23 16:46:42,306 - INFO -   5. _duality- (CT): 0.000 DEAD
+2025-08-23 16:46:42,306 - INFO - No player above threshold (0.25)
+2025-08-23 16:46:42,579 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:42,579 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:42,580 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:42,580 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:42,580 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:42,580 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:42,580 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:42,581 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:42,581 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:42,581 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:42,581 - INFO - === KILL PREDICTION RANKING ===
+2025-08-23 16:46:42,581 - INFO -   1. K0NDR1X (CT): 0.000 HP100
+2025-08-23 16:46:42,582 - INFO -   2. hamruz (T): 0.000 HP100
+2025-08-23 16:46:42,582 - INFO -   3. Reqless (CT): 0.000 HP100
+2025-08-23 16:46:42,582 - INFO -   4. ergoJJ (T): 0.000 HP100
+2025-08-23 16:46:42,582 - INFO -   5. _duality- (CT): 0.000 HP100
+2025-08-23 16:46:42,582 - INFO - No player above threshold (0.25)
+2025-08-23 16:46:42,825 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:42,826 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:42,826 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:42,826 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:42,826 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:42,826 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:42,826 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:42,827 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:42,827 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:42,827 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:42,827 - INFO - === KILL PREDICTION RANKING ===
+2025-08-23 16:46:42,827 - INFO -   1. K0NDR1X (CT): 0.000 HP100
+2025-08-23 16:46:42,827 - INFO -   2. hamruz (T): 0.000 HP100
+2025-08-23 16:46:42,827 - INFO -   3. Reqless (CT): 0.000 HP100
+2025-08-23 16:46:42,828 - INFO -   4. ergoJJ (T): 0.000 HP100
+2025-08-23 16:46:42,828 - INFO -   5. _duality- (CT): 0.000 HP100
+2025-08-23 16:46:42,828 - INFO - No player above threshold (0.25)
+2025-08-23 16:46:43,073 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:43,073 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:43,073 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:43,073 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:43,074 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:43,074 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:43,074 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:43,074 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:43,074 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:43,074 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:43,075 - INFO - === KILL PREDICTION RANKING ===
+2025-08-23 16:46:43,075 - INFO -   1. K0NDR1X (CT): 0.000 HP100
+2025-08-23 16:46:43,075 - INFO -   2. hamruz (T): 0.000 HP100
+2025-08-23 16:46:43,075 - INFO -   3. Reqless (CT): 0.000 HP100
+2025-08-23 16:46:43,075 - INFO -   4. ergoJJ (T): 0.000 HP100
+2025-08-23 16:46:43,075 - INFO -   5. _duality- (CT): 0.000 HP100
+2025-08-23 16:46:43,075 - INFO - No player above threshold (0.25)
+2025-08-23 16:46:43,616 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:43,616 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:43,617 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:43,617 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:43,617 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:43,617 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:43,617 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:43,617 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:43,618 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:43,618 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:43,618 - INFO - === KILL PREDICTION RANKING ===
+2025-08-23 16:46:43,618 - INFO -   1. K0NDR1X (CT): 0.000 HP100
+2025-08-23 16:46:43,618 - INFO -   2. hamruz (T): 0.000 HP100
+2025-08-23 16:46:43,618 - INFO -   3. Reqless (CT): 0.000 HP100
+2025-08-23 16:46:43,618 - INFO -   4. ergoJJ (T): 0.000 HP100
+2025-08-23 16:46:43,619 - INFO -   5. _duality- (CT): 0.000 HP100
+2025-08-23 16:46:43,619 - INFO - No player above threshold (0.25)
+2025-08-23 16:46:43,903 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:43,903 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:43,904 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:43,904 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:43,904 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:43,904 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:43,904 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:43,904 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:43,905 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:43,905 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:43,905 - INFO - === KILL PREDICTION RANKING ===
+2025-08-23 16:46:43,905 - INFO -   1. K0NDR1X (CT): 0.000 HP100
+2025-08-23 16:46:43,905 - INFO -   2. hamruz (T): 0.000 HP100
+2025-08-23 16:46:43,905 - INFO -   3. Reqless (CT): 0.000 HP100
+2025-08-23 16:46:43,905 - INFO -   4. ergoJJ (T): 0.000 HP100
+2025-08-23 16:46:43,906 - INFO -   5. _duality- (CT): 0.000 HP100
+2025-08-23 16:46:43,906 - INFO - No player above threshold (0.25)
+2025-08-23 16:46:44,157 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:44,157 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:44,158 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:44,158 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:44,158 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:44,158 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:44,158 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:44,158 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:44,159 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:44,159 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:44,159 - INFO - === KILL PREDICTION RANKING ===
+2025-08-23 16:46:44,159 - INFO -   1. K0NDR1X (CT): 0.000 HP100
+2025-08-23 16:46:44,159 - INFO -   2. hamruz (T): 0.000 HP100
+2025-08-23 16:46:44,159 - INFO -   3. Reqless (CT): 0.000 HP100
+2025-08-23 16:46:44,160 - INFO -   4. ergoJJ (T): 0.000 HP100
+2025-08-23 16:46:44,160 - INFO -   5. _duality- (CT): 0.000 HP100
+2025-08-23 16:46:44,160 - INFO - No player above threshold (0.25)
+2025-08-23 16:46:44,404 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:44,404 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:44,405 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:44,405 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:44,405 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:44,405 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:44,405 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:44,405 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:44,406 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:44,406 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:44,406 - INFO - === KILL PREDICTION RANKING ===
+2025-08-23 16:46:44,406 - INFO -   1. K0NDR1X (CT): 0.000 HP100
+2025-08-23 16:46:44,406 - INFO -   2. hamruz (T): 0.000 HP100
+2025-08-23 16:46:44,406 - INFO -   3. Reqless (CT): 0.000 HP100
+2025-08-23 16:46:44,406 - INFO -   4. ergoJJ (T): 0.000 HP100
+2025-08-23 16:46:44,406 - INFO -   5. _duality- (CT): 0.000 HP100
+2025-08-23 16:46:44,407 - INFO - No player above threshold (0.25)
+2025-08-23 16:46:44,619 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:44,619 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:44,620 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:44,620 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:44,620 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:44,620 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:44,620 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:44,620 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:44,621 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:44,621 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:44,621 - INFO - === KILL PREDICTION RANKING ===
+2025-08-23 16:46:44,621 - INFO -   1. K0NDR1X (CT): 0.000 HP100
+2025-08-23 16:46:44,621 - INFO -   2. hamruz (T): 0.000 HP100
+2025-08-23 16:46:44,621 - INFO -   3. Reqless (CT): 0.000 HP100
+2025-08-23 16:46:44,621 - INFO -   4. ergoJJ (T): 0.000 HP100
+2025-08-23 16:46:44,622 - INFO -   5. _duality- (CT): 0.000 HP100
+2025-08-23 16:46:44,622 - INFO - No player above threshold (0.25)
+2025-08-23 16:46:44,865 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:44,865 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:44,865 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:44,865 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:44,865 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:44,866 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:44,866 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:44,866 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:44,866 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:44,866 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:44,866 - INFO - === KILL PREDICTION RANKING ===
+2025-08-23 16:46:44,867 - INFO -   1. K0NDR1X (CT): 0.000 HP100
+2025-08-23 16:46:44,867 - INFO -   2. hamruz (T): 0.000 HP100
+2025-08-23 16:46:44,867 - INFO -   3. Reqless (CT): 0.000 HP100
+2025-08-23 16:46:44,867 - INFO -   4. ergoJJ (T): 0.000 HP100
+2025-08-23 16:46:44,867 - INFO -   5. _duality- (CT): 0.000 HP100
+2025-08-23 16:46:44,867 - INFO - No player above threshold (0.25)
+2025-08-23 16:46:45,147 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:45,147 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:45,147 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:45,148 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:45,148 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:45,148 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:45,148 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:45,148 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:45,148 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:45,148 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:45,149 - INFO - === KILL PREDICTION RANKING ===
+2025-08-23 16:46:45,149 - INFO -   1. K0NDR1X (CT): 0.000 HP100
+2025-08-23 16:46:45,149 - INFO -   2. hamruz (T): 0.000 HP100
+2025-08-23 16:46:45,149 - INFO -   3. Reqless (CT): 0.000 HP100
+2025-08-23 16:46:45,149 - INFO -   4. ergoJJ (T): 0.000 HP100
+2025-08-23 16:46:45,149 - INFO -   5. _duality- (CT): 0.000 HP100
+2025-08-23 16:46:45,149 - INFO - No player above threshold (0.25)
+2025-08-23 16:46:45,393 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:45,394 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:45,394 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:45,394 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:45,394 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:45,394 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:45,395 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:45,395 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:45,395 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:45,395 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:45,395 - INFO - === KILL PREDICTION RANKING ===
+2025-08-23 16:46:45,395 - INFO -   1. K0NDR1X (CT): 0.000 HP100
+2025-08-23 16:46:45,395 - INFO -   2. hamruz (T): 0.000 HP100
+2025-08-23 16:46:45,396 - INFO -   3. Reqless (CT): 0.000 HP100
+2025-08-23 16:46:45,396 - INFO -   4. ergoJJ (T): 0.000 HP100
+2025-08-23 16:46:45,396 - INFO -   5. _duality- (CT): 0.000 HP100
+2025-08-23 16:46:45,396 - INFO - No player above threshold (0.25)
+2025-08-23 16:46:45,623 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:45,624 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:45,624 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:45,624 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:45,624 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:45,625 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:45,625 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:45,625 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:45,625 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:45,625 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:45,625 - INFO - === KILL PREDICTION RANKING ===
+2025-08-23 16:46:45,625 - INFO -   1. K0NDR1X (CT): 0.000 HP100
+2025-08-23 16:46:45,626 - INFO -   2. hamruz (T): 0.000 HP100
+2025-08-23 16:46:45,626 - INFO -   3. Reqless (CT): 0.000 HP100
+2025-08-23 16:46:45,626 - INFO -   4. ergoJJ (T): 0.000 HP100
+2025-08-23 16:46:45,626 - INFO -   5. _duality- (CT): 0.000 HP100
+2025-08-23 16:46:45,626 - INFO - No player above threshold (0.25)
+2025-08-23 16:46:45,889 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:45,889 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:45,890 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:45,890 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:45,890 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:45,890 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:45,890 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:45,890 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:45,891 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:45,891 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:45,891 - INFO - === KILL PREDICTION RANKING ===
+2025-08-23 16:46:45,891 - INFO -   1. K0NDR1X (CT): 0.000 HP100
+2025-08-23 16:46:45,891 - INFO -   2. hamruz (T): 0.000 HP100
+2025-08-23 16:46:45,891 - INFO -   3. Reqless (CT): 0.000 HP100
+2025-08-23 16:46:45,891 - INFO -   4. ergoJJ (T): 0.000 HP100
+2025-08-23 16:46:45,892 - INFO -   5. _duality- (CT): 0.000 HP100
+2025-08-23 16:46:45,892 - INFO - No player above threshold (0.25)
+2025-08-23 16:46:46,155 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:46,155 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:46,156 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:46,156 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:46,156 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:46,156 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:46,156 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:46,156 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:46,157 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:46,157 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:46,157 - INFO - === KILL PREDICTION RANKING ===
+2025-08-23 16:46:46,157 - INFO -   1. K0NDR1X (CT): 0.000 HP100
+2025-08-23 16:46:46,157 - INFO -   2. hamruz (T): 0.000 HP100
+2025-08-23 16:46:46,157 - INFO -   3. Reqless (CT): 0.000 HP100
+2025-08-23 16:46:46,157 - INFO -   4. ergoJJ (T): 0.000 HP100
+2025-08-23 16:46:46,158 - INFO -   5. _duality- (CT): 0.000 HP100
+2025-08-23 16:46:46,158 - INFO - No player above threshold (0.25)
+2025-08-23 16:46:46,432 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:46,433 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:46,433 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:46,433 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:46,433 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:46,433 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:46,434 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:46,434 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:46,434 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:46,434 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:46,434 - INFO - === KILL PREDICTION RANKING ===
+2025-08-23 16:46:46,434 - INFO -   1. K0NDR1X (CT): 0.000 HP100
+2025-08-23 16:46:46,434 - INFO -   2. hamruz (T): 0.000 HP100
+2025-08-23 16:46:46,435 - INFO -   3. Reqless (CT): 0.000 HP100
+2025-08-23 16:46:46,435 - INFO -   4. ergoJJ (T): 0.000 HP100
+2025-08-23 16:46:46,435 - INFO -   5. _duality- (CT): 0.000 HP100
+2025-08-23 16:46:46,436 - INFO - No player above threshold (0.25)
+2025-08-23 16:46:46,649 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:46,650 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:46,650 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:46,650 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:46,650 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:46,650 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:46,651 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:46,651 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:46,651 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:46,651 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:46,651 - INFO - === KILL PREDICTION RANKING ===
+2025-08-23 16:46:46,651 - INFO -   1. K0NDR1X (CT): 0.000 HP100
+2025-08-23 16:46:46,651 - INFO -   2. hamruz (T): 0.000 HP100
+2025-08-23 16:46:46,652 - INFO -   3. Reqless (CT): 0.000 HP100
+2025-08-23 16:46:46,652 - INFO -   4. ergoJJ (T): 0.000 HP100
+2025-08-23 16:46:46,652 - INFO -   5. _duality- (CT): 0.000 HP100
+2025-08-23 16:46:46,652 - INFO - No player above threshold (0.25)
+2025-08-23 16:46:46,925 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:46,925 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:46,926 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:46,926 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:46,926 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:46,926 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:46,926 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:46,926 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:46,926 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:46,927 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:46,927 - INFO - === KILL PREDICTION RANKING ===
+2025-08-23 16:46:46,927 - INFO -   1. K0NDR1X (CT): 0.000 HP100
+2025-08-23 16:46:46,927 - INFO -   2. hamruz (T): 0.000 HP100
+2025-08-23 16:46:46,927 - INFO -   3. Reqless (CT): 0.000 HP100
+2025-08-23 16:46:46,927 - INFO -   4. ergoJJ (T): 0.000 HP100
+2025-08-23 16:46:46,927 - INFO -   5. _duality- (CT): 0.000 HP100
+2025-08-23 16:46:46,928 - INFO - No player above threshold (0.25)
+2025-08-23 16:46:47,222 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:47,222 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:47,222 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:47,223 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:47,223 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:47,223 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:47,223 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:47,223 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:47,223 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:47,224 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:47,224 - INFO - === KILL PREDICTION RANKING ===
+2025-08-23 16:46:47,224 - INFO -   1. K0NDR1X (CT): 0.000 HP100
+2025-08-23 16:46:47,224 - INFO -   2. hamruz (T): 0.000 HP100
+2025-08-23 16:46:47,224 - INFO -   3. Reqless (CT): 0.000 HP100
+2025-08-23 16:46:47,224 - INFO -   4. ergoJJ (T): 0.000 HP100
+2025-08-23 16:46:47,224 - INFO -   5. _duality- (CT): 0.000 HP100
+2025-08-23 16:46:47,225 - INFO - No player above threshold (0.25)
+2025-08-23 16:46:47,468 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:47,468 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:47,468 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:47,469 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:47,469 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:47,469 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:47,469 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:47,469 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:47,469 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:47,470 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:47,470 - INFO - === KILL PREDICTION RANKING ===
+2025-08-23 16:46:47,470 - INFO -   1. K0NDR1X (CT): 0.000 HP100
+2025-08-23 16:46:47,470 - INFO -   2. hamruz (T): 0.000 HP100
+2025-08-23 16:46:47,470 - INFO -   3. Reqless (CT): 0.000 HP100
+2025-08-23 16:46:47,470 - INFO -   4. ergoJJ (T): 0.000 HP100
+2025-08-23 16:46:47,470 - INFO -   5. _duality- (CT): 0.000 HP100
+2025-08-23 16:46:47,470 - INFO - No player above threshold (0.25)
+2025-08-23 16:46:47,715 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:47,715 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:47,715 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:47,716 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:47,716 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:47,716 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:47,716 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:47,716 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:47,716 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:47,716 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:47,717 - INFO - === KILL PREDICTION RANKING ===
+2025-08-23 16:46:47,717 - INFO -   1. K0NDR1X (CT): 0.000 HP100
+2025-08-23 16:46:47,717 - INFO -   2. hamruz (T): 0.000 HP100
+2025-08-23 16:46:47,717 - INFO -   3. Reqless (CT): 0.000 HP100
+2025-08-23 16:46:47,717 - INFO -   4. ergoJJ (T): 0.000 HP100
+2025-08-23 16:46:47,717 - INFO -   5. _duality- (CT): 0.000 HP100
+2025-08-23 16:46:47,718 - INFO - No player above threshold (0.25)
+2025-08-23 16:46:47,962 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:47,962 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:47,963 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:47,963 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:47,963 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:47,963 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:47,963 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:47,964 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:47,964 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:47,964 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:47,964 - INFO - === KILL PREDICTION RANKING ===
+2025-08-23 16:46:47,964 - INFO -   1. K0NDR1X (CT): 0.000 HP100
+2025-08-23 16:46:47,964 - INFO -   2. hamruz (T): 0.000 HP100
+2025-08-23 16:46:47,964 - INFO -   3. Reqless (CT): 0.000 HP100
+2025-08-23 16:46:47,964 - INFO -   4. ergoJJ (T): 0.000 HP100
+2025-08-23 16:46:47,965 - INFO -   5. _duality- (CT): 0.000 HP100
+2025-08-23 16:46:47,965 - INFO - No player above threshold (0.25)
+2025-08-23 16:46:48,210 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:48,210 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:48,211 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:48,211 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:48,211 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:48,211 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:48,211 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:48,211 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:48,212 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:48,212 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:48,212 - INFO - === KILL PREDICTION RANKING ===
+2025-08-23 16:46:48,212 - INFO -   1. K0NDR1X (CT): 0.000 HP100
+2025-08-23 16:46:48,212 - INFO -   2. hamruz (T): 0.000 HP100
+2025-08-23 16:46:48,212 - INFO -   3. Reqless (CT): 0.000 HP100
+2025-08-23 16:46:48,212 - INFO -   4. ergoJJ (T): 0.000 HP100
+2025-08-23 16:46:48,212 - INFO -   5. _duality- (CT): 0.000 HP100
+2025-08-23 16:46:48,213 - INFO - No player above threshold (0.25)
+2025-08-23 16:46:48,507 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:48,508 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:48,508 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:48,508 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:48,508 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:48,508 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:48,509 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:48,509 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:48,509 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:48,509 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:48,509 - INFO - === KILL PREDICTION RANKING ===
+2025-08-23 16:46:48,509 - INFO -   1. K0NDR1X (CT): 0.000 HP100
+2025-08-23 16:46:48,509 - INFO -   2. hamruz (T): 0.000 HP100
+2025-08-23 16:46:48,510 - INFO -   3. Reqless (CT): 0.000 HP100
+2025-08-23 16:46:48,510 - INFO -   4. ergoJJ (T): 0.000 HP100
+2025-08-23 16:46:48,510 - INFO -   5. _duality- (CT): 0.000 HP100
+2025-08-23 16:46:48,510 - INFO - No player above threshold (0.25)
+2025-08-23 16:46:48,756 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:48,756 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:48,756 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:48,756 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:48,756 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:48,757 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:48,757 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:48,757 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:48,758 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:48,759 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:48,759 - INFO - === KILL PREDICTION RANKING ===
+2025-08-23 16:46:48,759 - INFO -   1. K0NDR1X (CT): 0.000 HP100
+2025-08-23 16:46:48,759 - INFO -   2. hamruz (T): 0.000 HP100
+2025-08-23 16:46:48,759 - INFO -   3. Reqless (CT): 0.000 HP100
+2025-08-23 16:46:48,759 - INFO -   4. ergoJJ (T): 0.000 HP100
+2025-08-23 16:46:48,759 - INFO -   5. _duality- (CT): 0.000 HP100
+2025-08-23 16:46:48,760 - INFO - No player above threshold (0.25)
+2025-08-23 16:46:49,004 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:49,005 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:49,005 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:49,005 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:49,005 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:49,005 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:49,005 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:49,006 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:49,006 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:49,006 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:49,006 - INFO - === KILL PREDICTION RANKING ===
+2025-08-23 16:46:49,006 - INFO -   1. K0NDR1X (CT): 0.000 HP100
+2025-08-23 16:46:49,006 - INFO -   2. hamruz (T): 0.000 HP100
+2025-08-23 16:46:49,006 - INFO -   3. Reqless (CT): 0.000 HP100
+2025-08-23 16:46:49,007 - INFO -   4. ergoJJ (T): 0.000 HP100
+2025-08-23 16:46:49,007 - INFO -   5. _duality- (CT): 0.000 HP100
+2025-08-23 16:46:49,007 - INFO - No player above threshold (0.25)
+2025-08-23 16:46:49,252 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:49,253 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:49,253 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:49,253 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:49,253 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:49,253 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:49,253 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:49,254 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:49,254 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:49,254 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:49,254 - INFO - === KILL PREDICTION RANKING ===
+2025-08-23 16:46:49,254 - INFO -   1. K0NDR1X (CT): 0.000 HP100
+2025-08-23 16:46:49,254 - INFO -   2. hamruz (T): 0.000 HP100
+2025-08-23 16:46:49,254 - INFO -   3. Reqless (CT): 0.000 HP100
+2025-08-23 16:46:49,255 - INFO -   4. ergoJJ (T): 0.000 HP100
+2025-08-23 16:46:49,255 - INFO -   5. _duality- (CT): 0.000 HP100
+2025-08-23 16:46:49,255 - INFO - No player above threshold (0.25)
+2025-08-23 16:46:49,500 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:49,500 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:49,500 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:49,500 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:49,501 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:49,501 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:49,501 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:49,501 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:49,501 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:49,501 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:49,501 - INFO - === KILL PREDICTION RANKING ===
+2025-08-23 16:46:49,502 - INFO -   1. K0NDR1X (CT): 0.000 HP100
+2025-08-23 16:46:49,502 - INFO -   2. hamruz (T): 0.000 HP100
+2025-08-23 16:46:49,502 - INFO -   3. Reqless (CT): 0.000 HP100
+2025-08-23 16:46:49,502 - INFO -   4. ergoJJ (T): 0.000 HP100
+2025-08-23 16:46:49,502 - INFO -   5. _duality- (CT): 0.000 HP100
+2025-08-23 16:46:49,502 - INFO - No player above threshold (0.25)
+2025-08-23 16:46:49,747 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:49,747 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:49,747 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:49,747 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:49,748 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:49,748 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:49,748 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:49,748 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:49,748 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:49,748 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:49,749 - INFO - === KILL PREDICTION RANKING ===
+2025-08-23 16:46:49,749 - INFO -   1. K0NDR1X (CT): 0.000 HP100
+2025-08-23 16:46:49,749 - INFO -   2. hamruz (T): 0.000 HP100
+2025-08-23 16:46:49,749 - INFO -   3. Reqless (CT): 0.000 HP100
+2025-08-23 16:46:49,749 - INFO -   4. ergoJJ (T): 0.000 HP100
+2025-08-23 16:46:49,749 - INFO -   5. _duality- (CT): 0.000 HP100
+2025-08-23 16:46:49,749 - INFO - No player above threshold (0.25)
+2025-08-23 16:46:49,994 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:49,995 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:49,995 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:49,995 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:49,995 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:49,995 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:49,995 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:49,996 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:49,996 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:49,996 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:49,996 - INFO - === KILL PREDICTION RANKING ===
+2025-08-23 16:46:49,996 - INFO -   1. K0NDR1X (CT): 0.000 HP100
+2025-08-23 16:46:49,997 - INFO -   2. hamruz (T): 0.000 HP100
+2025-08-23 16:46:49,997 - INFO -   3. Reqless (CT): 0.000 HP100
+2025-08-23 16:46:49,997 - INFO -   4. ergoJJ (T): 0.000 HP100
+2025-08-23 16:46:49,997 - INFO -   5. _duality- (CT): 0.000 HP100
+2025-08-23 16:46:49,997 - INFO - No player above threshold (0.25)
+2025-08-23 16:46:50,244 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:50,244 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:50,245 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:50,245 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:50,245 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:50,245 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:50,245 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:50,246 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:50,246 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:50,246 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:50,246 - INFO - === KILL PREDICTION RANKING ===
+2025-08-23 16:46:50,246 - INFO -   1. K0NDR1X (CT): 0.000 HP100
+2025-08-23 16:46:50,246 - INFO -   2. hamruz (T): 0.000 HP100
+2025-08-23 16:46:50,246 - INFO -   3. Reqless (CT): 0.000 HP100
+2025-08-23 16:46:50,247 - INFO -   4. ergoJJ (T): 0.000 HP100
+2025-08-23 16:46:50,247 - INFO -   5. _duality- (CT): 0.000 HP100
+2025-08-23 16:46:50,247 - INFO - No player above threshold (0.25)
+2025-08-23 16:46:50,468 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:50,468 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:50,468 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:50,468 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:50,469 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:50,469 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:50,469 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:50,469 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:50,469 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:50,469 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:50,470 - INFO - === KILL PREDICTION RANKING ===
+2025-08-23 16:46:50,470 - INFO -   1. K0NDR1X (CT): 0.000 HP100
+2025-08-23 16:46:50,470 - INFO -   2. hamruz (T): 0.000 HP100
+2025-08-23 16:46:50,470 - INFO -   3. Reqless (CT): 0.000 HP100
+2025-08-23 16:46:50,470 - INFO -   4. ergoJJ (T): 0.000 HP100
+2025-08-23 16:46:50,470 - INFO -   5. _duality- (CT): 0.000 HP100
+2025-08-23 16:46:50,470 - INFO - No player above threshold (0.25)
+2025-08-23 16:46:50,738 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:50,738 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:50,738 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:50,738 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:50,739 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:50,739 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:50,739 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:50,739 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:50,739 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:50,739 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:50,740 - INFO - === KILL PREDICTION RANKING ===
+2025-08-23 16:46:50,740 - INFO -   1. K0NDR1X (CT): 0.000 HP100
+2025-08-23 16:46:50,740 - INFO -   2. hamruz (T): 0.000 HP100
+2025-08-23 16:46:50,740 - INFO -   3. Reqless (CT): 0.000 HP100
+2025-08-23 16:46:50,740 - INFO -   4. ergoJJ (T): 0.000 HP100
+2025-08-23 16:46:50,740 - INFO -   5. _duality- (CT): 0.000 HP100
+2025-08-23 16:46:50,740 - INFO - No player above threshold (0.25)
+2025-08-23 16:46:50,984 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:50,985 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:50,985 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:50,985 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:50,985 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:50,985 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:50,986 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:50,986 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:50,986 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:50,986 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:50,986 - INFO - === KILL PREDICTION RANKING ===
+2025-08-23 16:46:50,987 - INFO -   1. K0NDR1X (CT): 0.000 HP100
+2025-08-23 16:46:50,987 - INFO -   2. hamruz (T): 0.000 HP100
+2025-08-23 16:46:50,987 - INFO -   3. Reqless (CT): 0.000 HP100
+2025-08-23 16:46:50,987 - INFO -   4. ergoJJ (T): 0.000 HP100
+2025-08-23 16:46:50,987 - INFO -   5. _duality- (CT): 0.000 HP100
+2025-08-23 16:46:50,987 - INFO - No player above threshold (0.25)
+2025-08-23 16:46:51,232 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:51,232 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:51,232 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:51,233 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:51,233 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:51,233 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:51,233 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:51,233 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:51,233 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:51,233 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:51,234 - INFO - === KILL PREDICTION RANKING ===
+2025-08-23 16:46:51,234 - INFO -   1. K0NDR1X (CT): 0.000 HP100
+2025-08-23 16:46:51,234 - INFO -   2. hamruz (T): 0.000 HP100
+2025-08-23 16:46:51,234 - INFO -   3. Reqless (CT): 0.000 HP100
+2025-08-23 16:46:51,234 - INFO -   4. ergoJJ (T): 0.000 HP100
+2025-08-23 16:46:51,234 - INFO -   5. _duality- (CT): 0.000 HP100
+2025-08-23 16:46:51,234 - INFO - No player above threshold (0.25)
+2025-08-23 16:46:51,527 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:51,528 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:51,528 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:51,528 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:51,529 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:51,529 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:51,529 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:51,529 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:51,529 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:51,529 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:51,530 - INFO - === KILL PREDICTION RANKING ===
+2025-08-23 16:46:51,530 - INFO -   1. K0NDR1X (CT): 0.000 HP100
+2025-08-23 16:46:51,530 - INFO -   2. hamruz (T): 0.000 HP100
+2025-08-23 16:46:51,530 - INFO -   3. Reqless (CT): 0.000 HP100
+2025-08-23 16:46:51,530 - INFO -   4. ergoJJ (T): 0.000 HP100
+2025-08-23 16:46:51,530 - INFO -   5. _duality- (CT): 0.000 HP100
+2025-08-23 16:46:51,530 - INFO - No player above threshold (0.25)
+2025-08-23 16:46:51,775 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:51,776 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:51,776 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:51,776 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:51,776 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:51,776 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:51,777 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:51,777 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:51,777 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:51,777 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:51,777 - INFO - === KILL PREDICTION RANKING ===
+2025-08-23 16:46:51,777 - INFO -   1. K0NDR1X (CT): 0.000 HP100
+2025-08-23 16:46:51,777 - INFO -   2. hamruz (T): 0.000 HP100
+2025-08-23 16:46:51,778 - INFO -   3. Reqless (CT): 0.000 HP100
+2025-08-23 16:46:51,778 - INFO -   4. ergoJJ (T): 0.000 HP100
+2025-08-23 16:46:51,778 - INFO -   5. _duality- (CT): 0.000 HP100
+2025-08-23 16:46:51,778 - INFO - No player above threshold (0.25)
+2025-08-23 16:46:51,994 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:51,994 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:51,994 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:51,994 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:51,995 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:51,995 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:51,995 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:51,995 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:51,995 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:51,995 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:51,996 - INFO - === KILL PREDICTION RANKING ===
+2025-08-23 16:46:51,996 - INFO -   1. K0NDR1X (CT): 0.000 HP100
+2025-08-23 16:46:51,996 - INFO -   2. hamruz (T): 0.000 HP100
+2025-08-23 16:46:51,996 - INFO -   3. Reqless (CT): 0.000 HP100
+2025-08-23 16:46:51,996 - INFO -   4. ergoJJ (T): 0.000 HP100
+2025-08-23 16:46:51,996 - INFO -   5. _duality- (CT): 0.000 HP100
+2025-08-23 16:46:51,996 - INFO - No player above threshold (0.25)
+2025-08-23 16:46:52,270 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:52,271 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:52,271 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:52,271 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:52,271 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:52,271 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:52,271 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:52,272 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:52,272 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:52,272 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:52,272 - INFO - === KILL PREDICTION RANKING ===
+2025-08-23 16:46:52,272 - INFO -   1. K0NDR1X (CT): 0.000 HP100
+2025-08-23 16:46:52,272 - INFO -   2. hamruz (T): 0.000 HP100
+2025-08-23 16:46:52,272 - INFO -   3. Reqless (CT): 0.000 HP100
+2025-08-23 16:46:52,273 - INFO -   4. ergoJJ (T): 0.000 HP100
+2025-08-23 16:46:52,273 - INFO -   5. _duality- (CT): 0.000 HP100
+2025-08-23 16:46:52,273 - INFO - No player above threshold (0.25)
+2025-08-23 16:46:52,519 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:52,519 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:52,519 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:52,520 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:52,520 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:52,520 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:52,520 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:52,520 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:52,520 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:52,521 - ERROR - Fejl i kill probability beregning: 'str' object has no attribute 'get'
+2025-08-23 16:46:52,521 - INFO - === KILL PREDICTION RANKING ===
+2025-08-23 16:46:52,521 - INFO -   1. K0NDR1X (CT): 0.000 HP100
+2025-08-23 16:46:52,521 - INFO -   2. hamruz (T): 0.000 HP100
+2025-08-23 16:46:52,521 - INFO -   3. Reqless (CT): 0.000 HP100
+2025-08-23 16:46:52,521 - INFO -   4. ergoJJ (T): 0.000 HP100
+2025-08-23 16:46:52,521 - INFO -   5. _duality- (CT): 0.000 HP100
+2025-08-23 16:46:52,522 - INFO - No player above threshold (0.25)

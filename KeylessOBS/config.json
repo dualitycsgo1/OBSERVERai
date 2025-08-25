@@ -1,0 +1,69 @@
+{
+  "observer": {
+    "switch_cooldown": 1.2,
+    "enable_auto_switch": true
+  },
+  "duel_detection": {
+    "max_distance": 1400.0,
+    "min_distance": 75.0,
+    "facing_threshold": 0.35,
+    "height_difference_max": 220.0,
+    "ttc_max": 3.2
+  },
+  "scoring": {
+    "w_orientation_adv": 0.33,
+    "w_distance_suit": 0.14,
+    "w_health": 0.12,
+    "w_weapon_quality": 0.14,
+    "w_duel_proximity": 0.16,
+    "w_recent_perf": 0.06,
+    "w_isolation": 0.05
+  },
+  "weapon_scores": {
+    "awp": 1.0,
+    "ak47": 0.9,
+    "m4a4": 0.88,
+    "m4a1": 0.88,
+    "rifle": 0.7,
+    "smg": 0.48,
+    "shotgun": 0.5,
+    "pistol": 0.42,
+    "knife": 0.2
+  },
+  "weapon_ranges": {
+    "awp": {
+      "close": 380,
+      "far": 1300
+    },
+    "rifle": {
+      "close": 240,
+      "far": 950
+    },
+    "smg": {
+      "close": 160,
+      "far": 520
+    },
+    "shotgun": {
+      "close": 110,
+      "far": 300
+    },
+    "pistol": {
+      "close": 150,
+      "far": 520
+    }
+  },
+  "hysteresis": {
+    "switch_margin": 0.08,
+    "min_hold_time": 1.1,
+    "score_ema_alpha": 0.55
+  },
+  "rotation": {
+    "window": 1.2,
+    "delta": 0.04
+  },
+  "triggers": {
+    "kill_focus_time": 2.2,
+    "damage_drop_hp": 35,
+    "damage_focus_time": 1.7
+  }
+}
