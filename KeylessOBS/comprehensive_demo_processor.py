@@ -44,21 +44,35 @@ class ComprehensiveDemoProcessor:
         """Extract header information using cs2_header_extractor.exe"""
         try:
             if not os.path.exists(self.header_extractor):
+                self.logger.warning(f"Header extractor not found at: {self.header_extractor}")
                 return None
+            
+            # Set environment for Go executable
+            env = os.environ.copy()
+            env["TEMP"] = self.base_dir  # Use base directory for temp files
+            env["TMP"] = self.base_dir
             
             result = subprocess.run(
                 [self.header_extractor, demo_path], 
                 capture_output=True, 
                 text=True, 
-                timeout=30
+                timeout=60,  # Extended timeout for header extraction
+                cwd=self.base_dir,  # Set working directory to where the executables are
+                env=env  # Pass environment variables
             )
             
             if result.returncode == 0:
                 return json.loads(result.stdout)
             else:
-                self.logger.warning(f"Header extraction failed for {demo_path}: {result.stderr}")
+                self.logger.warning(f"Header extraction failed for {demo_path}")
+                self.logger.warning(f"Return code: {result.returncode}")
+                self.logger.warning(f"Stderr: {result.stderr}")
+                self.logger.warning(f"Stdout: {result.stdout}")
                 return None
                 
+        except subprocess.TimeoutExpired:
+            self.logger.error(f"Header extraction timed out for {demo_path} (exceeded 1 minute)")
+            return None
         except Exception as e:
             self.logger.error(f"Error extracting header from {demo_path}: {e}")
             return None
@@ -67,13 +81,21 @@ class ComprehensiveDemoProcessor:
         """Parse demo content using demo_parser_with_positions.exe"""
         try:
             if not os.path.exists(self.demo_parser):
+                self.logger.warning(f"Demo parser not found at: {self.demo_parser}")
                 return None
+            
+            # Set environment for Go executable
+            env = os.environ.copy()
+            env["TEMP"] = self.base_dir  # Use base directory for temp files
+            env["TMP"] = self.base_dir
             
             result = subprocess.run(
                 [self.demo_parser, demo_path], 
                 capture_output=True, 
                 text=True, 
-                timeout=60  # Reasonable timeout for demo parsing
+                timeout=300,  # Extended timeout for large professional demos (5 minutes)
+                cwd=self.base_dir,  # Set working directory to where the executables are
+                env=env  # Pass environment variables
             )
             
             if result.returncode == 0:
@@ -87,9 +109,15 @@ class ComprehensiveDemoProcessor:
                     self.logger.debug(f"Raw output: {result.stdout[:500]}...")
                     return None
             else:
-                self.logger.warning(f"Demo parsing failed for {demo_path}: {result.stderr}")
+                self.logger.warning(f"Demo parsing failed for {demo_path}")
+                self.logger.warning(f"Return code: {result.returncode}")
+                self.logger.warning(f"Stderr: {result.stderr}")
+                self.logger.warning(f"Stdout: {result.stdout[:500]}...")  # First 500 chars of stdout
                 return None
                 
+        except subprocess.TimeoutExpired:
+            self.logger.error(f"Demo parsing timed out for {demo_path} (exceeded 5 minutes)")
+            return None
         except Exception as e:
             self.logger.error(f"Error parsing demo {demo_path}: {e}")
             return None
