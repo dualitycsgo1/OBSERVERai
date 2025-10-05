@@ -19,9 +19,8 @@ observer_ai_model.pkl
 *.pkl
 *.joblib
 
-# Demo files and maps
+# Demo files (maps/ folder is essential and should be included)
 demos/
-maps/
 
 # Logs and cache
 *.log
