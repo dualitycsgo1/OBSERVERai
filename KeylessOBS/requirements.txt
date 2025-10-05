@@ -1,1 +1,28 @@
+# CS2 Observer AI - Python Dependencies
+# Complete requirements for standalone build
+
+# Core scientific computing
+numpy>=1.21.0
+pandas>=1.3.0
+scipy>=1.7.0
+
+# Machine learning
+scikit-learn>=1.0.0
+joblib>=1.1.0
+
+# System utilities
+psutil>=5.8.0
 keyboard==0.13.5
+
+# Networking and web
+requests>=2.25.0
+
+# Build tools
+pyinstaller>=5.0.0
+
+# Optional: AWPY for advanced demo analysis (if available)
+# awpy>=1.0.0
+
+# Development and testing
+pytest>=6.0.0
+pytest-cov>=2.12.0

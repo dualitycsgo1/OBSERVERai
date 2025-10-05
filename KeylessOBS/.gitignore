@@ -1,0 +1,80 @@
+# OBSERVERai .gitignore
+
+# Build artifacts and executables
+dist/
+build/
+standalone_dist/
+final_build/
+installer_output/
+*.exe
+*.spec
+
+# Training data and models (too large for git)
+training_data/
+models/
+model_backups/
+enhanced_positional_models/
+complete_positional_dataset_all_85_demos.json
+observer_ai_model.pkl
+*.pkl
+*.joblib
+
+# Demo files and maps
+demos/
+maps/
+
+# Logs and cache
+*.log
+__pycache__/
+*.pyc
+*.pyo
+
+# Development and testing files
+debug_*.py
+test_comprehensive_*.py
+test_duel_fixes.py
+test_map_extraction.py
+test_models.py
+test_training_stats.py
+simple_build_test.py
+rebuild_stats.py
+
+# Build scripts and installers
+build_*.bat
+compile_installer.bat
+*.iss
+create_distribution*.ps1
+installer_script.iss
+
+# Temporary and backup files
+*.tmp
+*.bak
+*.backup
+*.old
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Distribution packages
+*.zip
+CS2Observer-AI-Distribution.zip
+
+# Documentation that's too detailed for github
+COMPLETE_USER_GUIDE.txt
+AI_TRAINER_README.md
+AI_TRAINER_SUMMARY.md
+PRODUCTION_FILES.md
+DUEL_DETECTOR_FIXES.md

@@ -1,0 +1,12 @@
+{
+  "decision_weights": {
+    "demo_analyzer": 0.35,
+    "pattern_memory": 0.25,
+    "kill_analyzer": 0.25,
+    "rule_based": 0.15
+  },
+  "prediction_threshold": 0.6,
+  "switch_cooldown": 2.0,
+  "learning_rate": 0.1,
+  "confidence_threshold": 0.7
+}

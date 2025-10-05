@@ -1,6 +1,6 @@
 {
   "observer": {
-    "switch_cooldown": 1.2,
+    "switch_cooldown": 4.2,
     "enable_auto_switch": true
   },
   "duel_detection": {
