@@ -158,6 +158,8 @@ VK_CODES = {
 }
 # Virtual key codes for A,Q,E,W,U,I,O,P
 HOTKEY_CODES = [0x41, 0x51, 0x45, 0x57, 0x55, 0x49, 0x4F, 0x50]  # Corrected typo in 0x4O to 0x4F
+# Virtual key code for "-" (minus/dash) key for campath toggle
+VK_MINUS = 0xBD
 
 # Logging setup - Ultra minimal, user-friendly output
 # Use user AppData directory for logs to avoid permission issues
@@ -344,6 +346,7 @@ class CS2DuelDetector:
     def __init__(self, config_path: str = "config.json"):
         self.config = self.load_config(config_path)
         self.active = self.config.get('observer', {}).get('enable_auto_switch', True)
+        self.campaths_enabled = self.config.get('observer', {}).get('enable_campaths', True)  # Enable/disable campaths (AQWE/UIOP keys)
 
         # Cooldown/hold/rotation - ULTRA AGGRESSIVE for 2-3 second early switching
         self.switch_cooldown = max(0.5, self.config.get('observer', {}).get('switch_cooldown', 0.5))  # REDUCED to 0.5s for early switching
@@ -2205,7 +2208,16 @@ class CS2DuelDetector:
 
     def toggle_active(self):
         self.active = not self.active
-        print(f"Duel detection: {'AKTIVT' if self.active else 'INAKTIVT'}")
+        status = "AKTIVT" if self.active else "INAKTIVT"
+        print(f"Duel detection: {status}", flush=True)
+        logging.info(f"Observer toggled: {status}")
+
+    def toggle_campaths(self):
+        """Toggle campaths (AQWE/UIOP hotkeys) on/off"""
+        self.campaths_enabled = not self.campaths_enabled
+        status = "enabled" if self.campaths_enabled else "disabled"
+        print(f"🎬 Campaths {status}", flush=True)
+        logging.info(f"🎬 Campaths {status}")
 
     # ------------- Main processing -------------
 
@@ -2267,12 +2279,15 @@ class CS2DuelDetector:
                 logging.info("❄️ Freezetime started")
                 print("[Freezetime] Freezetime started.")
 
-                # Simulate pressing a random hotkey (A, Q, W, E, U, I, O, P) only once
-                hotkey_code = random.choice(HOTKEY_CODES)
-                if send_key(hotkey_code):
-                    hotkey_char = chr(hotkey_code)
-                    pass  # Random hotkey pressed
-                    print(f"[Freezetime] Pressed random hotkey: {hotkey_char}")
+                # Simulate pressing a random hotkey (A, Q, W, E, U, I, O, P) only once if campaths are enabled
+                if self.campaths_enabled:
+                    hotkey_code = random.choice(HOTKEY_CODES)
+                    if send_key(hotkey_code):
+                        hotkey_char = chr(hotkey_code)
+                        pass  # Random hotkey pressed
+                        print(f"[Freezetime] Pressed random hotkey: {hotkey_char}")
+                else:
+                    print(f"[Freezetime] Campaths disabled - no hotkey pressed")
 
             # Handle FreezetimeEnded event using round_phase
             if round_phase != "freezetime" and self.freezetime_fkey_sent:
@@ -3080,13 +3095,18 @@ def control_interface():
 
     while True:
         try:
-            cmd = input("> ").strip().lower()
-            if cmd in ('quit', 'exit'):
+            cmd = input("> ").strip()
+            cmd_lower = cmd.lower()
+            
+            if cmd_lower in ('quit', 'exit'):
                 break
-            elif cmd == 'toggle':
+            elif cmd == "":
+                # Handle empty input (just Enter key)
+                continue
+            elif cmd_lower == 'toggle':
                 duel_detector.active = not duel_detector.active
                 print(f"Observer: {'ON' if duel_detector.active else 'OFF'}")
-            elif cmd == 'status':
+            elif cmd_lower == 'status':
                 print(f"Status: {'ON' if duel_detector.active else 'OFF'}")
                 print(f"Cooldown: {duel_detector.switch_cooldown}s")
                 print(f"Min holdetid: {duel_detector.min_hold_time}s")
@@ -3115,21 +3135,21 @@ def control_interface():
                     left = duel_detector.numbers_lockout_seconds - (datetime.now() - duel_detector.freezetime_start).total_seconds()
                     left = max(0.0, left)
                     print(f"Numbers-lockout: {'AKTIV' if left>0 else 'INAKTIV'} ({left:.1f}s tilbage)")
-            elif cmd.startswith('cooldown '):
+            elif cmd_lower.startswith('cooldown '):
                 try:
-                    duel_detector.switch_cooldown = float(cmd.split()[1])
+                    duel_detector.switch_cooldown = float(cmd_lower.split()[1])
                     print(f"Cooldown sat til {duel_detector.switch_cooldown}s")
                 except:
                     print("Ugyldig værdi")
-            elif cmd.startswith('hold '):
+            elif cmd_lower.startswith('hold '):
                 try:
-                    duel_detector.min_hold_time = float(cmd.split()[1])
+                    duel_detector.min_hold_time = float(cmd_lower.split()[1])
                     print(f"Min holdetid sat til {duel_detector.min_hold_time}s")
                 except:
                     print("Ugyldig værdi")
-            elif cmd.startswith('margin '):
+            elif cmd_lower.startswith('margin '):
                 try:
-                    duel_detector.switch_margin = float(cmd.split()[1])
+                    duel_detector.switch_margin = float(cmd_lower.split()[1])
                     print(f"Switch-margin sat til {duel_detector.switch_margin}")
                 except:
                     print("Ugyldig værdi")
@@ -3139,9 +3159,23 @@ def control_interface():
             break
 
 def global_hotkey_listener():
+    """Global hotkey listener that works independently of input() command loop"""
     while True:
-        keyboard.wait("'")  # Listen for the ' key globally
-        duel_detector.toggle_active()
+        try:
+            # Listen for either ' (toggle observer) or - (toggle campaths)
+            event = keyboard.read_event()
+            if event.event_type == keyboard.KEY_DOWN:
+                if event.name == "'" or event.name == "apostrophe":
+                    print("\n🎯 Hotkey detected: Toggling observer...")
+                    duel_detector.toggle_active()
+                    print("> ", end="", flush=True)  # Restore prompt
+                elif event.name == "-" or event.name == "minus":
+                    print("\n🎬 Hotkey detected: Toggling campaths...")
+                    duel_detector.toggle_campaths()
+                    print("> ", end="", flush=True)  # Restore prompt
+        except Exception as e:
+            print(f"Keyboard event error: {e}")
+            time.sleep(0.1)  # Small delay to prevent busy loop
 
 # ---------------------
 # Main
