@@ -1,0 +1,1009 @@
+{
+  "source_url": "https://www.youtube.com/watch?v=ykyKLhnX6lw",
+  "visible_event_title": "IEM KATOWICE 2025 GRAND FINAL",
+  "visible_teams": [
+    "Team Vitality",
+    "Team Spirit"
+  ],
+  "visible_map": "Dust2",
+  "whole_round_observation": {
+    "round": 1,
+    "freeze_observed_from_seconds": 24,
+    "live_start_between_nominal_seconds": [
+      38,
+      39
+    ],
+    "last_live_fight_at_seconds": 110,
+    "death_and_round_win_visible_at_seconds": 111,
+    "complete_live_round_visually_reviewed_at_1fps": true,
+    "winner": "Team Vitality",
+    "score_after_round": [
+      1,
+      0
+    ],
+    "round2": "Observed from freeze/live transition at134 through179 only; incomplete."
+  },
+  "method": {
+    "video_duration_seconds": 180.026,
+    "video_dimensions": [
+      1280,
+      720
+    ],
+    "frame_sampling_fps": 1,
+    "reviewed_frame_count": 180,
+    "all_samples_0_through_179_visually_reviewed": true,
+    "reviewed_contact_sheets": 20,
+    "name_clock_checks": "44 enlarged HUD crop panels plus full-size key frames",
+    "audio_reviewed": false,
+    "subsecond_cut_detection_guaranteed": false,
+    "precision_note": "Nominal fps-filter time grid; cut boundaries and durations are approximate to one sampled second. Transient cuts shorter than the sampling interval may be missed."
+  },
+  "segments": [
+    {
+      "index": 1,
+      "start_vod_seconds_nominal": 0,
+      "end_vod_seconds_nominal_exclusive": 6,
+      "duration_seconds_approx": 6,
+      "timing_precision_seconds": 1,
+      "kind": "intro_graphic",
+      "pov_player_name_visible": null,
+      "team_if_visible": null,
+      "fixed_player_role": null,
+      "game_clock_observed": null,
+      "alive_CT_T_observed": null,
+      "visible_facts": "Yellow/black transition followed by ESL logo.",
+      "inferred_editorial_reason": "Broadcast intro; no in-game camera-selection evidence.",
+      "reason_is_observer_intent_known": false
+    },
+    {
+      "index": 2,
+      "start_vod_seconds_nominal": 6,
+      "end_vod_seconds_nominal_exclusive": 7,
+      "duration_seconds_approx": 1,
+      "timing_precision_seconds": 1,
+      "kind": "player_camera",
+      "pov_player_name_visible": null,
+      "team_if_visible": null,
+      "fixed_player_role": null,
+      "game_clock_observed": null,
+      "alive_CT_T_observed": null,
+      "visible_facts": "Close-up of headset-wearing player; no readable name label.",
+      "inferred_editorial_reason": "Reaction/intro insert; identity not assigned from face.",
+      "reason_is_observer_intent_known": false
+    },
+    {
+      "index": 3,
+      "start_vod_seconds_nominal": 7,
+      "end_vod_seconds_nominal_exclusive": 22,
+      "duration_seconds_approx": 15,
+      "timing_precision_seconds": 1,
+      "kind": "arena_sequence",
+      "pov_player_name_visible": null,
+      "team_if_visible": null,
+      "fixed_player_role": null,
+      "game_clock_observed": null,
+      "alive_CT_T_observed": null,
+      "visible_facts": "Arena overhead countdown and stage Dust II graphics; several venue views.",
+      "inferred_editorial_reason": "Establishing sequence, not a single player POV; individual arena cuts not exhaustively resolved.",
+      "reason_is_observer_intent_known": false
+    },
+    {
+      "index": 4,
+      "start_vod_seconds_nominal": 22,
+      "end_vod_seconds_nominal_exclusive": 24,
+      "duration_seconds_approx": 2,
+      "timing_precision_seconds": 1,
+      "kind": "sponsor_bumper",
+      "pov_player_name_visible": null,
+      "team_if_visible": null,
+      "fixed_player_role": null,
+      "game_clock_observed": null,
+      "alive_CT_T_observed": null,
+      "visible_facts": "Intel Core Ultra graphic.",
+      "inferred_editorial_reason": "Transition into the game.",
+      "reason_is_observer_intent_known": false
+    },
+    {
+      "index": 5,
+      "start_vod_seconds_nominal": 24,
+      "end_vod_seconds_nominal_exclusive": 25,
+      "duration_seconds_approx": 1,
+      "timing_precision_seconds": 1,
+      "kind": "player_pov",
+      "pov_player_name_visible": "magixx",
+      "team_if_visible": "T",
+      "fixed_player_role": null,
+      "game_clock_observed": "freeze 0:14",
+      "alive_CT_T_observed": [
+        [
+          5,
+          5
+        ]
+      ],
+      "visible_facts": "MAGIXX card, pistol, 0-0, all ten roster cards at 100 HP.",
+      "inferred_editorial_reason": "Brief player introduction before the team establishing shot.",
+      "reason_is_observer_intent_known": false
+    },
+    {
+      "index": 6,
+      "start_vod_seconds_nominal": 25,
+      "end_vod_seconds_nominal_exclusive": 40,
+      "duration_seconds_approx": 15,
+      "timing_precision_seconds": 1,
+      "kind": "third_person_game",
+      "pov_player_name_visible": null,
+      "team_if_visible": "T",
+      "fixed_player_role": null,
+      "game_clock_observed": "freeze 0:13; 0:01 at37; 0:00 at38; live1:54 at39",
+      "alive_CT_T_observed": [
+        [
+          5,
+          5
+        ]
+      ],
+      "visible_facts": "Third-person camera moves toward the T group; no selected-player card.",
+      "inferred_editorial_reason": "Establishing team movement across freeze/live boundary.",
+      "reason_is_observer_intent_known": false
+    },
+    {
+      "index": 7,
+      "start_vod_seconds_nominal": 40,
+      "end_vod_seconds_nominal_exclusive": 42,
+      "duration_seconds_approx": 2,
+      "timing_precision_seconds": 1,
+      "kind": "player_pov",
+      "pov_player_name_visible": "ropz",
+      "team_if_visible": "CT",
+      "fixed_player_role": null,
+      "game_clock_observed": "1:53",
+      "alive_CT_T_observed": [
+        [
+          5,
+          5
+        ]
+      ],
+      "visible_facts": "ROPZ card; knife out, running near B; yellow x-ray silhouettes behind map surfaces.",
+      "inferred_editorial_reason": "Show the defender's movement/setup, before visible contact.",
+      "reason_is_observer_intent_known": false
+    },
+    {
+      "index": 8,
+      "start_vod_seconds_nominal": 42,
+      "end_vod_seconds_nominal_exclusive": 46,
+      "duration_seconds_approx": 4,
+      "timing_precision_seconds": 1,
+      "kind": "player_pov",
+      "pov_player_name_visible": "chopper",
+      "team_if_visible": "T",
+      "fixed_player_role": null,
+      "game_clock_observed": "1:51",
+      "alive_CT_T_observed": [
+        [
+          5,
+          5
+        ]
+      ],
+      "visible_facts": "CHOPPER card; moving with teammates, utility in hand.",
+      "inferred_editorial_reason": "Show attacking movement/utility setup.",
+      "reason_is_observer_intent_known": false
+    },
+    {
+      "index": 9,
+      "start_vod_seconds_nominal": 46,
+      "end_vod_seconds_nominal_exclusive": 47,
+      "duration_seconds_approx": 1,
+      "timing_precision_seconds": 1,
+      "kind": "player_pov",
+      "pov_player_name_visible": "zont1x",
+      "team_if_visible": "T",
+      "fixed_player_role": null,
+      "game_clock_observed": "1:48",
+      "alive_CT_T_observed": [
+        [
+          5,
+          5
+        ]
+      ],
+      "visible_facts": "ZONT1X card; running behind teammate in tunnel passage.",
+      "inferred_editorial_reason": "Brief attacker setup shot.",
+      "reason_is_observer_intent_known": false
+    },
+    {
+      "index": 10,
+      "start_vod_seconds_nominal": 47,
+      "end_vod_seconds_nominal_exclusive": 49,
+      "duration_seconds_approx": 2,
+      "timing_precision_seconds": 1,
+      "kind": "player_pov",
+      "pov_player_name_visible": "sh1ro",
+      "team_if_visible": "T",
+      "fixed_player_role": null,
+      "game_clock_observed": "1:47",
+      "alive_CT_T_observed": [
+        [
+          5,
+          5
+        ]
+      ],
+      "visible_facts": "SH1RO card; pistol up, teammate and enemy x-ray outline around tunnel route.",
+      "inferred_editorial_reason": "Show the attacker's angle before a fight is exposed.",
+      "reason_is_observer_intent_known": false
+    },
+    {
+      "index": 11,
+      "start_vod_seconds_nominal": 49,
+      "end_vod_seconds_nominal_exclusive": 53,
+      "duration_seconds_approx": 4,
+      "timing_precision_seconds": 1,
+      "kind": "player_pov",
+      "pov_player_name_visible": "ropz",
+      "team_if_visible": "CT",
+      "fixed_player_role": null,
+      "game_clock_observed": "1:45",
+      "alive_CT_T_observed": [
+        [
+          5,
+          5
+        ]
+      ],
+      "visible_facts": "ROPZ card; grenade equipped/throwing motion, opponents visible as x-ray only.",
+      "inferred_editorial_reason": "Show defender utility and the opposite side of the developing contact.",
+      "reason_is_observer_intent_known": false
+    },
+    {
+      "index": 12,
+      "start_vod_seconds_nominal": 53,
+      "end_vod_seconds_nominal_exclusive": 58,
+      "duration_seconds_approx": 5,
+      "timing_precision_seconds": 1,
+      "kind": "player_pov",
+      "pov_player_name_visible": "sh1ro",
+      "team_if_visible": "T",
+      "fixed_player_role": null,
+      "game_clock_observed": "1:41",
+      "alive_CT_T_observed": [
+        [
+          5,
+          5
+        ]
+      ],
+      "visible_facts": "SH1RO card; holds pistol behind teammate at a wall/arch.",
+      "inferred_editorial_reason": "Maintain attacking setup despite no unambiguous directly exposed opponent.",
+      "reason_is_observer_intent_known": false
+    },
+    {
+      "index": 13,
+      "start_vod_seconds_nominal": 58,
+      "end_vod_seconds_nominal_exclusive": 60,
+      "duration_seconds_approx": 2,
+      "timing_precision_seconds": 1,
+      "kind": "third_person_game",
+      "pov_player_name_visible": null,
+      "team_if_visible": null,
+      "fixed_player_role": null,
+      "game_clock_observed": "1:36",
+      "alive_CT_T_observed": [
+        [
+          5,
+          5
+        ]
+      ],
+      "visible_facts": "Elevated third-person view of grouped players by tunnel/arch.",
+      "inferred_editorial_reason": "Establish positions before contact; not a kill-probability POV choice.",
+      "reason_is_observer_intent_known": false
+    },
+    {
+      "index": 14,
+      "start_vod_seconds_nominal": 60,
+      "end_vod_seconds_nominal_exclusive": 61,
+      "duration_seconds_approx": 1,
+      "timing_precision_seconds": 1,
+      "kind": "player_pov",
+      "pov_player_name_visible": "chopper",
+      "team_if_visible": "T",
+      "fixed_player_role": null,
+      "game_clock_observed": "1:34",
+      "alive_CT_T_observed": [
+        [
+          5,
+          5
+        ]
+      ],
+      "visible_facts": "CHOPPER card and nearby attacking players visible.",
+      "inferred_editorial_reason": "Short attacker shot immediately before switching to defender.",
+      "reason_is_observer_intent_known": false
+    },
+    {
+      "index": 15,
+      "start_vod_seconds_nominal": 61,
+      "end_vod_seconds_nominal_exclusive": 67,
+      "duration_seconds_approx": 6,
+      "timing_precision_seconds": 1,
+      "kind": "player_pov",
+      "pov_player_name_visible": "ropz",
+      "team_if_visible": "CT",
+      "fixed_player_role": null,
+      "game_clock_observed": "1:33; 1:31 at63",
+      "alive_CT_T_observed": [
+        [
+          5,
+          5
+        ],
+        [
+          5,
+          4
+        ]
+      ],
+      "visible_facts": "ROPZ fires; at63 kill feed says ropz kills donk and donk card is dead. Camera stays on ropz through66.",
+      "inferred_editorial_reason": "Preserve the firing sequence and aftermath instead of cutting immediately at the kill.",
+      "reason_is_observer_intent_known": false
+    },
+    {
+      "index": 16,
+      "start_vod_seconds_nominal": 67,
+      "end_vod_seconds_nominal_exclusive": 69,
+      "duration_seconds_approx": 2,
+      "timing_precision_seconds": 1,
+      "kind": "player_pov",
+      "pov_player_name_visible": "sh1ro",
+      "team_if_visible": "T",
+      "fixed_player_role": null,
+      "game_clock_observed": "1:27",
+      "alive_CT_T_observed": [
+        [
+          5,
+          4
+        ]
+      ],
+      "visible_facts": "SH1RO card; pistol lowered/knife or utility motion while repositioning.",
+      "inferred_editorial_reason": "Follow remaining attacker repositioning after the opening kill.",
+      "reason_is_observer_intent_known": false
+    },
+    {
+      "index": 17,
+      "start_vod_seconds_nominal": 69,
+      "end_vod_seconds_nominal_exclusive": 70,
+      "duration_seconds_approx": 1,
+      "timing_precision_seconds": 1,
+      "kind": "player_pov",
+      "pov_player_name_visible": "magixx",
+      "team_if_visible": "T",
+      "fixed_player_role": null,
+      "game_clock_observed": "1:25",
+      "alive_CT_T_observed": [
+        [
+          5,
+          4
+        ]
+      ],
+      "visible_facts": "MAGIXX card at85 HP; utility in hand near the passage.",
+      "inferred_editorial_reason": "Brief utility setup.",
+      "reason_is_observer_intent_known": false
+    },
+    {
+      "index": 18,
+      "start_vod_seconds_nominal": 70,
+      "end_vod_seconds_nominal_exclusive": 72,
+      "duration_seconds_approx": 2,
+      "timing_precision_seconds": 1,
+      "kind": "player_pov",
+      "pov_player_name_visible": "zont1x",
+      "team_if_visible": "T",
+      "fixed_player_role": null,
+      "game_clock_observed": "1:24",
+      "alive_CT_T_observed": [
+        [
+          5,
+          4
+        ]
+      ],
+      "visible_facts": "ZONT1X card; looks down while moving along a ledge/passage.",
+      "inferred_editorial_reason": "Brief positional transition.",
+      "reason_is_observer_intent_known": false
+    },
+    {
+      "index": 19,
+      "start_vod_seconds_nominal": 72,
+      "end_vod_seconds_nominal_exclusive": 82,
+      "duration_seconds_approx": 10,
+      "timing_precision_seconds": 1,
+      "kind": "player_pov",
+      "pov_player_name_visible": "ZywOo",
+      "team_if_visible": "CT",
+      "fixed_player_role": null,
+      "game_clock_observed": "1:22;1:13 at81",
+      "alive_CT_T_observed": [
+        [
+          5,
+          4
+        ],
+        [
+          5,
+          3
+        ]
+      ],
+      "visible_facts": "ZYWOO card; pistol held toward mid/short, then shots/ammo reduction. At83 feed shows ZywOo kills zont1x.",
+      "inferred_editorial_reason": "Longer defender hold catches the developing fight; exact kill boundary is between reviewed neighboring samples.",
+      "reason_is_observer_intent_known": false
+    },
+    {
+      "index": 20,
+      "start_vod_seconds_nominal": 82,
+      "end_vod_seconds_nominal_exclusive": 85,
+      "duration_seconds_approx": 3,
+      "timing_precision_seconds": 1,
+      "kind": "player_pov",
+      "pov_player_name_visible": "flameZ",
+      "team_if_visible": "CT",
+      "fixed_player_role": null,
+      "game_clock_observed": "1:12;1:11 at83",
+      "alive_CT_T_observed": [
+        [
+          5,
+          3
+        ]
+      ],
+      "visible_facts": "FLAMEZ card; silenced pistol; chopper x-ray nearby. At83 count shows5v3.",
+      "inferred_editorial_reason": "Move to the next possible contact while the earlier kill is in the feed.",
+      "reason_is_observer_intent_known": false
+    },
+    {
+      "index": 21,
+      "start_vod_seconds_nominal": 85,
+      "end_vod_seconds_nominal_exclusive": 87,
+      "duration_seconds_approx": 2,
+      "timing_precision_seconds": 1,
+      "kind": "player_pov",
+      "pov_player_name_visible": "sh1ro",
+      "team_if_visible": "T",
+      "fixed_player_role": null,
+      "game_clock_observed": "1:09",
+      "alive_CT_T_observed": [
+        [
+          4,
+          3
+        ]
+      ],
+      "visible_facts": "SH1RO card; feed says sh1ro kills ZywOo; ZywOo card dead.",
+      "inferred_editorial_reason": "Show the trade from attacker perspective; intent inferred.",
+      "reason_is_observer_intent_known": false
+    },
+    {
+      "index": 22,
+      "start_vod_seconds_nominal": 87,
+      "end_vod_seconds_nominal_exclusive": 88,
+      "duration_seconds_approx": 1,
+      "timing_precision_seconds": 1,
+      "kind": "player_pov",
+      "pov_player_name_visible": "magixx",
+      "team_if_visible": "T",
+      "fixed_player_role": null,
+      "game_clock_observed": "1:07",
+      "alive_CT_T_observed": [
+        [
+          4,
+          3
+        ],
+        [
+          4,
+          2
+        ]
+      ],
+      "visible_facts": "MAGIXX card becomes red/0 HP; blood visible; feed says flameZ kills magixx.",
+      "inferred_editorial_reason": "Victim POV is shown during a trade; selected POV need not be the next killer.",
+      "reason_is_observer_intent_known": false
+    },
+    {
+      "index": 23,
+      "start_vod_seconds_nominal": 88,
+      "end_vod_seconds_nominal_exclusive": 89,
+      "duration_seconds_approx": 1,
+      "timing_precision_seconds": 1,
+      "kind": "player_pov",
+      "pov_player_name_visible": "sh1ro",
+      "team_if_visible": "T",
+      "fixed_player_role": null,
+      "game_clock_observed": "1:06",
+      "alive_CT_T_observed": [
+        [
+          4,
+          2
+        ],
+        [
+          4,
+          1
+        ]
+      ],
+      "visible_facts": "SH1RO death animation and0 HP; feed says flameZ kills sh1ro.",
+      "inferred_editorial_reason": "Rapid trade/death cut; one-second samples do not establish subsecond timing.",
+      "reason_is_observer_intent_known": false
+    },
+    {
+      "index": 24,
+      "start_vod_seconds_nominal": 89,
+      "end_vod_seconds_nominal_exclusive": 93,
+      "duration_seconds_approx": 4,
+      "timing_precision_seconds": 1,
+      "kind": "player_pov",
+      "pov_player_name_visible": "flameZ",
+      "team_if_visible": "CT",
+      "fixed_player_role": null,
+      "game_clock_observed": "1:05",
+      "alive_CT_T_observed": [
+        [
+          4,
+          1
+        ]
+      ],
+      "visible_facts": "FLAMEZ card and4v1 indicator; silenced pistol and recent two kills in feed.",
+      "inferred_editorial_reason": "Show successful defender after the trade sequence.",
+      "reason_is_observer_intent_known": false
+    },
+    {
+      "index": 25,
+      "start_vod_seconds_nominal": 93,
+      "end_vod_seconds_nominal_exclusive": 112,
+      "duration_seconds_approx": 19,
+      "timing_precision_seconds": 1,
+      "kind": "player_pov",
+      "pov_player_name_visible": "chopper",
+      "team_if_visible": "T",
+      "fixed_player_role": null,
+      "game_clock_observed": "1:01 at93;0:44 at110;post-round0:05 at111",
+      "alive_CT_T_observed": [
+        [
+          4,
+          1
+        ],
+        [
+          4,
+          0
+        ]
+      ],
+      "visible_facts": "CHOPPER card remains through the whole sampled span. Four CT alive and only chopper T alive. CT x-rays often behind walls; he fires at110, dies by111. At111 feed says ropz kills chopper; score becomes1-0.",
+      "inferred_editorial_reason": "Sustained last-T/clutch story. The POV is the eventual victim, not the eventual winning killer. This is an editorial interpretation of visible continuity, not knowledge of observer intent.",
+      "reason_is_observer_intent_known": false
+    },
+    {
+      "index": 26,
+      "start_vod_seconds_nominal": 112,
+      "end_vod_seconds_nominal_exclusive": 114,
+      "duration_seconds_approx": 2,
+      "timing_precision_seconds": 1,
+      "kind": "player_camera",
+      "pov_player_name_visible": null,
+      "team_if_visible": "CT",
+      "fixed_player_role": null,
+      "game_clock_observed": null,
+      "alive_CT_T_observed": null,
+      "visible_facts": "Vitality player reacting/gesturing at desk.",
+      "inferred_editorial_reason": "Post-round reaction; identity not assigned from face.",
+      "reason_is_observer_intent_known": false
+    },
+    {
+      "index": 27,
+      "start_vod_seconds_nominal": 114,
+      "end_vod_seconds_nominal_exclusive": 116,
+      "duration_seconds_approx": 2,
+      "timing_precision_seconds": 1,
+      "kind": "audience_camera",
+      "pov_player_name_visible": null,
+      "team_if_visible": null,
+      "fixed_player_role": null,
+      "game_clock_observed": null,
+      "alive_CT_T_observed": null,
+      "visible_facts": "Audience/sign shot.",
+      "inferred_editorial_reason": "Audience reaction insert.",
+      "reason_is_observer_intent_known": false
+    },
+    {
+      "index": 28,
+      "start_vod_seconds_nominal": 116,
+      "end_vod_seconds_nominal_exclusive": 118,
+      "duration_seconds_approx": 2,
+      "timing_precision_seconds": 1,
+      "kind": "player_camera",
+      "pov_player_name_visible": null,
+      "team_if_visible": "CT",
+      "fixed_player_role": null,
+      "game_clock_observed": null,
+      "alive_CT_T_observed": null,
+      "visible_facts": "Close-up of a Vitality player at monitor; no readable identity label.",
+      "inferred_editorial_reason": "Post-round player insert.",
+      "reason_is_observer_intent_known": false
+    },
+    {
+      "index": 29,
+      "start_vod_seconds_nominal": 118,
+      "end_vod_seconds_nominal_exclusive": 121,
+      "duration_seconds_approx": 3,
+      "timing_precision_seconds": 1,
+      "kind": "player_camera",
+      "pov_player_name_visible": null,
+      "team_if_visible": "CT",
+      "fixed_player_role": null,
+      "game_clock_observed": null,
+      "alive_CT_T_observed": null,
+      "visible_facts": "Another Vitality player at desk, changing expression/looking down.",
+      "inferred_editorial_reason": "Post-round player insert.",
+      "reason_is_observer_intent_known": false
+    },
+    {
+      "index": 30,
+      "start_vod_seconds_nominal": 121,
+      "end_vod_seconds_nominal_exclusive": 122,
+      "duration_seconds_approx": 1,
+      "timing_precision_seconds": 1,
+      "kind": "sponsor_bumper",
+      "pov_player_name_visible": null,
+      "team_if_visible": null,
+      "fixed_player_role": null,
+      "game_clock_observed": null,
+      "alive_CT_T_observed": null,
+      "visible_facts": "Intel bumper.",
+      "inferred_editorial_reason": "Transition into replay.",
+      "reason_is_observer_intent_known": false
+    },
+    {
+      "index": 31,
+      "start_vod_seconds_nominal": 122,
+      "end_vod_seconds_nominal_exclusive": 126,
+      "duration_seconds_approx": 4,
+      "timing_precision_seconds": 1,
+      "kind": "replay_third_person",
+      "pov_player_name_visible": null,
+      "team_if_visible": null,
+      "fixed_player_role": null,
+      "game_clock_observed": "old round1 ~1:33",
+      "alive_CT_T_observed": [
+        [
+          5,
+          5
+        ],
+        [
+          5,
+          4
+        ]
+      ],
+      "visible_facts": "Large REPLAY label; third-person view of attacking players and the earlier firing sequence. Score display returns to0-0.",
+      "inferred_editorial_reason": "Historical replay, not a fresh live round or causal prediction example.",
+      "reason_is_observer_intent_known": false
+    },
+    {
+      "index": 32,
+      "start_vod_seconds_nominal": 126,
+      "end_vod_seconds_nominal_exclusive": 131,
+      "duration_seconds_approx": 5,
+      "timing_precision_seconds": 1,
+      "kind": "replay_player_pov",
+      "pov_player_name_visible": "flameZ",
+      "team_if_visible": "CT",
+      "fixed_player_role": null,
+      "game_clock_observed": "old round1 ~1:08 to1:05",
+      "alive_CT_T_observed": [
+        [
+          4,
+          3
+        ],
+        [
+          4,
+          1
+        ]
+      ],
+      "visible_facts": "REPLAY watermark; FLAMEZ POV firing and earlier kill feed/trades.",
+      "inferred_editorial_reason": "Replay shows the earlier sequence from shooter perspective; do not count it as additional live kills.",
+      "reason_is_observer_intent_known": false
+    },
+    {
+      "index": 33,
+      "start_vod_seconds_nominal": 131,
+      "end_vod_seconds_nominal_exclusive": 134,
+      "duration_seconds_approx": 3,
+      "timing_precision_seconds": 1,
+      "kind": "player_camera",
+      "pov_player_name_visible": null,
+      "team_if_visible": "CT",
+      "fixed_player_role": null,
+      "game_clock_observed": null,
+      "alive_CT_T_observed": null,
+      "visible_facts": "Vitality desk/player reaction; REPLAY label remains over this insert.",
+      "inferred_editorial_reason": "Reaction at the end of replay segment.",
+      "reason_is_observer_intent_known": false
+    },
+    {
+      "index": 34,
+      "start_vod_seconds_nominal": 134,
+      "end_vod_seconds_nominal_exclusive": 137,
+      "duration_seconds_approx": 3,
+      "timing_precision_seconds": 1,
+      "kind": "third_person_game",
+      "pov_player_name_visible": null,
+      "team_if_visible": "T",
+      "fixed_player_role": null,
+      "game_clock_observed": "round2 freeze0:00 at134;live1:54 at136",
+      "alive_CT_T_observed": [
+        [
+          5,
+          5
+        ]
+      ],
+      "visible_facts": "Live game returns at score1-0; Round2 label; T group moves from spawn.",
+      "inferred_editorial_reason": "Establish next-round movement rather than immediately choosing a duel.",
+      "reason_is_observer_intent_known": false
+    },
+    {
+      "index": 35,
+      "start_vod_seconds_nominal": 137,
+      "end_vod_seconds_nominal_exclusive": 141,
+      "duration_seconds_approx": 4,
+      "timing_precision_seconds": 1,
+      "kind": "player_pov",
+      "pov_player_name_visible": "magixx",
+      "team_if_visible": "T",
+      "fixed_player_role": null,
+      "game_clock_observed": "round2 1:53",
+      "alive_CT_T_observed": [
+        [
+          5,
+          5
+        ]
+      ],
+      "visible_facts": "MAGIXX card; moving with team holding knife/pistol.",
+      "inferred_editorial_reason": "Attack development.",
+      "reason_is_observer_intent_known": false
+    },
+    {
+      "index": 36,
+      "start_vod_seconds_nominal": 141,
+      "end_vod_seconds_nominal_exclusive": 145,
+      "duration_seconds_approx": 4,
+      "timing_precision_seconds": 1,
+      "kind": "player_pov",
+      "pov_player_name_visible": "sh1ro",
+      "team_if_visible": "T",
+      "fixed_player_role": null,
+      "game_clock_observed": "1:49",
+      "alive_CT_T_observed": [
+        [
+          5,
+          5
+        ]
+      ],
+      "visible_facts": "SH1RO card; movement/utility handling along the street.",
+      "inferred_editorial_reason": "Utility preparation and route development.",
+      "reason_is_observer_intent_known": false
+    },
+    {
+      "index": 37,
+      "start_vod_seconds_nominal": 145,
+      "end_vod_seconds_nominal_exclusive": 147,
+      "duration_seconds_approx": 2,
+      "timing_precision_seconds": 1,
+      "kind": "player_pov",
+      "pov_player_name_visible": "chopper",
+      "team_if_visible": "T",
+      "fixed_player_role": null,
+      "game_clock_observed": "1:45",
+      "alive_CT_T_observed": [
+        [
+          5,
+          5
+        ]
+      ],
+      "visible_facts": "CHOPPER card; looks upward with utility, teammate visible.",
+      "inferred_editorial_reason": "Show a utility lineup/preparation; exact grenade intent is not directly known.",
+      "reason_is_observer_intent_known": false
+    },
+    {
+      "index": 38,
+      "start_vod_seconds_nominal": 147,
+      "end_vod_seconds_nominal_exclusive": 150,
+      "duration_seconds_approx": 3,
+      "timing_precision_seconds": 1,
+      "kind": "player_pov",
+      "pov_player_name_visible": "flameZ",
+      "team_if_visible": "CT",
+      "fixed_player_role": null,
+      "game_clock_observed": "1:43",
+      "alive_CT_T_observed": [
+        [
+          5,
+          5
+        ]
+      ],
+      "visible_facts": "FLAMEZ card; rifle held toward mid/doors.",
+      "inferred_editorial_reason": "Show defensive angle during attacker setup.",
+      "reason_is_observer_intent_known": false
+    },
+    {
+      "index": 39,
+      "start_vod_seconds_nominal": 150,
+      "end_vod_seconds_nominal_exclusive": 151,
+      "duration_seconds_approx": 1,
+      "timing_precision_seconds": 1,
+      "kind": "player_pov",
+      "pov_player_name_visible": "ZywOo",
+      "team_if_visible": "CT",
+      "fixed_player_role": null,
+      "game_clock_observed": null,
+      "alive_CT_T_observed": [
+        [
+          5,
+          5
+        ]
+      ],
+      "visible_facts": "ZYWOO card; rifle angle. Clock area covered by betting-odds graphic.",
+      "inferred_editorial_reason": "Very short defender shot; hidden clock not reconstructed as an observation.",
+      "reason_is_observer_intent_known": false
+    },
+    {
+      "index": 40,
+      "start_vod_seconds_nominal": 151,
+      "end_vod_seconds_nominal_exclusive": 153,
+      "duration_seconds_approx": 2,
+      "timing_precision_seconds": 1,
+      "kind": "player_pov",
+      "pov_player_name_visible": "chopper",
+      "team_if_visible": "T",
+      "fixed_player_role": null,
+      "game_clock_observed": null,
+      "alive_CT_T_observed": [
+        [
+          5,
+          5
+        ]
+      ],
+      "visible_facts": "CHOPPER card; utility in hand. Clock covered by odds.",
+      "inferred_editorial_reason": "Return to attacker utility preparation.",
+      "reason_is_observer_intent_known": false
+    },
+    {
+      "index": 41,
+      "start_vod_seconds_nominal": 153,
+      "end_vod_seconds_nominal_exclusive": 159,
+      "duration_seconds_approx": 6,
+      "timing_precision_seconds": 1,
+      "kind": "player_pov",
+      "pov_player_name_visible": "sh1ro",
+      "team_if_visible": "T",
+      "fixed_player_role": null,
+      "game_clock_observed": null,
+      "alive_CT_T_observed": [
+        [
+          5,
+          5
+        ]
+      ],
+      "visible_facts": "SH1RO card; pistol out, teammates crossing, then grenade in hand. Clock covered by odds.",
+      "inferred_editorial_reason": "Hold attack preparation for several seconds even without an exposed enemy.",
+      "reason_is_observer_intent_known": false
+    },
+    {
+      "index": 42,
+      "start_vod_seconds_nominal": 159,
+      "end_vod_seconds_nominal_exclusive": 160,
+      "duration_seconds_approx": 1,
+      "timing_precision_seconds": 1,
+      "kind": "player_pov",
+      "pov_player_name_visible": "magixx",
+      "team_if_visible": "T",
+      "fixed_player_role": null,
+      "game_clock_observed": null,
+      "alive_CT_T_observed": [
+        [
+          5,
+          5
+        ]
+      ],
+      "visible_facts": "MAGIXX card; pistol aimed along street. Odds cover clock.",
+      "inferred_editorial_reason": "Brief attacker angle.",
+      "reason_is_observer_intent_known": false
+    },
+    {
+      "index": 43,
+      "start_vod_seconds_nominal": 160,
+      "end_vod_seconds_nominal_exclusive": 168,
+      "duration_seconds_approx": 8,
+      "timing_precision_seconds": 1,
+      "kind": "player_pov",
+      "pov_player_name_visible": "apEX",
+      "team_if_visible": "CT",
+      "fixed_player_role": null,
+      "game_clock_observed": "clock covered at160;1:29 at161",
+      "alive_CT_T_observed": [
+        [
+          5,
+          5
+        ]
+      ],
+      "visible_facts": "APEX card; rifle aimed toward mid doors/wall; yellow x-rays cluster behind surfaces. sh1ro HP falls to78 by165.",
+      "inferred_editorial_reason": "Hold the defender angle through developing pressure; damage source is not conclusively assigned from these samples.",
+      "reason_is_observer_intent_known": false
+    },
+    {
+      "index": 44,
+      "start_vod_seconds_nominal": 168,
+      "end_vod_seconds_nominal_exclusive": 170,
+      "duration_seconds_approx": 2,
+      "timing_precision_seconds": 1,
+      "kind": "player_pov",
+      "pov_player_name_visible": "sh1ro",
+      "team_if_visible": "T",
+      "fixed_player_role": null,
+      "game_clock_observed": "1:22",
+      "alive_CT_T_observed": [
+        [
+          5,
+          5
+        ]
+      ],
+      "visible_facts": "SH1RO card78 HP; pistol toward ramp/angle.",
+      "inferred_editorial_reason": "Switch to pressured attacker; trigger reason remains inferred.",
+      "reason_is_observer_intent_known": false
+    },
+    {
+      "index": 45,
+      "start_vod_seconds_nominal": 170,
+      "end_vod_seconds_nominal_exclusive": 174,
+      "duration_seconds_approx": 4,
+      "timing_precision_seconds": 1,
+      "kind": "player_pov",
+      "pov_player_name_visible": "donk",
+      "team_if_visible": "T",
+      "fixed_player_role": null,
+      "game_clock_observed": "1:20",
+      "alive_CT_T_observed": [
+        [
+          5,
+          5
+        ]
+      ],
+      "visible_facts": "DONK card; red pistol, close behind teammates moving toward short/A area.",
+      "inferred_editorial_reason": "Attack movement becomes the visual subject.",
+      "reason_is_observer_intent_known": false
+    },
+    {
+      "index": 46,
+      "start_vod_seconds_nominal": 174,
+      "end_vod_seconds_nominal_exclusive": 178,
+      "duration_seconds_approx": 4,
+      "timing_precision_seconds": 1,
+      "kind": "player_pov",
+      "pov_player_name_visible": "ZywOo",
+      "team_if_visible": "CT",
+      "fixed_player_role": null,
+      "game_clock_observed": "1:16",
+      "alive_CT_T_observed": [
+        [
+          5,
+          5
+        ]
+      ],
+      "visible_facts": "ZYWOO card; rifle held over A-site boxes toward approaching x-ray outlines.",
+      "inferred_editorial_reason": "Show the defender's angle before contact.",
+      "reason_is_observer_intent_known": false
+    },
+    {
+      "index": 47,
+      "start_vod_seconds_nominal": 178,
+      "end_vod_seconds_nominal_exclusive": 180,
+      "duration_seconds_approx": 2,
+      "timing_precision_seconds": 1,
+      "kind": "player_pov",
+      "pov_player_name_visible": "apEX",
+      "team_if_visible": "CT",
+      "fixed_player_role": null,
+      "game_clock_observed": "1:12",
+      "alive_CT_T_observed": [
+        [
+          5,
+          5
+        ]
+      ],
+      "visible_facts": "APEX rifle POV; firing by179 and several T HP values reduced. No visible death card/kill feed by clip end.",
+      "inferred_editorial_reason": "Developing contact; clip ends before Round2 resolves.",
+      "reason_is_observer_intent_known": false
+    }
+  ],
+  "interpretation_warning": "Editorial reasons are hypotheses, not known observer intent. One-frame-per-second review is not an exhaustive cut detector. X-ray behind cover does not certify collision or bullet penetration."
+}

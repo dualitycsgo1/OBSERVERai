@@ -1,414 +1,368 @@
+"""Static 3D collision visibility for CS2 (world units, Z up).
+
+A navigation mesh describes walkable surfaces, not walls that block shots.
+Only collision meshes are accepted here. Missing assets produce ``unknown``.
+Visibility is not bullet penetration, smoke visibility, or a guarantee of a kill.
 """
-Line of Sight (LOS) System for CS2 Observer AI
-Prevents false duels through walls using occupancy grid + 2D ray casting
-"""
+
+from dataclasses import dataclass
+import logging
+from math import atan2, degrees, hypot
+from pathlib import Path
+import re
+import struct
+from typing import Dict, Optional, Tuple
 
 import numpy as np
-import os
-import logging
-from typing import Dict, Tuple, Optional
-from math import hypot
 
 logger = logging.getLogger(__name__)
+EYE_HEIGHT = 64.0
+CROUCH_EYE_HEIGHT = 46.0
+_EPSILON = 1e-6
 
-GRID_SIZE = 64.0  # Source units per cell (tune per map)
-EYE_HEIGHT = 70.0  # Eye height above feet position
-MAX_Z_TOLERANCE = 200.0  # Maximum vertical separation to consider for LOS
 
-class GridLOS:
+def _point(value):
+    point = np.asarray(value, dtype=np.float64)
+    if point.shape != (3,) or not np.isfinite(point).all():
+        raise ValueError("A position must contain three finite world coordinates")
+    return point
+
+
+def normalize_map_name(map_name: str) -> str:
+    """Accept a basename or workshop path without allowing filesystem traversal."""
+    name = str(map_name or "").replace("\\", "/").rsplit("/", 1)[-1].lower()
+    for suffix in (".vpk", ".bsp"):
+        if name.endswith(suffix):
+            name = name[:-len(suffix)]
+    if not re.fullmatch(r"[a-z0-9_-]+", name):
+        raise ValueError("Invalid map name")
+    if name in {"dust2", "mirage", "inferno", "nuke", "ancient", "anubis",
+                "overpass", "train", "vertigo", "cache"}:
+        name = "de_" + name
+    return name
+
+
+@dataclass(frozen=True)
+class VisibilityResult:
+    state: str  # visible, blocked, unknown
+    reason: str
+    source: Optional[str] = None
+
+    @property
+    def visible(self) -> Optional[bool]:
+        return {"visible": True, "blocked": False, "unknown": None}[self.state]
+
+
+@dataclass
+class _Node:
+    lower: np.ndarray
+    upper: np.ndarray
+    indices: Optional[np.ndarray] = None
+    left: Optional["_Node"] = None
+    right: Optional["_Node"] = None
+
+
+class TriangleMeshLOS:
+    """Double-sided finite-segment ray casting with a triangle BVH.
+
+    ``triangles`` has shape (N, 3, 3), in the same coordinate frame as GSI.
+    The mesh must contain visual occluders; player clips/sky must be excluded.
     """
-    Line of Sight checker using occupancy grid and Bresenham ray casting
-    """
-    
-    def __init__(self, blockmask: np.ndarray, origin_xy: Tuple[float, float] = (0.0, 0.0)):
-        """
-        Initialize LOS checker with a blocking mask
-        
-        Args:
-            blockmask: HxW np.uint8 array (1=solid wall, 0=free space)
-            origin_xy: World coordinate (x0,y0) that maps to mask[0,0]
-        """
-        self.mask = blockmask
-        self.H, self.W = blockmask.shape
-        self.x0, self.y0 = origin_xy
-        logger.info(f"GridLOS initialized: {self.W}x{self.H} grid, origin: {origin_xy}")
 
-    def world_to_cell(self, x: float, y: float) -> Tuple[int, int]:
-        """Convert world coordinates to grid cell indices"""
-        i = int((y - self.y0) / GRID_SIZE)
-        j = int((x - self.x0) / GRID_SIZE)
-        return i, j
+    def __init__(self, triangles, leaf_size: int = 24):
+        triangles = np.asarray(triangles, dtype=np.float64)
+        if triangles.ndim != 3 or triangles.shape[1:] != (3, 3) or not len(triangles):
+            raise ValueError("Collision triangles must have nonempty shape (N, 3, 3)")
+        if not np.isfinite(triangles).all():
+            raise ValueError("Collision triangles contain non-finite coordinates")
+        if leaf_size < 1:
+            raise ValueError("leaf_size must be positive")
+        edge1 = triangles[:, 1] - triangles[:, 0]
+        edge2 = triangles[:, 2] - triangles[:, 0]
+        valid = np.linalg.norm(np.cross(edge1, edge2), axis=1) > _EPSILON
+        self.triangles = triangles[valid].copy()
+        if not len(self.triangles):
+            raise ValueError("Collision mesh contains no nondegenerate triangles")
+        self._lower = self.triangles.min(axis=1)
+        self._upper = self.triangles.max(axis=1)
+        self._centers = (self._lower + self._upper) * 0.5
+        self._leaf_size = leaf_size
+        self.root = self._build(np.arange(len(self.triangles)))
 
-    def clear_line(self, i0: int, j0: int, i1: int, j1: int) -> bool:
+    @classmethod
+    def from_awpy_mesh(cls, path):
+        """Read AWPY AWMH v1 indexed collision meshes without optional AWPY.
+
+        Format: https://github.com/pnxenopoulos/awpy-data#collision-meshes
+        All integer/float fields are little endian; coordinates are Z-up.
         """
-        Bresenham ray casting through grid
-        Returns True if no solid cells are hit
-        """
-        di = abs(i1 - i0)
-        dj = abs(j1 - j0)
-        si = 1 if i0 < i1 else -1
-        sj = 1 if j0 < j1 else -1
-        err = dj - di
-        i, j = i0, j0
-        
-        while True:
-            # Check bounds - outside grid is considered blocking
-            if not (0 <= i < self.H and 0 <= j < self.W):
-                return False
-            
-            # Check if current cell is solid
-            if self.mask[i, j] != 0:
-                return False
-            
-            # Reached destination
-            if i == i1 and j == j1:
-                break
-            
-            # Bresenham step
-            e2 = 2 * err
-            if e2 > -di:
-                err -= di
-                j += sj
-            if e2 < dj:
-                err += dj
-                i += si
-        
+        raw = Path(path).read_bytes()
+        if len(raw) < 16:
+            raise ValueError("Truncated AWMH collision mesh")
+        magic, version, vertex_count, triangle_count = struct.unpack_from("<4sIII", raw)
+        if magic != b"AWMH" or version != 1:
+            raise ValueError("Expected an AWPY AWMH version 1 collision mesh")
+        expected = 16 + vertex_count * 12 + triangle_count * 12
+        if len(raw) != expected:
+            raise ValueError("AWMH byte length does not match its vertex/triangle counts")
+        vertices = np.frombuffer(raw, dtype="<f4", count=vertex_count * 3, offset=16).reshape(-1, 3)
+        faces = np.frombuffer(raw, dtype="<u4", count=triangle_count * 3,
+                              offset=16 + vertex_count * 12).reshape(-1, 3)
+        if not vertex_count or not triangle_count or (faces >= vertex_count).any():
+            raise ValueError("AWMH mesh has empty or out-of-range triangle indices")
+        return cls(vertices[faces])
+
+    def _build(self, indices):
+        node = _Node(self._lower[indices].min(axis=0), self._upper[indices].max(axis=0))
+        if len(indices) <= self._leaf_size:
+            node.indices = indices
+            return node
+        axis = int(np.argmax(np.ptp(self._centers[indices], axis=0)))
+        split = len(indices) // 2
+        order = np.argpartition(self._centers[indices, axis], split)
+        node.left = self._build(indices[order[:split]])
+        node.right = self._build(indices[order[split:]])
+        return node
+
+    @staticmethod
+    def _box_hit(node, origin, direction, length):
+        near, far = 0.0, length
+        for axis in range(3):
+            if abs(direction[axis]) < 1e-12:
+                if origin[axis] < node.lower[axis] - _EPSILON or origin[axis] > node.upper[axis] + _EPSILON:
+                    return False
+            else:
+                a = (node.lower[axis] - origin[axis]) / direction[axis]
+                b = (node.upper[axis] - origin[axis]) / direction[axis]
+                near, far = max(near, min(a, b)), min(far, max(a, b))
+                if far < near - _EPSILON:
+                    return False
         return True
 
-    def has_line_of_sight(self, ax: float, ay: float, az: float, 
-                         bx: float, by: float, bz: float) -> bool:
-        """
-        Check line of sight between two world positions
-        Uses 2D ray casting with basic elevation check
-        """
-        # Basic elevation sanity check
-        eye_a = az + EYE_HEIGHT
-        eye_b = bz + EYE_HEIGHT
-        if abs(eye_a - eye_b) > MAX_Z_TOLERANCE:
-            # Large vertical separation - still allow but could be penalized
-            pass
-        
-        # Convert to grid coordinates
-        i0, j0 = self.world_to_cell(ax, ay)
-        i1, j1 = self.world_to_cell(bx, by)
-        
-        # Ray cast through grid
-        return self.clear_line(i0, j0, i1, j1)
+    @staticmethod
+    def _coplanar_hit(triangle, origin, direction, length):
+        """Resolve rays along a triangle plane instead of silently skipping them."""
+        normal = np.cross(triangle[1] - triangle[0], triangle[2] - triangle[0])
+        if abs(np.dot(normal, origin - triangle[0])) > _EPSILON * np.linalg.norm(normal):
+            return False
+        drop = int(np.argmax(np.abs(normal)))
+        tri = np.delete(triangle, drop, axis=1)
+        a = np.delete(origin + direction * _EPSILON, drop)
+        b = np.delete(origin + direction * (length - _EPSILON), drop)
+
+        def cross(u, v):
+            return u[0] * v[1] - u[1] * v[0]
+
+        def inside(p):
+            signs = [cross(tri[(i + 1) % 3] - tri[i], p - tri[i]) for i in range(3)]
+            return min(signs) >= -_EPSILON or max(signs) <= _EPSILON
+
+        if inside(a) or inside(b):
+            return True
+        for i in range(3):
+            c, d = tri[i], tri[(i + 1) % 3]
+            ab, cd = b - a, d - c
+            denominator = cross(ab, cd)
+            if abs(denominator) > _EPSILON:
+                t, u = cross(c - a, cd) / denominator, cross(c - a, ab) / denominator
+                if 0 <= t <= 1 and 0 <= u <= 1:
+                    return True
+            elif abs(cross(c - a, ab)) <= _EPSILON:
+                axis = int(np.argmax(np.abs(ab)))
+                if max(min(a[axis], b[axis]), min(c[axis], d[axis])) <= min(max(a[axis], b[axis]), max(c[axis], d[axis])):
+                    return True
+        return False
+
+    def _triangles_hit(self, indices, origin, direction, length):
+        triangles = self.triangles[indices]
+        edge1 = triangles[:, 1] - triangles[:, 0]
+        edge2 = triangles[:, 2] - triangles[:, 0]
+        h = np.cross(direction, edge2)
+        determinant = np.einsum("ij,ij->i", edge1, h)
+        scale = np.linalg.norm(np.cross(edge1, edge2), axis=1)
+        parallel = np.abs(determinant) <= 1e-10 * scale
+        usable = ~parallel
+        if usable.any():
+            inverse = 1.0 / determinant[usable]
+            s = origin - triangles[usable, 0]
+            u = inverse * np.einsum("ij,ij->i", s, h[usable])
+            q = np.cross(s, edge1[usable])
+            v = inverse * (q @ direction)
+            distance = inverse * np.einsum("ij,ij->i", edge2[usable], q)
+            if np.any((u >= -1e-10) & (v >= -1e-10) & (u + v <= 1 + 1e-10)
+                      & (distance > _EPSILON) & (distance < length - _EPSILON)):
+                return True
+        return any(self._coplanar_hit(t, origin, direction, length) for t in triangles[parallel])
+
+    def has_line_of_sight(self, pos1, pos2) -> bool:
+        origin, target = _point(pos1), _point(pos2)
+        delta = target - origin
+        length = float(np.linalg.norm(delta))
+        if length <= 2 * _EPSILON:
+            return True
+        direction = delta / length
+        stack = [self.root]
+        while stack:
+            node = stack.pop()
+            if not self._box_hit(node, origin, direction, length):
+                continue
+            if node.indices is not None:
+                if self._triangles_hit(node.indices, origin, direction, length):
+                    return False
+            else:
+                stack.extend((node.left, node.right))
+        return True
+
 
 class MapGeometryManager:
-    """
-    Manages line-of-sight checking for different CS2 maps
-    """
-    
-    def __init__(self, maps_dir: str = "maps"):
-        self.maps_dir = maps_dir
-        self.los_checkers: Dict[str, GridLOS] = {}
-        self.current_map = None
-        self.ensure_maps_directory()
-        
-        # Initialize real geometry systems (priority: AWPY NAV > BSP > Approximation)
-        self.awpy_nav_manager = None
-        self.bsp_loader = None
-        self.use_real_geometry = False
-        
-        # Try AWPY NAV first (best option)
-        try:
-            from awpy_nav_integration import AWPYNavGeometryManager
-            self.awpy_nav_manager = AWPYNavGeometryManager(maps_dir)
-            self.use_real_geometry = True
-            logger.info("🧭 AWPY NAV geometry system initialized (highest accuracy)")
-        except ImportError:
-            logger.info("📐 AWPY not available, trying BSP loader...")
-            
-            # Fallback to BSP loader
-            try:
-                from gcfscape_integration import BSPLoader
-                self.bsp_loader = BSPLoader(maps_dir)
-                self.use_real_geometry = True
-                logger.info("🗺️  BSP geometry system initialized")
-            except ImportError:
-                logger.info("📐 Using approximated geometry (no real geometry systems available)")
+    """Load real local collision assets; never generate fictional geometry.
 
-    def ensure_maps_directory(self):
-        """Create maps directory if it doesn't exist"""
-        if not os.path.exists(self.maps_dir):
-            os.makedirs(self.maps_dir)
-            logger.info(f"Created maps directory: {self.maps_dir}")
+    Supports ``<map>_collision.npz`` (``triangles`` or ``vertices`` + integer
+    ``faces``) and AWPY ``<map>.mesh``. Default paths resolve
+    beside this module, independent of the process working directory.
+    """
+
+    def __init__(self, maps_dir: Optional[str] = None):
+        self.maps_dir = Path(maps_dir) if maps_dir is not None else Path(__file__).resolve().parent / "maps"
+        self.los_checkers: Dict[str, object] = {}
+        self.sources: Dict[str, str] = {}
+        self.errors: Dict[str, str] = {}
+        self.current_map: Optional[str] = None
+        self.use_real_geometry = False
 
     def load_map_geometry(self, map_name: str) -> bool:
-        """
-        Load geometry data for a specific map
-        Returns True if successful
-        """
-        # Try to load real BSP geometry first
-        if self.use_real_geometry and self.bsp_loader:
-            try:
-                logger.info(f"🗺️  Loading real BSP geometry for {map_name}")
-                bsp_data = self.bsp_loader.load_map_geometry(map_name)
-                
-                if bsp_data and 'collision_mesh' in bsp_data:
-                    # Use real collision mesh from BSP
-                    collision_mesh = bsp_data['collision_mesh']
-                    bounds = bsp_data.get('bounds', {})
-                    origin_xy = (bounds.get('min_x', -2000), bounds.get('min_y', -2000))
-                    
-                    self.los_checkers[map_name] = GridLOS(collision_mesh, origin_xy)
-                    self.current_map = map_name
-                    logger.info(f"✅ Loaded REAL BSP geometry for {map_name}")
-                    logger.info(f"   Grid size: {collision_mesh.shape}")
-                    logger.info(f"   Solid cells: {np.sum(collision_mesh)} ({np.sum(collision_mesh)/collision_mesh.size*100:.1f}%)")
-                    return True
-                else:
-                    logger.warning(f"BSP geometry loading failed for {map_name}, falling back to approximation")
-            except Exception as e:
-                logger.error(f"Error loading BSP geometry for {map_name}: {e}")
-        
-        # Fallback to cached/approximated geometry
-        map_file = os.path.join(self.maps_dir, f"{map_name}_blockmask.npy")
-        
-        if os.path.exists(map_file):
-            try:
-                blockmask = np.load(map_file)
-                origin_file = os.path.join(self.maps_dir, f"{map_name}_origin.npy")
-                
-                if os.path.exists(origin_file):
-                    origin_xy = tuple(np.load(origin_file))
-                else:
-                    origin_xy = (0.0, 0.0)  # Default origin
-                
-                self.los_checkers[map_name] = GridLOS(blockmask, origin_xy)
-                self.current_map = map_name
-                logger.info(f"📐 Loaded approximated geometry for {map_name}")
-                return True
-                
-            except Exception as e:
-                logger.error(f"Error loading geometry for {map_name}: {e}")
-                return False
-        else:
-            # Generate default geometry if file doesn't exist
-            logger.warning(f"No geometry file found for {map_name}, generating default")
-            self.generate_default_geometry(map_name)
+        map_name = normalize_map_name(map_name)
+        self.current_map = map_name
+        if map_name in self.los_checkers:
+            self.use_real_geometry = True
+            return True
+        npz_path = self.maps_dir / f"{map_name}_collision.npz"
+        mesh_path = self.maps_dir / f"{map_name}.mesh"
+        try:
+            if npz_path.is_file():
+                with np.load(npz_path, allow_pickle=False) as data:
+                    if "triangles" in data:
+                        triangles = data["triangles"]
+                    else:
+                        vertices, faces = data["vertices"], data["faces"]
+                        if vertices.ndim != 2 or vertices.shape[1] != 3 or faces.ndim != 2 or faces.shape[1] != 3:
+                            raise ValueError("vertices/faces must have shape (N, 3)")
+                        if not np.issubdtype(faces.dtype, np.integer) or (faces < 0).any() or (faces >= len(vertices)).any():
+                            raise ValueError("faces must contain valid nonnegative integer vertex indices")
+                        triangles = vertices[faces]
+                    checker = TriangleMeshLOS(triangles)
+                source = str(npz_path)
+            elif mesh_path.is_file():
+                # Native parsing needs no AWPY install or runtime download.
+                checker = TriangleMeshLOS.from_awpy_mesh(mesh_path)
+                source = str(mesh_path)
+            else:
+                raise FileNotFoundError(f"No collision mesh for {map_name}; .nav and 2D blockmasks cannot establish 3D visibility")
+            self.los_checkers[map_name] = checker
+            self.sources[map_name] = source
+            self.errors.pop(map_name, None)
+            self.use_real_geometry = True
+            logger.info("Loaded collision geometry for %s from %s", map_name, source)
+            return True
+        except Exception as exc:
+            self.errors[map_name] = str(exc)
+            self.use_real_geometry = False
+            logger.warning("Geometry unavailable for %s: %s", map_name, exc)
             return False
 
-    def generate_default_geometry(self, map_name: str):
-        """
-        Generate a basic geometry approximation for common maps
-        This is a fallback when no proper geometry data is available
-        """
-        if map_name.lower() in ['de_dust2', 'dust2']:
-            self.generate_dust2_approximation()
-        elif map_name.lower() in ['de_mirage', 'mirage']:
-            self.generate_mirage_approximation()
-        elif map_name.lower() in ['de_inferno', 'inferno']:
-            self.generate_inferno_approximation()
-        else:
-            self.generate_generic_geometry(map_name)
-
-    def generate_dust2_approximation(self):
-        """
-        Generate approximate Dust2 geometry based on common wall positions
-        This blocks obvious impossible sightlines like CT spawn <-> A catwalk
-        """
-        # Create a 100x100 grid covering typical Dust2 coordinates
-        # Dust2 ranges roughly from -2000 to +2000 in both X and Y
-        size = 100
-        mask = np.zeros((size, size), dtype=np.uint8)
-        origin = (-2000.0, -2000.0)
-        
-        # Add strategic blocking structures to prevent impossible sightlines
-        # Grid: 100x100 covering -2000 to +2000 (40 units per cell)
-        
-        # CT spawn area (bottom-left in our coordinate system)
-        # Blocks CT spawn from seeing across map
-        mask[15:25, 25:35] = 1  # CT spawn building
-        
-        # A site area (top-right)
-        # Blocks A site from CT spawn sightlines  
-        mask[75:85, 75:85] = 1  # A site building
-        
-        # Central mid area (blocks cross-map sightlines)
-        mask[45:55, 45:55] = 1  # Mid building/wall
-        
-        # B site area (bottom-right)
-        mask[25:35, 75:85] = 1  # B site building
-        
-        # T spawn area (top-left) 
-        mask[75:85, 25:35] = 1  # T spawn building
-        
-        # Long diagonal wall (key structure separating CT spawn from A site)
-        # This should block the main impossible sightline mentioned by user
-        for i in range(20, 70):
-            for j in range(max(0, i-10), min(100, i+10)):
-                if 30 <= i <= 65 and 55 <= j <= 90:  # Diagonal wall area
-                    mask[i, j] = 1
-        
-        # Save the approximation
-        map_file = os.path.join(self.maps_dir, "de_dust2_blockmask.npy")
-        origin_file = os.path.join(self.maps_dir, "de_dust2_origin.npy")
-        
-        np.save(map_file, mask)
-        np.save(origin_file, np.array(origin))
-        
-        self.los_checkers['de_dust2'] = GridLOS(mask, origin)
-        self.current_map = 'de_dust2'
-        
-        logger.info("Generated Dust2 geometry approximation")
-
-    def generate_mirage_approximation(self):
-        """Generate approximate Mirage geometry"""
-        size = 80
-        mask = np.zeros((size, size), dtype=np.uint8)
-        origin = (-1500.0, -1500.0)
-        
-        # Major structures
-        mask[30:50, 30:50] = 1  # Central area
-        mask[15:30, 60:75] = 1  # A site
-        mask[60:75, 15:30] = 1  # B site
-        
-        map_file = os.path.join(self.maps_dir, "de_mirage_blockmask.npy")
-        origin_file = os.path.join(self.maps_dir, "de_mirage_origin.npy")
-        
-        np.save(map_file, mask)
-        np.save(origin_file, np.array(origin))
-        
-        self.los_checkers['de_mirage'] = GridLOS(mask, origin)
-        logger.info("Generated Mirage geometry approximation")
-
-    def generate_inferno_approximation(self):
-        """Generate approximate Inferno geometry"""
-        size = 90
-        mask = np.zeros((size, size), dtype=np.uint8)
-        origin = (-1800.0, -1800.0)
-        
-        # Complex structure approximation
-        mask[25:45, 35:55] = 1  # Central buildings
-        mask[15:35, 65:80] = 1  # A site complex
-        mask[65:80, 15:35] = 1  # B site complex
-        
-        map_file = os.path.join(self.maps_dir, "de_inferno_blockmask.npy")
-        origin_file = os.path.join(self.maps_dir, "de_inferno_origin.npy")
-        
-        np.save(map_file, mask)
-        np.save(origin_file, np.array(origin))
-        
-        self.los_checkers['de_inferno'] = GridLOS(mask, origin)
-        logger.info("Generated Inferno geometry approximation")
-
-    def generate_generic_geometry(self, map_name: str):
-        """Generate minimal generic geometry for unknown maps"""
-        size = 60
-        mask = np.zeros((size, size), dtype=np.uint8)
-        origin = (-1500.0, -1500.0)
-        
-        # Minimal structure - just prevents extreme cross-map sightlines
-        mask[25:35, 25:35] = 1  # Central obstruction
-        
-        map_file = os.path.join(self.maps_dir, f"{map_name}_blockmask.npy")
-        origin_file = os.path.join(self.maps_dir, f"{map_name}_origin.npy")
-        
-        np.save(map_file, mask)
-        np.save(origin_file, np.array(origin))
-        
-        self.los_checkers[map_name] = GridLOS(mask, origin)
-        logger.info(f"Generated generic geometry for {map_name}")
-
-    def has_line_of_sight(self, pos1: Tuple[float, float, float], 
-                         pos2: Tuple[float, float, float]) -> bool:
-        """
-        Check if two positions have line of sight
-        Returns True if no map geometry blocks the view
-        """
-        # Try AWPY NAV first (most accurate)
-        if self.awpy_nav_manager and self.current_map:
-            try:
-                return self.awpy_nav_manager.has_line_of_sight(pos1, pos2)
-            except Exception as e:
-                logger.warning(f"AWPY NAV LOS failed, falling back: {e}")
-        
-        # Fallback to grid-based LOS
-        if not self.current_map or self.current_map not in self.los_checkers:
-            # No geometry data - allow all sightlines (fallback)
-            return True
-        
-        los_checker = self.los_checkers[self.current_map]
-        return los_checker.has_line_of_sight(pos1[0], pos1[1], pos1[2],
-                                           pos2[0], pos2[1], pos2[2])
-
     def set_current_map(self, map_name: str):
-        """Set the current map and load its geometry if needed"""
-        if map_name != self.current_map:
-            # Update AWPY NAV manager first
-            if self.awpy_nav_manager:
-                self.awpy_nav_manager.set_current_map(map_name)
-            
-            # Then load grid-based geometry as fallback
-            self.load_map_geometry(map_name)
+        try:
+            normalized = normalize_map_name(map_name)
+        except ValueError:
+            self.current_map = None
+            self.use_real_geometry = False
+            return False
+        # Failed loads remain unknown; switching never retains old geometry.
+        if normalized == self.current_map and normalized in self.errors:
+            return False
+        return self.load_map_geometry(normalized)
 
-def duel_geometrically_possible(pos_a: Tuple[float, float, float],
-                               pos_b: Tuple[float, float, float],
-                               geometry_manager: MapGeometryManager,
-                               max_2d_distance: float = 3000.0,
-                               min_2d_distance: float = 50.0) -> bool:
-    """
-    Check if a duel between two positions is geometrically possible
-    
-    Args:
-        pos_a, pos_b: Player positions (x, y, z)
-        geometry_manager: Map geometry manager
-        max_2d_distance: Maximum 2D distance for duels
-        min_2d_distance: Minimum 2D distance (avoid shoulder clips)
-    
-    Returns:
-        True if duel is geometrically possible
-    """
-    ax, ay, az = pos_a
-    bx, by, bz = pos_b
-    
-    # Distance checks
-    dist_2d = hypot(ax - bx, ay - by)
-    if dist_2d > max_2d_distance or dist_2d < min_2d_distance:
-        return False
-    
-    # Line of sight check
-    if not geometry_manager.has_line_of_sight(pos_a, pos_b):
-        return False
-    
-    return True
+    def visibility(self, pos1, pos2) -> VisibilityResult:
+        try:
+            _point(pos1)
+            _point(pos2)
+        except (TypeError, ValueError):
+            return VisibilityResult("unknown", "Invalid or missing world position")
+        checker = self.los_checkers.get(self.current_map)
+        if checker is None:
+            return VisibilityResult("unknown", self.errors.get(self.current_map, "No current collision mesh"))
+        try:
+            if hasattr(checker, "is_visible"):
+                clear = bool(checker.is_visible(tuple(pos1), tuple(pos2)))
+            else:
+                clear = checker.has_line_of_sight(pos1, pos2)
+            return VisibilityResult("visible" if clear else "blocked", "Static collision mesh ray cast", self.sources.get(self.current_map))
+        except Exception as exc:
+            logger.warning("Collision query failed: %s", exc)
+            return VisibilityResult("unknown", f"Collision query failed: {exc}", self.sources.get(self.current_map))
 
-# Global geometry manager instance
+    def has_line_of_sight(self, pos1, pos2) -> Optional[bool]:
+        """Tri-state API. Callers must distinguish None from False."""
+        return self.visibility(pos1, pos2).visible
+
+
+def aim_angles(origin, target) -> Tuple[float, float]:
+    """Return Source-style (pitch, yaw) degrees for world positions."""
+    dx, dy, dz = _point(target) - _point(origin)
+    return -degrees(atan2(dz, hypot(dx, dy))), degrees(atan2(dy, dx))
+
+
+def aim_error_degrees(forward, origin, target) -> Optional[float]:
+    """3D angle from a GSI forward vector to a target; None for zero vectors."""
+    try:
+        view, delta = _point(forward), _point(target) - _point(origin)
+    except (TypeError, ValueError):
+        return None
+    magnitude = float(np.linalg.norm(view) * np.linalg.norm(delta))
+    if magnitude <= _EPSILON:
+        return None
+    return float(np.degrees(np.arccos(np.clip(np.dot(view, delta) / magnitude, -1.0, 1.0))))
+
+
+def duel_geometrically_possible(pos_a, pos_b, geometry_manager: MapGeometryManager,
+                               max_2d_distance: Optional[float] = None,
+                               min_2d_distance: float = 0.0,
+                               crouched_a: bool = False, crouched_b: bool = False) -> Optional[bool]:
+    """Whether sampled direct-fire sightlines exist in either direction.
+
+    Inputs are feet positions. Sample head, torso, pelvis and torso sides from
+    each player's eye to allow partial cover and asymmetric height advantages.
+    False means sampled rays are occluded, not that wallbangs are impossible.
+    None means geometry/positions are unknown. Optional range limits are caller
+    policy rather than a claim about physically possible weapon kills.
+    """
+    try:
+        a, b = _point(pos_a), _point(pos_b)
+    except (TypeError, ValueError):
+        return None
+    distance = hypot(*(a[:2] - b[:2]))
+    if distance < min_2d_distance or (max_2d_distance is not None and distance > max_2d_distance):
+        return False
+    unknown = False
+    for source, target, crouched_source, crouched_target in ((a, b, crouched_a, crouched_b), (b, a, crouched_b, crouched_a)):
+        eye_height = CROUCH_EYE_HEIGHT if crouched_source else EYE_HEIGHT
+        target_eye = CROUCH_EYE_HEIGHT if crouched_target else EYE_HEIGHT
+        eye = source + (0, 0, eye_height)
+        for offset in ((0, 0, target_eye), (0, 0, target_eye * .72), (0, 0, target_eye * .45),
+                       (-12, 0, target_eye * .72), (12, 0, target_eye * .72),
+                       (0, -12, target_eye * .72), (0, 12, target_eye * .72)):
+            result = geometry_manager.has_line_of_sight(eye, target + offset)
+            if result is True:
+                return True
+            unknown = unknown or result is None
+    return None if unknown else False
+
+
 _geometry_manager = None
 
+
 def get_geometry_manager() -> MapGeometryManager:
-    """Get the global geometry manager instance"""
     global _geometry_manager
     if _geometry_manager is None:
         _geometry_manager = MapGeometryManager()
     return _geometry_manager
-
-if __name__ == "__main__":
-    # Test the geometry system
-    logging.basicConfig(level=logging.INFO)
-    
-    # Create geometry manager and test Dust2
-    gm = MapGeometryManager()
-    gm.generate_dust2_approximation()
-    
-    # Test cases for Dust2
-    test_cases = [
-        # (pos1, pos2, expected, description)
-        ((-1000, 0, 0), (1000, 0, 0), False, "Cross-map through central building"),
-        ((-500, -500, 0), (-400, -400, 0), True, "Close positions with LOS"),
-        ((-1500, 0, 0), (1500, 1500, 0), False, "CT spawn to A catwalk (blocked)"),
-        ((0, 0, 0), (200, 200, 0), True, "Short range duel"),
-    ]
-    
-    print("🗺️  Testing Dust2 Geometry System")
-    print("=" * 50)
-    
-    for pos1, pos2, expected, desc in test_cases:
-        result = duel_geometrically_possible(pos1, pos2, gm)
-        status = "✅" if result == expected else "❌"
-        print(f"{status} {desc}: {result} (expected {expected})")
-    
-    print(f"\nGeometry files created in: {gm.maps_dir}/")
-    print("Ready to integrate with duel detector!")
