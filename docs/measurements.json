@@ -332,10 +332,169 @@
     "model_runtime_jobs": 1
   },
   "validation": {
-    "python_tests_passed": 86,
+    "python_tests_passed": 148,
     "python_subtests_passed": 4,
     "go_tests_passed": 7,
     "parser_build": "passed",
     "real_demos_parsed": 5
+  },
+  "professional_vod_review": {
+    "notes": "OBSERVER_VOD_NOTES.md",
+    "esl_annotations": "vod_observations.json",
+    "mode": "hand-written causal rules, not video-trained model",
+    "complete_rounds_reviewed_at_1fps": "ESL Dust2 round 1; BLAST Ancient first two live rounds via selected sheets",
+    "audio_reviewed": false
+  },
+  "camera_policy_comparison": {
+    "scope": "Offline sampled process_gamestate replay, simulated camera and blocked native input; not rendered POV capture or human quality",
+    "same_inputs_for_both_policies": true,
+    "causal_event_reconstruction": "Known same-round events only when both tick and time are at or before the snapshot; no future roster/position/ammo; reset at observed gaps over two seconds",
+    "model_sha256": "e20f305807016fc088f8de715d9ced23eb530a401448a3ccb399683a37ea96e2",
+    "source_fingerprints": {
+      "cs2_duel_detector.py": "36468ef4c0fad5300f3a75664628ae17149e173f9d7ce91cc76f52321201b098",
+      "observer_runtime_policy.py": "fd06c831403c19fc404032f3d2dbd5d98b0c922e9ced8c6c8d9cb21ff43ae95e",
+      "observer_policy.py": "96c23028a5722490ea391a0628838d8b90c0ff32a2de6e13c91a1842d31d9444",
+      "observer_model.py": "75ea81103f925127497e7c44691916dc6ce1fca1204dc765d25817c9bd7e8335",
+      "replay_observer.py": "018c328f752a72edf781bed356967043a65f1f8955c590a5cfbc37240553ebc4"
+    },
+    "maps": [
+      "de_dust2",
+      "de_cache"
+    ],
+    "independent_demos": 2,
+    "policies": {
+      "legacy": {
+        "snapshots": 5558,
+        "strict_next_killer_action_snapshots": 942,
+        "held_target_next_killer_hits": 215,
+        "held_target_next_kill_duel_hits": 441,
+        "raw_model_top1_next_killer_hits": 456,
+        "switch_requests": 504,
+        "camera_target_changes": 504,
+        "snapshots_target_absent": 0,
+        "snapshots_target_confirmed_dead": 9,
+        "snapshots_target_health_unknown": 0,
+        "processing_errors": 0,
+        "internal_target_camera_mismatches": 0,
+        "blocked_native_input_attempts": 0,
+        "next_killer_in_actual_policy_pool": null,
+        "raw_model_scored_snapshots": 5474,
+        "actual_policy_model_scored_snapshots": null,
+        "held_target_next_killer_coverage": 0.22823779193205945,
+        "held_target_next_kill_duel_coverage": 0.4681528662420382,
+        "raw_model_next_killer_coverage": 0.4840764331210191,
+        "mean_processing_ms": 30.151372148258996,
+        "policy_reasons": {
+          "legacy path": 5558
+        },
+        "excluding_first_knife_only_intervals": {
+          "excluded_strict_opportunities": 36,
+          "remaining_strict_opportunities": 906,
+          "held_next_killer_hits": 210,
+          "held_next_kill_duel_hits": 428,
+          "raw_model_next_killer_hits": 442,
+          "held_next_killer_coverage": 0.23178807947019867,
+          "held_next_kill_duel_coverage": 0.47240618101545256
+        },
+        "per_map": [
+          {
+            "map_name": "de_cache",
+            "snapshots": 2293,
+            "strict_next_killer_action_snapshots": 403,
+            "held_target_next_killer_hits": 97,
+            "held_target_next_kill_duel_hits": 190,
+            "camera_target_changes": 211
+          },
+          {
+            "map_name": "de_dust2",
+            "snapshots": 3265,
+            "strict_next_killer_action_snapshots": 539,
+            "held_target_next_killer_hits": 118,
+            "held_target_next_kill_duel_hits": 251,
+            "camera_target_changes": 293
+          }
+        ]
+      },
+      "broadcast": {
+        "snapshots": 5558,
+        "strict_next_killer_action_snapshots": 942,
+        "held_target_next_killer_hits": 245,
+        "held_target_next_kill_duel_hits": 491,
+        "raw_model_top1_next_killer_hits": 456,
+        "switch_requests": 583,
+        "camera_target_changes": 583,
+        "snapshots_target_absent": 0,
+        "snapshots_target_confirmed_dead": 0,
+        "snapshots_target_health_unknown": 35,
+        "processing_errors": 0,
+        "internal_target_camera_mismatches": 0,
+        "blocked_native_input_attempts": 0,
+        "next_killer_in_actual_policy_pool": 941,
+        "raw_model_scored_snapshots": 5474,
+        "actual_policy_model_scored_snapshots": 5408,
+        "held_target_next_killer_coverage": 0.26008492569002123,
+        "held_target_next_kill_duel_coverage": 0.5212314225053079,
+        "raw_model_next_killer_coverage": 0.4840764331210191,
+        "mean_processing_ms": 62.87318663187015,
+        "policy_reasons": {
+          "no_active_story_retain_pov": 513,
+          "setup_interest": 142,
+          "preserve_setup": 1187,
+          "follow_engagement": 53,
+          "preserve_engagement": 537,
+          "confirmed_death": 73,
+          "follow_trade": 82,
+          "preserve_trade_chain": 387,
+          "cut_budget": 332,
+          "anchor_under_pressure": 893,
+          "setup_hold": 430,
+          "minimum_shot": 101,
+          "preserve_clutch": 763,
+          "engagement_grace": 13,
+          "follow_clutch": 17,
+          "telemetry_gap": 35
+        },
+        "excluding_first_knife_only_intervals": {
+          "excluded_strict_opportunities": 36,
+          "remaining_strict_opportunities": 906,
+          "held_next_killer_hits": 236,
+          "held_next_kill_duel_hits": 473,
+          "raw_model_next_killer_hits": 442,
+          "held_next_killer_coverage": 0.26048565121412803,
+          "held_next_kill_duel_coverage": 0.522075055187638
+        },
+        "per_map": [
+          {
+            "map_name": "de_cache",
+            "snapshots": 2293,
+            "strict_next_killer_action_snapshots": 403,
+            "held_target_next_killer_hits": 99,
+            "held_target_next_kill_duel_hits": 191,
+            "camera_target_changes": 250
+          },
+          {
+            "map_name": "de_dust2",
+            "snapshots": 3265,
+            "strict_next_killer_action_snapshots": 539,
+            "held_target_next_killer_hits": 146,
+            "held_target_next_kill_duel_hits": 300,
+            "camera_target_changes": 333
+          }
+        ]
+      }
+    },
+    "caveats": [
+      "942 overlapping action windows include 36 from opening knife-only intervals.",
+      "906-window exclusion is a diagnostic, not a new untouched test set.",
+      "Missing health/roster is unknown; no reconstructed freeze or bomb objective states.",
+      "Keyboard dispatch and simulated camera success do not confirm a real rendered camera.",
+      "One-second VOD samples do not establish optimal policy timers or broadcast quality."
+    ]
+  },
+  "dataset_segment_caveat": {
+    "strict_windows": 942,
+    "opening_knife_only_windows": 36,
+    "remaining_windows": 906,
+    "original_model_experiment_includes_knife_intervals": true
   }
 }

@@ -15,7 +15,7 @@ jobs:
           go-version-file: KeylessOBS/go.mod
           cache-dependency-path: KeylessOBS/go.sum
       - run: python -m pip install numpy scikit-learn pytest keyboard zstandard
-      - run: python -m pytest tests test_demo_processing.py -q
+      - run: python -m pytest -q
         working-directory: KeylessOBS
       - run: go test ./...
         working-directory: KeylessOBS

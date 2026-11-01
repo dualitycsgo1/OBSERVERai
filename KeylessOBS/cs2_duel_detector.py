@@ -527,7 +527,8 @@ class CS2DuelDetector:
         return {
             "observer": {
                 "switch_cooldown": 0.5,  # ULTRA REDUCED for 2-3 second early switching
-                "enable_auto_switch": True
+                "enable_auto_switch": True,
+                "camera_policy": "broadcast"
             },
             "duel_detection": {
                 "max_distance": 1200.0,      # Standard close-range duels
@@ -2051,6 +2052,10 @@ class CS2DuelDetector:
 
     def _numbers_lockout_active(self) -> bool:
         """True hvis 1-0 ikke må trykkes pga freezetime-lås (19s fra FT-start)."""
+        if self.config.get('observer', {}).get('camera_policy', 'broadcast') == 'broadcast':
+            # The broadcast policy uses the actual round phase. A fixed timer
+            # must not suppress the first live engagement after freeze ends.
+            return (getattr(self, '_last_gamestate', {}).get('round') or {}).get('phase') == 'freezetime'
         if not self.freezetime_start:
             return False
         return (datetime.now() - self.freezetime_start).total_seconds() < self.numbers_lockout_seconds
@@ -2149,6 +2154,22 @@ class CS2DuelDetector:
 
     # ------------- Main processing -------------
 
+    def _broadcast_overview(self):
+        if not getattr(self, 'campaths_enabled', False):
+            return False
+        if send_key(random.choice(HOTKEY_CODES)):
+            self.last_switch_time = datetime.now()
+            self.last_any_switch = time.time()
+            return True
+        return False
+
+    def _process_broadcast_gamestate(self, gamestate, now_ts):
+        from observer_runtime_policy import BroadcastObserverRuntime
+        adapter = getattr(self, '_broadcast_runtime', None)
+        if adapter is None:
+            adapter = self._broadcast_runtime = BroadcastObserverRuntime(self)
+        return adapter.process(gamestate, now_ts, self._broadcast_overview)
+
     def process_gamestate(self, gamestate: Dict[str, Any]):
         try:
             if not self.active:
@@ -2190,6 +2211,11 @@ class CS2DuelDetector:
 
             # Set the map before any geometry-dependent scoring or duel locks.
             self._refresh_observer_model()
+            if self.config.get('observer', {}).get('camera_policy', 'broadcast') == 'broadcast':
+                # One policy decision and at most one actuator. Legacy trigger
+                # helpers can send keys themselves, so none run in this mode.
+                self._process_broadcast_gamestate(gamestate, now_ts)
+                return
             self._update_duel_lock_tracking(allplayers, now)
             self.update_history_and_triggers(allplayers, now_ts, gamestate)
 

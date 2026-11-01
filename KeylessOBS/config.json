@@ -1,7 +1,29 @@
 {
   "observer": {
     "switch_cooldown": 4.2,
-    "enable_auto_switch": true
+    "enable_auto_switch": true,
+    "camera_policy": "broadcast"
+  },
+  "broadcast_policy": {
+    "minimum_shot_seconds": 1.0,
+    "setup_hold_seconds": 3.0,
+    "engagement_grace_seconds": 0.75,
+    "trade_window_seconds": 2.0,
+    "aftermath_seconds": 1.2,
+    "cut_window_seconds": 10.0,
+    "max_cuts_per_window": 3,
+    "urgent_cuts_bypass_budget": true,
+    "minimum_setup_interest": 0.2,
+    "setup_switch_margin": 0.15,
+    "anchor_minimum_approachers": 2,
+    "clutch_minimum_opponents": 2,
+    "facts": {
+      "setup_distance": 2000.0,
+      "local_support_radius": 700.0,
+      "minimum_approach_speed": 20.0,
+      "combat_activity_seconds": 0.75,
+      "maximum_event_gap_seconds": 2.0
+    }
   },
   "duel_detection": {
     "max_distance": 1400.0,

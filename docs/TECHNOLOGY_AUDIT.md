@@ -47,6 +47,15 @@ round count as positive labels. Teamkills, warmup/freezetime and partial end-of-
 round/EOF horizons are excluded. Consecutive samples overlap and are correlated;
 90,533 rows are not 90,533 independent matches.
 
+Phase filtering does not distinguish every match segment. Subsequent inspection
+found an opening knife-only live interval in both held-out demos, followed by a
+long gap and reuse of the first round number. Those intervals contribute 36 of
+the 942 strict next-killer windows (3.82%). The original static model experiment
+includes them; it has not been silently retrained or relabelled. Camera replay
+also reports the remaining 906 windows separately and resets reconstruction at
+observed telemetry gaps. This is a dataset limitation, not evidence that a missing
+phase boundary can be inferred exactly.
+
 The fixed split has three training demos (50,573 player rows) and two held-out
 demos (39,960 rows, 1,045 positives). The estimator is a Random Forest with 150
 trees, minimum leaf size 3, seed 42. No historical compatible kill model was
@@ -99,51 +108,82 @@ therefore fragile, and repeated evaluation on this fixed set can overfit model
 selection. A general accuracy claim needs substantially more fresh demos, maps,
 patches and skill levels kept untouched until final testing.
 
-## Sampled camera replay: the remaining gap
+## Camera selection: visibility, VODs and fair replay
 
-The actual `process_gamestate` state machine was replayed on both held-out demos
-using their sample times, the exact canonical model, simulated spectator slots,
-and blocked native keyboard APIs. Matching patch meshes were installed for each
-map. A control run used the declared unknown-geometry fallback.
+An initial replay used the living-player export without restored deaths or
+round-kill counters. The legacy policy held the next killer in 25.16% of 942
+windows with matched meshes, versus 27.92% in unknown-geometry fallback. The raw
+model ranked the next killer first in 48.83%. Current direct-duel filtering put
+the next killer in its pool in only 54.99% of windows. This diagnosed a mismatch:
+current occlusion cannot rule out an upcoming peek. Those historical runs are
+retained in the JSON, but are not a fair baseline for the enhanced replay below.
 
-| Strict next-killer opportunity, 942 windows | Matched collision mesh | Unknown geometry fallback |
+Selected professional sequences were then visually reviewed: one complete ESL
+Dust2 round and the first two BLAST Ancient live rounds at one sampled frame per
+second. [Timestamped facts and interpretations](OBSERVER_VOD_NOTES.md) document
+holds before contact, continuity with a lone player, and rapid event-driven cuts.
+The resulting hand-written policy separates setup, engagement, trade, aftermath
+and overview. It keeps blocked setups eligible and does not rotate on quiet
+model scores. This is not imitation learning, and default timers were not fitted
+to the VODs or the two validation demos.
+
+Both policies were compared again with identical canonical model, matching patch
+meshes and causal event reconstruction. A death/kill counter is restored only
+from an already-observed event in the same round (both tick and time checks).
+Positions and ammunition come only from current/past snapshots. Unconfirmed
+missing players remain unknown. Gaps longer than two seconds start a new observed
+interval so reused round numbers do not carry opening knife deaths into later
+play. This conservative reset also drops events in unobserved gaps.
+The shared feature extractor abstains when a reported playing-team player's
+health is unknown; the broadcast adapter also abstains when its known roster is
+incomplete. It does not reduce alive counts to manufacture a model forecast.
+Broadcast model scores were available in
+5408/5558 snapshots; the
+remaining snapshots were processed without a forecast.
+
+| Metric, same 5,558 sampled states / 942 action windows | Legacy policy | Broadcast policy |
 | --- | ---: | ---: |
-| Raw model's top-ranked player | 48.83% | 48.83% |
-| Next killer is present in the current duel candidate pool | 54.99% | 98.94% |
-| Model's top-ranked player inside that pool | 31.32% | 48.83% |
-| Camera's held target at the sample time | 25.16% (237/942) | 27.92% (263/942) |
+| Held target is the next killer, within two seconds | 22.82% (215/942) | 26.01% (245/942) |
+| Held target is killer or victim of that next kill | 46.82% (441/942) | 52.12% (491/942) |
+| Simulated target changes | 504 | 583 |
+| Sampled held target confirmed dead | 9 | 0 |
+| Mean process time on this machine | 30.2 ms | 62.9 ms |
 
-Each variant processed 5,558 snapshots. All four complete runs had zero processing
-errors, zero native input attempts, and zero mismatches between the camera target
-and the detector's internal target. Matched-mesh runs emitted 399 switch keys for
-399 actual target changes; fallback runs emitted 615 for 615. The former no-op
-bug, which reset cooldown while reselecting the same player, is covered by
-regression tests and absent from these runs.
+The increase is concentrated on Dust2: +28 next-killer hits and +49
+killer-or-victim hits. Cache changes by only +2 and +1, respectively. Total
+simulated cuts rise from 504 to 583 (15.7%), and measured computation roughly
+doubles. These are useful tradeoffs to review, not uniform improvement across
+matches or evidence that more cutting makes a better broadcast.
 
-This exposes a real architectural gap. A currently blocked sightline does not
-mean that a kill two seconds later is impossible: players may peek. The current
-duel pool combines current visibility with range/facing policy, excluding the
-next killer from roughly 45% of action windows. The table separates that loss
-from the additional effect of camera holds, switching cooldown and other policy.
-The default 4.2-second switch cooldown is also longer than the model's two-second
-forecast horizon. These policies were not tuned to the two validation demos.
+Excluding the first knife-only intervals leaves 906 windows. Next-killer coverage
+is 23.18%
+for legacy and 26.05%
+for broadcast. Killer-or-victim coverage is
+47.24%
+and 52.21%,
+respectively. This is a diagnostic subset, not a fresh test set.
 
-Mean processing time was 54.7 ms with mesh and 12.1 ms with fallback on this
-machine during concurrent runs, including map loading. These are offline
-processing measurements, not end-to-end live latency.
+All four enhanced runs had 0 processing
+errors, 0 native input
+attempts and 0 simulated
+camera/internal-target mismatches. Raw per-map and aggregate counts plus source
+fingerprints are saved in [measurements.json](measurements.json). The direct-duel
+pool diagnostics describe the legacy filter; the broadcast setup candidate pool
+is recorded separately.
 
-The export contains only living players and complete live-round horizons;
-freeze/death transition states, round kill counters, final partial horizons and
-real GSI/input delivery are absent. There were 233 matched-mesh snapshots whose
-held target was absent from the living-player export, versus 5 in fallback.
-Consequently the percentages measure held targets at sampled times, not rendered
-POV kill capture. They do not establish an improvement over the old camera system.
+These metrics describe the held player at sampled times before an upcoming kill,
+not rendered POV kill capture, complete action coverage or professional quality.
+Killer-or-victim inclusion does not establish a readable shot or trade sequence.
+The export still lacks freeze phases, bomb objectives, omitted world/suicide
+deaths and final partial horizons. Only two independent demos are available.
+Processing timings include offline concurrent load and are not live latency.
 
-The next engineering work should distinguish a verified **current direct duel**
-from a **feasible future peek** using movement/reachable positions and geometry,
-then evaluate a camera policy with a compatible forecast horizon on fresh demos.
-This revision is an audited foundation and a draft for review, not evidence of a
-production-ready broadcast observer.
+The pure policy commits state on acknowledgment. Its keyboard adapter only knows
+whether dispatch succeeded; it has no independent spectator-camera feedback.
+Failed dispatch changes neither target nor cut budget. A live spectator trial
+must verify slot mapping, delivery delays and actual camera results. Static
+visibility and movement-based setup interest also do not yet solve reachable
+future-peek geometry or wall penetration. This remains an audited draft.
 
 ## Geometry verification and practical limits
 
@@ -197,9 +237,9 @@ python KeylessOBS/evaluate_demos.py --results-dir work/parser-results --output-d
 
 Aggregated results without player identifiers are in [measurements.json](measurements.json).
 
-Local checks passed: 86 Python tests and 4 subtests, 7 Go tests, a source parser
+Local checks passed: 148 Python tests and 4 subtests, 7 Go tests, a source parser
 build, all five compressed real demos, the isolated evaluation CLI, and four
-complete held-out replay runs. Automated validation commands are in README and
+initial and four enhanced held-out replay runs. Automated validation commands are in README and
 the Windows CI workflow. The
 source build is verified. Packaged observer/trainer EXEs and interaction with a
 running CS2 spectator session were not validated in this audit.

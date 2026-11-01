@@ -38,7 +38,8 @@ class RuntimeLockTests(unittest.TestCase):
 
     def detector(self, locked=True, model=True):
         detector = runtime.CS2DuelDetector.__new__(runtime.CS2DuelDetector)
-        detector.config = {'geometry': {'require_verified_visibility': False}}
+        detector.config = {'geometry': {'require_verified_visibility': False},
+                           'observer': {'camera_policy': 'legacy'}}
         detector.active = True
         detector.geometry_manager = None
         detector._refresh_observer_model = lambda: None

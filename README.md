@@ -10,10 +10,13 @@ old code: its trainer predicted headshots and used different features from live
 inference. See [the technology audit](docs/TECHNOLOGY_AUDIT.md) for evidence,
 changes, measurements, and remaining limitations.
 
-The final two-demo test gives 48.8% static next-killer ranking versus 28.7% for a
-nearest-enemy baseline. Sampled camera replay with mesh reaches 25.2%; current
-duel filtering and camera policy remain substantial limits. This revision is a
-draft for review, not a validated broadcast release.
+The two-demo test gives 48.8% static next-killer ranking versus 28.7% for a
+nearest-enemy baseline. With causal event reconstruction, sampled camera replay
+gives 22.82% for the legacy policy and
+26.01% for the first VOD-informed policy.
+These are offline held-target measurements, not rendered POV capture. Both demos
+include opening knife intervals; the audit reports a separate diagnostic without
+them. This revision remains a draft for review.
 
 ## Run from source
 
@@ -66,6 +69,27 @@ The observer never downloads geometry while a match runs.
 
 See [collision setup and API details](KeylessOBS/maps/COLLISION_GEOMETRY.md).
 
+## Camera policy and professional VOD review
+
+The default `observer.camera_policy="broadcast"` separates setup, engagement,
+trade, aftermath and overview. Selected ESL and BLAST rounds show holds before
+contact, rapid event-driven trade cuts and continuity with a lone player. The
+first hand-written policy follows those hypotheses; it is not a model trained on
+VODs. See [review scope, timestamped observations and rules](docs/OBSERVER_VOD_NOTES.md).
+
+Current direct visibility and future editorial interest are separate. A blocked
+player can remain a setup candidate; verified direct-duel filtering is still
+available in the legacy path. The model breaks ties between relevant candidates.
+Quiet scores do not automatically rotate the camera. Missing health cannot
+establish a death, and failed input calls do not update the target/cut budget.
+The broadcast forecast abstains while the known roster or health is incomplete.
+
+Set `observer.camera_policy="legacy"` for the earlier duel-based selection.
+`broadcast_policy` contains configurable holds, cut budget and fact thresholds;
+these defaults are engineering choices, not measured professional shot timings.
+Freezetime uses the actual GSI round phase. Overview requires enabled campaths.
+Successful key dispatch is not confirmation from the rendered spectator camera.
+
 ## Demo training and evaluation
 
 Import `.dem` or `.dem.zst` files in the trainer. Archives are streamed to a
@@ -73,6 +97,9 @@ temporary file; source demos are preserved. The parser samples live rounds every
 0.5 seconds and labels each living player by whether they get at least one enemy
 kill in the **next two seconds**. Same-tick outcomes, teamkills, warmup/freezetime,
 and incomplete round-end/EOF horizons are excluded from prediction labels.
+Parser-reported live phases can still contain knife-only opening intervals; the
+audit discloses these separately. Round-phase filtering alone is not a complete
+competitive-match segment classifier.
 
 Training and live inference use one versioned 17-feature schema. Kill-only and
 legacy headshot models are rejected. The Random Forest is refitted on accumulated,
@@ -102,6 +129,18 @@ parser JSON exports:
 python KeylessOBS/evaluate_demos.py --results-dir work/parser-results --output-dir work/evaluation-new --learning-curve --strict-next-killer
 ```
 
+Replay both camera policies on the same parsed held-out demo and isolated model:
+
+```powershell
+python KeylessOBS/replay_observer.py work/parser-results/heldout.json --model work/evaluation-new/models/observer_ai_model.pkl --meshes KeylessOBS/maps --output work/replay-broadcast --camera-policy broadcast --reconstruct-events
+python KeylessOBS/replay_observer.py work/parser-results/heldout.json --model work/evaluation-new/models/observer_ai_model.pkl --meshes KeylessOBS/maps --output work/replay-legacy --camera-policy legacy --reconstruct-events
+```
+
+The harness blocks native input and simulates spectator selection. It restores
+only already-observed deaths/counters, keeps uncertain missing players unknown,
+and records source/model fingerprints. It cannot restore absent freeze/objective
+phases or verify the rendered camera. Use matching patch meshes for each demo.
+
 See [the recorded measurements](docs/measurements.json) for the audit's model
 comparison and the audit report for its limits.
 
@@ -109,7 +148,7 @@ comparison and the audit report for its limits.
 
 ```powershell
 cd KeylessOBS
-python -m pytest tests test_demo_processing.py -q
+python -m pytest -q
 go test ./...
 go build -o demo_parser_with_positions.exe .
 ```

@@ -75,7 +75,9 @@ def feature_vector(gamestate, player_id):
             if (other_id in (player_id, 'total') or not isinstance(other, dict)
                     or other.get("team") not in ("T", "CT")):
                 continue
-            if _number(other.get("state", {}).get("health", 0)) <= 0:
+            # Unknown health cannot establish that another playing-team player
+            # is dead. Abstain instead of silently reducing the alive counts.
+            if _number(other["state"]["health"]) <= 0:
                 continue
             if other["team"] == team:
                 teammates += 1

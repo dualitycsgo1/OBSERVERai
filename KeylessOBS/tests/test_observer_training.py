@@ -77,6 +77,27 @@ def test_dead_targets_and_missing_direction_are_not_fabricated():
     assert feature_vector(state, "a")[FEATURE_NAMES.index("best_aim_angle")] == 0
 
 
+def test_unknown_health_of_present_playing_team_players_abstains_model_features():
+    state = snapshot()
+    state["allplayers"]["teammate"] = copy.deepcopy(state["allplayers"]["a"])
+    complete = feature_vector(state, "a")
+    assert complete[FEATURE_NAMES.index("teammates_alive")] == 1
+    assert complete[FEATURE_NAMES.index("enemies_alive")] == 1
+    for player_id in ("teammate", "b"):
+        for missing in ("health", "state"):
+            partial = copy.deepcopy(state)
+            if missing == "health":
+                del partial["allplayers"][player_id]["state"]["health"]
+            else:
+                del partial["allplayers"][player_id]["state"]
+            assert feature_vector(partial, "a") is None
+        partial = copy.deepcopy(state)
+        partial["allplayers"][player_id]["state"]["health"] = None
+        assert feature_vector(partial, "a") is None
+    # Complete vectors keep their existing feature order and values.
+    assert feature_vector(state, "a") == complete
+
+
 def test_kill_events_and_post_event_rows_cannot_become_prediction_data():
     wrong_phase = sample()
     wrong_phase["snapshot_phase"] = "post_event"
