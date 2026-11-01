@@ -185,6 +185,46 @@ must verify slot mapping, delivery delays and actual camera results. Static
 visibility and movement-based setup interest also do not yet solve reachable
 future-peek geometry or wall penetration. This remains an audited draft.
 
+## Local encounter revision after a real trial
+
+A user's tunnel-rush recording exposed a policy failure. A distant defender's
+molotov damage and anchor-role transition stole the camera from an already
+selected local multi-player attack. The controlled causal replay reproduces the
+branch; it does not reconstruct exact live GSI cadence. The case uses a training
+demo and is kept separate from the held-out regression.
+
+The new policy commits to the selected local encounter, retains it through firing
+pauses and follows a local participant after confirmed death. It uses the existing
+700-unit radius without map/player hardcoding. Unknown contacts do not become
+confirmed disengagement. The obsolete separate Positional AI integration is also
+removed; the validated future-kill model's weights and feature schema are unchanged.
+
+| Same 942 overlapping windows | Previous broadcast | Local encounter revision |
+| --- | ---: | ---: |
+| Held next killer | 245 (26.01%) | 274 (29.09%) |
+| Held killer or victim | 491 (52.12%) | 520 (55.20%) |
+| Simulated target changes | 583 | 507 |
+| Completed POV spans below one second | 25 | 18 |
+
+All 5,558 per-snapshot inputs, raw model rankings and future diagnostic labels
+were checked identical before/after. New runs have zero processing errors,
+native input attempts, simulated camera/internal-target mismatches or held targets
+confirmed dead. Excluding opening knife intervals gives 262/906 next-killer hits
+and 502/906 killer-or-victim hits. The earlier legacy run is explicitly a
+reference from its recorded source, not a new run on the current source.
+
+Results differ by map: Cache improves from 99 to 120 next-killer hits and 191 to
+226 duel hits; Dust2 improves from 146 to 154 next-killer hits but drops from 300
+to 294 duel hits. Repeated use of these same two demos is a regression check, not
+fresh independent validation. The new measured process time is not a controlled
+before/after benchmark because host/game and parallel load changed.
+
+[Case mechanism and installed VPK inspection](LOCAL_ENCOUNTERS_AND_VPK.md) also
+document read-only extraction of NAV, physics/material tags and 43 named place
+entities. These native exports do not automatically replace runtime geometry.
+The local trial records future diagnostic GSI/decision sessions on its next
+manual start; no application is launched by the update.
+
 ## Geometry verification and practical limits
 
 Native AWPY AWMH v1 `.mesh` files and numeric NPZ collision triangles are supported.
@@ -237,7 +277,7 @@ python KeylessOBS/evaluate_demos.py --results-dir work/parser-results --output-d
 
 Aggregated results without player identifiers are in [measurements.json](measurements.json).
 
-Local checks passed: 148 Python tests and 4 subtests, 7 Go tests, a source parser
+Local checks passed: 169 Python tests and 4 subtests, 7 Go tests, a source parser
 build, all five compressed real demos, the isolated evaluation CLI, and four
 initial and four enhanced held-out replay runs. Automated validation commands are in README and
 the Windows CI workflow. The

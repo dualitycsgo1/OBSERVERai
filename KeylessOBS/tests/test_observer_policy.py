@@ -262,6 +262,128 @@ class ObserverPolicyTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.policy.reset_story(1, 'b')
 
+    def test_selected_supported_defender_keeps_multi_enemy_setup_over_unrelated_damage(self):
+        held = Candidate('a', 'CT', setup_interest=.3, supporting_teammate_count=1,
+                         local_opponent_ids=frozenset({'r1', 'r2', 'r3'}))
+        remote = Candidate('mid', 'CT', setup_interest=.9, engagement_active=True, last_damage_at=.1)
+        self.decide(0, 'a', [held])
+        decision = self.decide(.1, 'a', [held, remote])
+        self.assertEqual((decision.action, decision.target_id, decision.reason), ('hold', 'a', 'preserve_local_encounter'))
+        self.assertEqual(self.policy.state.encounter_opponent_ids, ('r1', 'r2', 'r3'))
+        self.assertEqual(self.policy.state.successful_cuts, 0)
+
+    def test_selected_encounter_survives_firing_pause_and_broad_trade_group(self):
+        held = Candidate('a', 'CT', engagement_active=True, trade_group_id='broad',
+                         supporting_teammate_count=1, local_opponent_ids=frozenset({'r1', 'r2'}))
+        self.decide(0, 'a', [held])
+        remote = Candidate('mid', 'CT', engagement_active=True, trade_group_id='broad', last_damage_at=.1)
+        decision = self.decide(.1, 'a', [replace(held, engagement_active=False), remote])
+        self.assertEqual((decision.action, decision.target_id, decision.reason), ('hold', 'a', 'preserve_local_encounter'))
+        self.assertFalse(decision.urgent)
+
+    def test_commitment_persists_with_one_original_local_opponent(self):
+        held = Candidate('a', 'CT', local_opponent_ids=frozenset({'r1', 'r2', 'r3'}))
+        self.decide(0, 'a', [held])
+        remote = Candidate('mid', 'CT', engagement_active=True)
+        decision = self.decide(1, 'a', [replace(held, local_opponent_ids=frozenset({'r1'})), remote],
+                               dead_player_ids=frozenset({'r2', 'r3'}))
+        self.assertEqual((decision.action, decision.target_id, decision.reason), ('hold', 'a', 'preserve_local_encounter'))
+
+    def test_opponents_stopping_does_not_end_the_selected_local_encounter(self):
+        held = Candidate('a', 'CT', approaching_enemy_count=3,
+                         local_opponent_ids=frozenset({'r1', 'r2', 'r3'}))
+        self.decide(0, 'a', [held])
+        decision = self.decide(2, 'a', [replace(held, approaching_enemy_count=0),
+                                       Candidate('mid', 'CT', engagement_active=True)])
+        self.assertEqual((decision.action, decision.target_id), ('hold', 'a'))
+
+    def test_unknown_local_telemetry_holds_but_confirmed_disengagement_releases(self):
+        self.policy = ObserverPolicy(PolicyConfig(minimum_shot_seconds=0, setup_hold_seconds=0))
+        held = Candidate('a', 'CT', local_opponent_ids=frozenset({'r1', 'r2'}))
+        remote = Candidate('mid', 'CT', engagement_active=True)
+        self.decide(0, 'a', [held])
+        decision = self.decide(1, 'a', [replace(held, local_opponent_ids=None), remote])
+        self.assertEqual((decision.action, decision.reason), ('hold', 'local_encounter_telemetry_gap'))
+        decision = self.decide(2, 'a', [replace(held, local_opponent_ids=frozenset()), remote])
+        self.assertEqual((decision.action, decision.target_id), ('switch', 'mid'))
+        self.assertEqual(self.policy.state.encounter_opponent_ids, ())
+
+    def test_different_single_opponent_does_not_keep_resolved_former_encounter(self):
+        self.policy = ObserverPolicy(PolicyConfig(minimum_shot_seconds=0, setup_hold_seconds=0))
+        held = Candidate('a', 'CT', local_opponent_ids=frozenset({'r1', 'r2'}))
+        self.decide(0, 'a', [held])
+        decision = self.decide(1, 'a', [replace(held, local_opponent_ids=frozenset({'other'})),
+                                       Candidate('mid', 'CT', engagement_active=True)])
+        self.assertEqual((decision.action, decision.target_id), ('switch', 'mid'))
+
+    def test_confirmed_death_follows_original_local_opponent_before_remote_activity(self):
+        self.decide(0, 'a', [Candidate('a', 'CT', local_opponent_ids=frozenset({'r1', 'r2'}))])
+        local = Candidate('r1', 'T', setup_interest=.1)
+        remote = Candidate('mid', 'CT', engagement_active=True, setup_interest=1, kill_probability=.99)
+        decision = self.decide(.2, 'a', [local, remote], dead_player_ids=frozenset({'a'}))
+        self.assertEqual((decision.action, decision.target_id, decision.reason), ('switch', 'r1', 'confirmed_death'))
+        self.assertEqual(decision.mode, 'trade')
+        self.assertTrue(decision.urgent)
+
+    def test_death_can_follow_linked_defender_fighting_the_same_local_opponents(self):
+        self.decide(0, 'a', [Candidate('a', 'CT', local_opponent_ids=frozenset({'r1', 'r2'}))])
+        defender = Candidate('mate', 'CT', engagement_active=True, local_opponent_ids=frozenset({'r1'}))
+        remote = Candidate('mid', 'CT', engagement_active=True, setup_interest=1, kill_probability=.99)
+        decision = self.decide(.2, 'a', [defender, remote], dead_player_ids=frozenset({'a'}))
+        self.assertEqual((decision.target_id, decision.reason), ('mate', 'confirmed_death'))
+
+    def test_confirmed_objective_still_interrupts_a_selected_local_encounter(self):
+        held = Candidate('a', 'CT', local_opponent_ids=frozenset({'r1', 'r2'}))
+        actor = Candidate('planter', 'T')
+        self.decide(0, 'a', [held])
+        decision = self.decide(.2, 'a', [held, actor], objective_event='planting', objective_target_id='planter')
+        self.assertEqual((decision.action, decision.target_id, decision.reason), ('switch', 'planter', 'confirmed_objective'))
+
+    def test_unacknowledged_local_commitment_cannot_protect_a_later_single_contact(self):
+        self.policy = ObserverPolicy(PolicyConfig(minimum_shot_seconds=0, setup_hold_seconds=0))
+        held = Candidate('a', 'CT', local_opponent_ids=frozenset({'r1', 'r2'}))
+        decision = self.policy.decide(Context(0, 'a', [held]))
+        self.assertFalse(self.policy.ack(decision, False, 0, 'a'))
+        self.assertEqual(self.policy.state.encounter_opponent_ids, ())
+        decision = self.decide(1, 'a', [replace(held, local_opponent_ids=frozenset({'r1'})),
+                                       Candidate('mid', 'CT', engagement_active=True)])
+        self.assertEqual((decision.action, decision.target_id), ('switch', 'mid'))
+
+    def test_local_fact_does_not_change_unselected_global_candidate_ranking(self):
+        current = Candidate('a', 'CT', setup_interest=.5)
+        other = Candidate('other', 'CT', local_opponent_ids=frozenset({'r1', 'r2', 'r3'}), kill_probability=.99)
+        decision = self.decide(0, 'a', [current, other])
+        self.assertEqual((decision.action, decision.target_id), ('hold', 'a'))
+
+    def test_reset_story_clears_local_commitment_without_charging_a_cut(self):
+        self.decide(0, 'a', [Candidate('a', 'CT', local_opponent_ids=frozenset({'r1', 'r2'}))])
+        self.assertTrue(self.policy.state.encounter_opponent_ids)
+        self.policy.reset_story(1, 'a')
+        self.assertEqual(self.policy.state.encounter_opponent_ids, ())
+        self.assertIsNone(self.policy.state.encounter_team)
+        self.assertEqual(self.policy.state.successful_cuts, 0)
+
+    def test_local_opponent_contract_is_validated_and_confirmed_dead_contacts_cannot_commit(self):
+        with self.assertRaises(ValueError):
+            Candidate('a', 'CT', local_opponent_ids='r1')
+        with self.assertRaises(ValueError):
+            Candidate('a', 'CT', local_opponent_ids=frozenset({'a'}))
+        with self.assertRaises(ValueError):
+            PolicyConfig(encounter_minimum_opponents=1)
+        self.decide(0, 'a', [Candidate('a', 'CT', local_opponent_ids=frozenset({'r1', 'r2'}))],
+                    dead_player_ids=frozenset({'r1', 'r2'}))
+        self.assertEqual(self.policy.state.encounter_opponent_ids, ())
+
+    def test_confirmed_deaths_resolve_old_commitment_even_when_local_telemetry_is_unknown(self):
+        self.policy = ObserverPolicy(PolicyConfig(minimum_shot_seconds=0, setup_hold_seconds=0))
+        held = Candidate('a', 'CT', local_opponent_ids=frozenset({'r1', 'r2'}))
+        self.decide(0, 'a', [held])
+        decision = self.decide(1, 'a', [replace(held, local_opponent_ids=None),
+                                       Candidate('mid', 'CT', engagement_active=True)],
+                               dead_player_ids=frozenset({'r1', 'r2'}))
+        self.assertEqual((decision.action, decision.target_id), ('switch', 'mid'))
+        self.assertEqual(self.policy.state.encounter_opponent_ids, ())
+
 
 if __name__ == '__main__':
     unittest.main()

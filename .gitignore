@@ -14,3 +14,7 @@ KeylessOBS/maps/*.geometry.json
 KeylessOBS/build/
 KeylessOBS/dist/
 *.log
+*.vpk
+*.glb
+*.gltf
+work/

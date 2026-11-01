@@ -223,6 +223,14 @@ class BroadcastObserverRuntime:
                 incoming_speed = sum(a * b for a, b in zip(enemy_motion, toward_me)) / (distance * dt)
                 approachers += incoming_speed >= approach_speed
             group = self.groups.get(sid)
+            opponents = [other for other in alive if players[other]["team"] != data["team"]]
+            local_opponents = None
+            if complete and positions[sid] is not None and all(positions[other] is not None for other in opponents):
+                # Locality is spatial, not velocity- or isolated-anchor-based.
+                # A rushing opponent remains part of this encounter after
+                # stopping, and a nearby teammate does not erase that threat.
+                local_opponents = frozenset(other for other in opponents
+                    if _distance(positions[sid], positions[other]) <= local_radius)
             candidates.append(Candidate(
                 player_id=sid, team=data["team"], direct_visibility=visibility,
                 setup_interest=min(1.0, setup), engagement_active=bool(event_active),
@@ -231,6 +239,7 @@ class BroadcastObserverRuntime:
                 last_damage_at=self.damage_times.get(sid), last_kill_at=self.kill_times.get(sid),
                 is_anchor=support_known and support_count == 0 and approachers >= 2,
                 approaching_enemy_count=approachers, supporting_teammate_count=support_count,
+                local_opponent_ids=local_opponents,
                 kill_probability=probabilities.get(sid)))
 
         objective, objective_target = None, None
@@ -293,6 +302,9 @@ class BroadcastObserverRuntime:
                      successful_dispatch_cuts=self.policy.state.successful_cuts,
                      dispatch_succeeded=success if attempted else None,
                      camera_feedback_confirmed=False,
+                     local_opponents={candidate.player_id:
+                         sorted(candidate.local_opponent_ids) if candidate.local_opponent_ids is not None else None
+                         for candidate in context.candidates},
                      alive_team_counts=context.alive_team_counts)
         self.detector.last_observer_decision = trace
         return trace

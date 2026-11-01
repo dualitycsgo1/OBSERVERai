@@ -132,7 +132,10 @@ def test_blocked_players_remain_setup_candidates_and_all_alive_are_scored_once()
 
 def test_event_supported_local_trade_can_override_minimum_shot():
     instance, payload = detector(visibility=True, settings={"minimum_shot_seconds": 5}), state()
-    payload["allplayers"]["e"] = player("CT", 150, 4)
+    # One local opponent: this exercises an ordinary trade, independently of
+    # the multi-opponent encounter commitment that intentionally protects POVs.
+    payload["allplayers"]["d"]["position"] = "900,0,0"
+    payload["allplayers"]["e"] = player("CT", 1200, 4)
     process(instance, payload, 100)
     payload["allplayers"]["a"]["state"]["round_kills"] = 1
     payload["allplayers"]["c"]["state"]["health"] = 0
@@ -299,3 +302,46 @@ def test_round_boundary_clears_old_death_confirmation_and_retains_known_roster()
     assert context.alive_team_counts is None
     assert "b" not in context.dead_player_ids
     assert instance.last_observer_decision["reason"] != "preserve_clutch"
+
+
+def test_supported_multi_opponent_encounter_survives_stopped_rush_and_remote_damage():
+    instance, payload = detector(), state()
+    payload["allplayers"].update({"e": player("CT", 5000, 4), "f": player("T", 4990, 5)})
+    for now in (100, 101.5, 103):
+        process(instance, payload, now).assert_not_called()
+    context = instance._broadcast_runtime.last_context
+    held = next(candidate for candidate in context.candidates if candidate.player_id == "a")
+    assert held.local_opponent_ids == frozenset({"c", "d"})
+    assert held.supporting_teammate_count == 1
+    assert not held.is_anchor and held.approaching_enemy_count == 0
+    payload["allplayers"]["f"]["state"]["health"] = 67
+    process(instance, payload, 103.5).assert_not_called()
+    assert instance.current_target_sid == "a"
+    assert set(instance.last_observer_decision["encounter_opponent_ids"]) == {"c", "d"}
+
+
+def test_local_opponent_facts_distinguish_unknown_from_confirmed_no_threats():
+    instance, payload = detector(), state()
+    process(instance, payload, 100)
+    adapter = instance._broadcast_runtime
+    assert next(candidate for candidate in adapter.last_context.candidates if candidate.player_id == "a").local_opponent_ids == frozenset({"c", "d"})
+    partial = copy.deepcopy(payload)
+    del partial["allplayers"]["c"]["state"]["health"]
+    process(instance, partial, 100.1)
+    assert next(candidate for candidate in adapter.last_context.candidates if candidate.player_id == "a").local_opponent_ids is None
+    # Explicitly observed deaths release spatial membership without fabricating
+    # an empty set from an omitted opponent or unknown position.
+    payload["allplayers"]["c"]["state"]["health"] = 0
+    payload["allplayers"]["d"]["state"]["health"] = 0
+    process(instance, payload, 100.2)
+    assert next(candidate for candidate in adapter.last_context.candidates if candidate.player_id == "a").local_opponent_ids == frozenset()
+
+
+def test_unknown_opponent_position_does_not_release_a_local_encounter():
+    instance, payload = detector(), state()
+    process(instance, payload, 100)
+    del payload["allplayers"]["c"]["position"]
+    process(instance, payload, 100.5).assert_not_called()
+    held = next(candidate for candidate in instance._broadcast_runtime.last_context.candidates if candidate.player_id == "a")
+    assert held.local_opponent_ids is None
+    assert set(instance.last_observer_decision["encounter_opponent_ids"]) == {"c", "d"}

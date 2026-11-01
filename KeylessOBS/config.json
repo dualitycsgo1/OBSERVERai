@@ -17,6 +17,7 @@
     "setup_switch_margin": 0.15,
     "anchor_minimum_approachers": 2,
     "clutch_minimum_opponents": 2,
+    "encounter_minimum_opponents": 2,
     "facts": {
       "setup_distance": 2000.0,
       "local_support_radius": 700.0,

@@ -48,13 +48,6 @@ except ImportError:
     LOS_AVAILABLE = False
     logging.warning("Line of Sight system not available - may allow duels through walls")
 
-# Import Enhanced Positional AI
-try:
-    from positional_observer_ai import PositionalObserverAI
-    POSITIONAL_AI_AVAILABLE = True
-except ImportError:
-    POSITIONAL_AI_AVAILABLE = False
-
 # Import Model Update System for hot reloading
 try:
     from model_updater import ModelUpdater
@@ -351,20 +344,6 @@ class CS2DuelDetector:
         self.death_switch_active_until: float = 0.0  # Timestamp until death switch is active
         self.death_switch_target: Optional[str] = None  # Who to prioritize after death
 
-        # Enhanced Positional AI Integration
-        self.positional_ai = None
-        if POSITIONAL_AI_AVAILABLE:
-            try:
-                self.positional_ai = PositionalObserverAI()
-                ai_info = self.positional_ai.get_model_info()
-                if ai_info['ready']:
-                    logging.info(f"✅ Positional AI: {ai_info['models_loaded']} models ready")
-                else:
-                    self.positional_ai = None
-            except (Exception, KeyboardInterrupt) as e:
-                self.positional_ai = None
-                logging.info("⚠️ Positional AI unavailable - using fallback")
-
         # Advanced Kill Prediction System - ULTRA AGGRESSIVE for 2-3 second early prediction
         self.kill_prediction_active = True  # Enable predictive switching
         self.prediction_window = 5.0  # MASSIVELY INCREASED - predict 5 seconds ahead for approach detection
@@ -498,7 +477,6 @@ class CS2DuelDetector:
     def _log_system_summary(self):
         """Log a clean system status summary"""
         systems = []
-        if self.positional_ai: systems.append("Positional AI")
         if self.ai_analyzer and self.ai_analyzer.models_loaded: systems.append("Validated kill model")
         if self.geometry_manager: systems.append("Line of Sight")
         if self.kill_analysis_data: systems.append("Kill Analysis")
@@ -2679,14 +2657,6 @@ class CS2DuelDetector:
             if visible is True:
                 score += 0.10
 
-        # 6. Weapon suitability and kill prediction (5% weight)
-        if self.positional_ai:
-            try:
-                ai_confidence = self._get_positional_ai_confidence(sid1, sid2, p1, p2, distance)
-                score += 0.05 * ai_confidence
-            except:
-                pass
-
         return min(score, 1.0)
 
     def _calculate_duel_isolation(self, sid1: str, sid2: str, allplayers: Dict[str, Any]) -> float:
@@ -2752,24 +2722,6 @@ class CS2DuelDetector:
             return 0.3  # Poor - getting chaotic
         else:
             return 0.1  # Very poor - multi-player chaos
-
-    def _get_positional_ai_confidence(self, sid1: str, sid2: str, p1: Dict[str, Any], p2: Dict[str, Any], distance: float) -> float:
-        """Get AI confidence for this potential duel"""
-        try:
-            # Simplified feature extraction for pre-engagement
-            features = {
-                'distance': distance,
-                'p1_health': p1.get('state', {}).get('health', 100),
-                'p2_health': p2.get('state', {}).get('health', 100),
-                'p1_armor': p1.get('state', {}).get('armor', 0),
-                'p2_armor': p2.get('state', {}).get('armor', 0),
-            }
-
-            # Get AI prediction
-            prediction = self.positional_ai.predict_engagement_quality(features)
-            return prediction
-        except:
-            return 0.5  # Neutral if AI fails
 
     def _calculate_approach_score(self, sid1: str, sid2: str, now: datetime) -> float:
         """Calculate how much the players are approaching each other"""

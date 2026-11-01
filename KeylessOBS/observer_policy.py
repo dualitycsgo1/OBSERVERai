@@ -32,6 +32,9 @@ class Candidate:
     approaching_enemy_count: int = 0
     supporting_teammate_count: int = 0
     kill_probability: Optional[float] = None
+    # Spatial contact facts, independent of current LOS, firing or isolation.
+    # None is unknown telemetry; an empty set confirms no local opponents.
+    local_opponent_ids: Optional[FrozenSet[str]] = None
 
     def __post_init__(self):
         if not self.player_id or not self.team:
@@ -47,6 +50,13 @@ class Candidate:
         for value in (self.last_damage_at, self.last_kill_at):
             if value is not None and not math.isfinite(value):
                 raise ValueError("Event times must be finite")
+        if self.local_opponent_ids is not None:
+            if isinstance(self.local_opponent_ids, str):
+                raise ValueError("local_opponent_ids must be a collection of identities")
+            identities = frozenset(self.local_opponent_ids)
+            if any(not isinstance(identity, str) or not identity or identity == self.player_id for identity in identities):
+                raise ValueError("Local opponents require distinct nonempty player identities")
+            object.__setattr__(self, "local_opponent_ids", identities)
 
 
 @dataclass(frozen=True)
@@ -90,6 +100,7 @@ class PolicyConfig:
     setup_switch_margin: float = 0.15
     anchor_minimum_approachers: int = 2
     clutch_minimum_opponents: int = 2
+    encounter_minimum_opponents: int = 2
 
     def __post_init__(self):
         for name in ("minimum_shot_seconds", "setup_hold_seconds", "engagement_grace_seconds",
@@ -100,7 +111,7 @@ class PolicyConfig:
                 raise ValueError(f"{name} must be finite and nonnegative")
         if self.cut_window_seconds == 0 or self.max_cuts_per_window < 0:
             raise ValueError("Cut window must be positive and budget nonnegative")
-        if self.anchor_minimum_approachers < 1 or self.clutch_minimum_opponents < 1:
+        if self.anchor_minimum_approachers < 1 or self.clutch_minimum_opponents < 1 or self.encounter_minimum_opponents < 2:
             raise ValueError("Encounter thresholds must be positive")
 
 
@@ -117,6 +128,8 @@ class PolicyState:
     cut_times: Tuple[float, ...] = ()
     successful_cuts: int = 0
     acknowledged_at: Optional[float] = None
+    encounter_opponent_ids: Tuple[str, ...] = ()
+    encounter_team: Optional[str] = None
 
 
 @dataclass(frozen=True)
@@ -132,6 +145,8 @@ class Decision:
     trade_group_id: Optional[str] = None
     conflict_at: Optional[float] = None
     kill_at: Optional[float] = None
+    encounter_opponent_ids: Tuple[str, ...] = ()
+    encounter_team: Optional[str] = None
 
 
 class ObserverPolicy:
@@ -159,7 +174,8 @@ class ObserverPolicy:
             held_since=self.state.held_since if same_view else now,
             view_kind=self.state.view_kind if same_view else "pov" if held_target is not None else "unknown",
             mode="overview", mode_since=None, trade_group_id=None,
-            last_conflict_at=None, last_kill_at=None, acknowledged_at=now)
+            last_conflict_at=None, last_kill_at=None, acknowledged_at=now,
+            encounter_opponent_ids=(), encounter_team=None)
         self._pending = None
 
     @staticmethod
@@ -200,6 +216,39 @@ class ObserverPolicy:
             -(candidate.kill_probability if candidate.kill_probability is not None else -1),
             candidate.player_id)) if candidates else None
 
+    @staticmethod
+    def _local_contacts(candidate, context):
+        if candidate.local_opponent_ids is None:
+            return None
+        dead = context.dead_player_ids | {item.player_id for item in context.candidates if not item.alive}
+        return candidate.local_opponent_ids - dead
+
+    def _remembered_contacts(self, context):
+        if self.state.held_target != context.held_target:
+            return set()
+        dead = context.dead_player_ids | {item.player_id for item in context.candidates if not item.alive}
+        return set(self.state.encounter_opponent_ids) - dead
+
+    def _encounter_fields(self, context, action, target, candidate):
+        """Acknowledge contact commitment only for the selected, attained view."""
+        same_view = target == context.held_target == self.state.held_target
+        remembered = self._remembered_contacts(context) if same_view else set()
+        if action == "overview":
+            return (), None
+        if candidate is None and target == context.held_target:
+            candidate = next((item for item in context.candidates if item.player_id == target), None)
+        if candidate is None:
+            return tuple(sorted(remembered)), self.state.encounter_team if remembered else None
+        local = self._local_contacts(candidate, context)
+        if local is None:
+            return tuple(sorted(remembered)), self.state.encounter_team if remembered else None
+        if len(local) >= self.config.encounter_minimum_opponents:
+            return tuple(sorted(remembered | local if remembered & local else local)), candidate.team
+        if remembered & local:
+            return tuple(sorted(remembered | local)), candidate.team
+        # Known empty/no-overlap contacts resolve the former local story.
+        return (), None
+
     def _make(self, context, action, target, mode, reason, urgent=False, candidate=None):
         same_observed_view = self.state.held_target == context.held_target
         conflict_at = self.state.last_conflict_at if same_observed_view else None
@@ -217,9 +266,13 @@ class ObserverPolicy:
             action = "hold"
         if mode == "overview" and reason.startswith("round_overview"):
             group, conflict_at, kill_at = None, None, None
+        encounter_ids, encounter_team = self._encounter_fields(context, action, target, candidate)
+        if mode == "overview" and reason.startswith("round_overview"):
+            encounter_ids, encounter_team = (), None
         self._sequence += 1
         decision = Decision(self._sequence, action, target, mode, reason, context.now,
-                            context.held_target, urgent, group, conflict_at, kill_at)
+                            context.held_target, urgent, group, conflict_at, kill_at,
+                            encounter_ids, encounter_team)
         self._pending = decision
         return decision
 
@@ -279,17 +332,35 @@ class ObserverPolicy:
                   and self._interesting(item, context)]
 
         if held_dead:
-            follow = self._best(traded, context) or self._best([item for item in alive if self._interesting(item, context)], context)
+            remembered = self._remembered_contacts(context)
+            linked = [item for item in alive if item.player_id in remembered or
+                      (item.team == self.state.encounter_team and item.local_opponent_ids is not None
+                       and item.local_opponent_ids & remembered)]
+            follow = (self._best(linked, context) or self._best(traded, context)
+                      or self._best([item for item in alive if self._interesting(item, context)], context))
             # A confirmed death requires leaving the dead view; an alive fallback
             # is a recovery decision, never claimed to predict the next kill.
             follow = follow or self._best(alive, context)
-            return (self._cut(context, follow, "trade" if traded else "setup", "confirmed_death", urgent=True)
+            return (self._cut(context, follow, "trade" if linked or traded else "setup", "confirmed_death", urgent=True)
                     if follow else self._overview(context, "dead_view_no_target", urgent=True))
 
         if held and held.engagement_active:
             return self._hold(context, "engagement", "preserve_engagement", held)
         if held and self._role(held, context) == 2:
             return self._hold(context, "setup", "preserve_clutch", held)
+
+        # Commit to the already selected local multi-player encounter, even
+        # before shots or while reloading. Nearby teammate support does not make
+        # a three-player rush uninteresting. Other players' damage/trade activity
+        # cannot override this story while one original opponent remains local.
+        if held:
+            local = self._local_contacts(held, context)
+            remembered = self._remembered_contacts(context)
+            if local is None and remembered:
+                return self._hold(context, self.state.mode, "local_encounter_telemetry_gap", held)
+            if local is not None and (len(local) >= self.config.encounter_minimum_opponents or remembered & local):
+                mode = self.state.mode if same_view and self.state.mode in {"engagement", "trade"} else "setup"
+                return self._hold(context, mode, "preserve_local_encounter", held)
 
         trade_alternatives = [item for item in traded if item.player_id != context.held_target]
         if self._recent(conflict, context.now, self.config.trade_window_seconds) and trade_alternatives:
@@ -360,6 +431,7 @@ class ObserverPolicy:
             mode=decision.mode, mode_since=now if decision.mode != self.state.mode or self.state.mode_since is None else self.state.mode_since,
             trade_group_id=decision.trade_group_id, last_conflict_at=decision.conflict_at,
             last_kill_at=decision.kill_at, cut_times=cut_times,
-            successful_cuts=self.state.successful_cuts + int(is_cut), acknowledged_at=now)
+            successful_cuts=self.state.successful_cuts + int(is_cut), acknowledged_at=now,
+            encounter_opponent_ids=decision.encounter_opponent_ids, encounter_team=decision.encounter_team)
         self._pending = None
         return True

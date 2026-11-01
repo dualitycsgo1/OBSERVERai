@@ -11,12 +11,13 @@ inference. See [the technology audit](docs/TECHNOLOGY_AUDIT.md) for evidence,
 changes, measurements, and remaining limitations.
 
 The two-demo test gives 48.8% static next-killer ranking versus 28.7% for a
-nearest-enemy baseline. With causal event reconstruction, sampled camera replay
-gives 22.82% for the legacy policy and
-26.01% for the first VOD-informed policy.
-These are offline held-target measurements, not rendered POV capture. Both demos
-include opening knife intervals; the audit reports a separate diagnostic without
-them. This revision remains a draft for review.
+nearest-enemy baseline. The local-encounter revision increases sampled camera
+next-killer coverage from 26.01% to 29.09%, and killer-or-victim inclusion from
+52.12% to 55.20%, with fewer simulated cuts. Dust2's duel metric falls slightly
+while Cache improves. These are offline held-target measurements on the same two
+demos, not rendered POV capture or independent proof of professional quality.
+The audit discloses opening knife intervals and all previous source measurements.
+This revision remains a draft for review.
 
 ## Run from source
 
@@ -69,6 +70,17 @@ The observer never downloads geometry while a match runs.
 
 See [collision setup and API details](KeylessOBS/maps/COLLISION_GEOMETRY.md).
 
+Installed map VPKs can be inspected without modifying the game files:
+
+```powershell
+python KeylessOBS/inspect_map_vpk.py --cli path/to/Source2Viewer-CLI.exe --vpk "path/to/csgo/maps/de_dust2.vpk" --output work/dust2-inspection
+```
+
+This exports and validates NAV/physics inventories with hashes, collision tags,
+materials and coordinate-transform metadata. It does not replace the runtime
+mesh or claim that navigation polygons establish visibility. See
+[the actual Dust2 inspection and limits](docs/LOCAL_ENCOUNTERS_AND_VPK.md).
+
 ## Camera policy and professional VOD review
 
 The default `observer.camera_policy="broadcast"` separates setup, engagement,
@@ -83,6 +95,13 @@ available in the legacy path. The model breaks ties between relevant candidates.
 Quiet scores do not automatically rotate the camera. Missing health cannot
 establish a death, and failed input calls do not update the target/cut budget.
 The broadcast forecast abstains while the known roster or health is incomplete.
+The selected local encounter is retained when multiple opponents are nearby;
+an unrelated damage event cannot immediately steal that view. Confirmed death
+still follows a local participant. See [the tunnel-rush correction](docs/LOCAL_ENCOUNTERS_AND_VPK.md).
+
+The obsolete separate Positional AI runtime hook has been removed. Spatial
+features remain in the shared validated future-kill model, with collision
+visibility supplied by the map service.
 
 Set `observer.camera_policy="legacy"` for the earlier duel-based selection.
 `broadcast_policy` contains configurable holds, cut budget and fact thresholds;
