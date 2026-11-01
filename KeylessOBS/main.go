@@ -1,405 +1,398 @@
-﻿package mainpackage main
-
-
-
-import (import (
-
-	"encoding/json""encoding/json"
-
-	"fmt""fmt"
-
-	"log""log"
-
-	"os""os"
-
-	"path/filepath""path/filepath"
-
-
-
-	dem "github.com/markus-wa/demoinfocs-golang/v5/pkg/demoinfocs"dem "github.com/markus-wa/demoinfocs-golang/v5/pkg/demoinfocs"
-
-	common "github.com/markus-wa/demoinfocs-golang/v5/pkg/demoinfocs/common"common "github.com/markus-wa/demoinfocs-golang/v5/pkg/demoinfocs/common"
-
-	events "github.com/markus-wa/demoinfocs-golang/v5/pkg/demoinfocs/events"events "github.com/markus-wa/demoinfocs-golang/v5/pkg/demoinfocs/events"
-
-))
-
-
-
-type Position struct {type Position struct {
-
-	X float64 `json:"x"`X float64 `json:"x"`
-
-	Y float64 `json:"y"`Y float64 `json:"y"`
-
-	Z float64 `json:"z"`Z float64 `json:"z"`
-
-}}
-
-
-
-type KillEvent struct {type KillEvent struct {
-
-	Tick            int64    `json:"tick"`Tick            int64    `json:"tick"`
-
-	AttackerName    string   `json:"attacker_name"`AttackerName    string   `json:"attacker_name"`
-
-	AttackerSteamID string   `json:"attacker_steam_id"`AttackerSteamID string   `json:"attacker_steam_id"`
-
-	AttackerPos     Position `json:"attacker_pos"`AttackerPos     Position `json:"attacker_pos"`
-
-	VictimName      string   `json:"victim_name"`VictimName      string   `json:"victim_name"`
-
-	VictimSteamID   string   `json:"victim_steam_id"`VictimSteamID   string   `json:"victim_steam_id"`
-
-	VictimPos       Position `json:"victim_pos"`VictimPos       Position `json:"victim_pos"`
-
-	Weapon          string   `json:"weapon"`Weapon          string   `json:"weapon"`
-
-	IsHeadshot      bool     `json:"is_headshot"`IsHeadshot      bool     `json:"is_headshot"`
-
-	AttackerTeam    string   `json:"attacker_team"`AttackerTeam    string   `json:"attacker_team"`
-
-	VictimTeam      string   `json:"victim_team"`VictimTeam      string   `json:"victim_team"`
-
-	MapName         string   `json:"map_name"`MapName         string   `json:"map_name"`
-
-	RoundNumber     int      `json:"round_number"`RoundNumber     int      `json:"round_number"`
-
-	Distance        float64  `json:"distance"`Distance        float64  `json:"distance"`
-
-	AngleDiff       float64  `json:"angle_diff"`AngleDiff       float64  `json:"angle_diff"`
-
-	AttackerViewX   float64  `json:"attacker_view_x"`AttackerViewX   float64  `json:"attacker_view_x"`
-
-	AttackerViewY   float64  `json:"attacker_view_y"`AttackerViewY   float64  `json:"attacker_view_y"`
-
-	VictimViewX     float64  `json:"victim_view_x"`VictimViewX     float64  `json:"victim_view_x"`
-
-	VictimViewY     float64  `json:"victim_view_y"`VictimViewY     float64  `json:"victim_view_y"`
-
-	DemoFile        string   `json:"demo_file"`DemoFile        string   `json:"demo_file"`
-
-}}
-
-
-
-type DemoResult struct {type DemoResult struct {
-
-	DemoFile  string      `json:"demo_file"`DemoFile  string      `json:"demo_file"`
-
-	MapName   string      `json:"map_name"`MapName   string      `json:"map_name"`
-
-	Kills     []KillEvent `json:"kills"`Kills     []KillEvent `json:"kills"`
-
-	Error     string      `json:"error,omitempty"`Error     string      `json:"error,omitempty"`
-
-	Success   bool        `json:"success"`Success   bool        `json:"success"`
-
-	KillCount int         `json:"kill_count"`KillCount int         `json:"kill_count"`
-
-}}
-
-
-
-func teamToString(team common.Team) string {func teamToString(team common.Team) string {
-
-	switch team {switch team {
-
-	case common.TeamTerrorists:case common.TeamTerrorists:
-
-		return "T"return "T"
-
-	case common.TeamCounterTerrorists:case common.TeamCounterTerrorists:
-
-		return "CT"return "CT"
-
-	default:default:
-
-		return "UNKNOWN"return "UNKNOWN"
-
-	}}
-
-}}
-
-
-
-func calculateDistance(pos1, pos2 Position) float64 {func calculateDistance(pos1, pos2 Position) float64 {
-
-	dx := pos1.X - pos2.Xdx := pos1.X - pos2.X
-
-	dy := pos1.Y - pos2.Ydy := pos1.Y - pos2.Y
-
-	dz := pos1.Z - pos2.Zdz := pos1.Z - pos2.Z
-
-	return dx*dx + dy*dy + dz*dzreturn dx*dx + dy*dy + dz*dz
-
-}}
-
-
-
-func calculateAngleDifference(viewAngle1, viewAngle2 float32) float64 {func calculateAngleDifference(viewAngle1, viewAngle2 float32) float64 {
-
-	diff := float64(viewAngle1 - viewAngle2)diff := float64(viewAngle1 - viewAngle2)
-
-	if diff > 180 {if diff > 180 {
-
-		diff -= 360diff -= 360
-
-	} else if diff < -180 {} else if diff < -180 {
-
-		diff += 360diff += 360
-
-	}}
-
-	if diff < 0 {if diff < 0 {
-
-		diff = -diffdiff = -diff
-
-	}}
-
-	return diffreturn diff
-
-}}
-
-
-
-func parseDemoFile(filePath string) *DemoResult {func parseDemoFile(filePath string) *DemoResult {
-
-	result := &DemoResult{result := &DemoResult{
-
-		DemoFile: filepath.Base(filePath),DemoFile: filepath.Base(filePath),
-
-		Success:  false,Success:  false,
-
-		Kills:    []KillEvent{},Kills:    []KillEvent{},
-
-	}}
-
-
-
-	f, err := os.Open(filePath)f, err := os.Open(filePath)
-
-	if err != nil {if err != nil {
-
-		result.Error = fmt.Sprintf("Failed to open demo file: %v", err)result.Error = fmt.Sprintf("Failed to open demo file: %v", err)
-
-		return resultreturn result
-
-	}}
-
-	defer f.Close()defer f.Close()
-
-
-
-	p := dem.NewParser(f)p := dem.NewParser(f)
-
-	defer p.Close()defer p.Close()
-
-
-
-	var currentRound int = 1var currentRound int = 1
-
-	var mapName string = "unknown"var mapName string
-
-
-
-	// Start parsing to initialize game state	// Parse header - use gamestate after parsing begins
-
-	p.RegisterEventHandler(func(e events.MatchStart) {	// For now, set map name as unknown until we can extract it from events
-
-		// Try to get map name from game state when match starts	mapName = "unknown"
-
-		gs := p.GameState()	result.MapName = mapNamep.RegisterEventHandler(func(e events.RoundStart) {
-
-		if gs != nil {currentRound++
-
-			mapName = "match_started_no_convars" // Default fallback})
-
-		}
-
-	})p.RegisterEventHandler(func(e events.Kill) {
-
-if e.Killer == nil || e.Victim == nil {
-
-	p.RegisterEventHandler(func(e events.RoundStart) {return
-
-		currentRound++}
-
-	})
-
-killerPos := e.Killer.Position()
-
-	p.RegisterEventHandler(func(e events.Kill) {victimPos := e.Victim.Position()
-
-		if e.Killer == nil || e.Victim == nil {
-
-			returndistance := calculateDistance(
-
-		}Position{X: float64(killerPos.X), Y: float64(killerPos.Y), Z: float64(killerPos.Z)},
-
-Position{X: float64(victimPos.X), Y: float64(victimPos.Y), Z: float64(victimPos.Z)},
-
-		killerPos := e.Killer.Position())
-
-		victimPos := e.Victim.Position()
-
-angleDiff := calculateAngleDifference(e.Killer.ViewDirectionX(), e.Victim.ViewDirectionX())
-
-		distance := calculateDistance(
-
-			Position{X: float64(killerPos.X), Y: float64(killerPos.Y), Z: float64(killerPos.Z)},killEvent := KillEvent{
-
-			Position{X: float64(victimPos.X), Y: float64(victimPos.Y), Z: float64(victimPos.Z)},Tick:            int64(p.GameState().IngameTick()),
-
-		)AttackerName:    e.Killer.Name,
-
-AttackerSteamID: fmt.Sprintf("%d", e.Killer.SteamID64),
-
-		angleDiff := calculateAngleDifference(e.Killer.ViewDirectionX(), e.Victim.ViewDirectionX())AttackerPos: Position{
-
-X: float64(killerPos.X),
-
-		killEvent := KillEvent{Y: float64(killerPos.Y),
-
-			Tick:            int64(p.GameState().IngameTick()),Z: float64(killerPos.Z),
-
-			AttackerName:    e.Killer.Name,},
-
-			AttackerSteamID: fmt.Sprintf("%d", e.Killer.SteamID64),VictimName:      e.Victim.Name,
-
-			AttackerPos: Position{VictimSteamID:   fmt.Sprintf("%d", e.Victim.SteamID64),
-
-				X: float64(killerPos.X),VictimPos: Position{
-
-				Y: float64(killerPos.Y),X: float64(victimPos.X),
-
-				Z: float64(killerPos.Z),Y: float64(victimPos.Y),
-
-			},Z: float64(victimPos.Z),
-
-			VictimName:      e.Victim.Name,},
-
-			VictimSteamID:   fmt.Sprintf("%d", e.Victim.SteamID64),Weapon:        e.Weapon.String(),
-
-			VictimPos: Position{IsHeadshot:    e.IsHeadshot,
-
-				X: float64(victimPos.X),AttackerTeam:  teamToString(e.Killer.Team),
-
-				Y: float64(victimPos.Y),VictimTeam:    teamToString(e.Victim.Team),
-
-				Z: float64(victimPos.Z),MapName:       mapName,
-
-			},RoundNumber:   currentRound,
-
-			Weapon:        e.Weapon.String(),Distance:      distance,
-
-			IsHeadshot:    e.IsHeadshot,AngleDiff:     angleDiff,
-
-			AttackerTeam:  teamToString(e.Killer.Team),AttackerViewX: float64(e.Killer.ViewDirectionX()),
-
-			VictimTeam:    teamToString(e.Victim.Team),AttackerViewY: float64(e.Killer.ViewDirectionY()),
-
-			MapName:       mapName,VictimViewX:   float64(e.Victim.ViewDirectionX()),
-
-			RoundNumber:   currentRound,VictimViewY:   float64(e.Victim.ViewDirectionY()),
-
-			Distance:      distance,DemoFile:      result.DemoFile,
-
-			AngleDiff:     angleDiff,}
-
-			AttackerViewX: float64(e.Killer.ViewDirectionX()),
-
-			AttackerViewY: float64(e.Killer.ViewDirectionY()),result.Kills = append(result.Kills, killEvent)
-
-			VictimViewX:   float64(e.Victim.ViewDirectionX()),})
-
-			VictimViewY:   float64(e.Victim.ViewDirectionY()),
-
-			DemoFile:      result.DemoFile,err = p.ParseToEnd()
-
-		}if err != nil {
-
-result.Error = fmt.Sprintf("Error parsing demo: %v", err)
-
-		result.Kills = append(result.Kills, killEvent)return result
-
-	})}
-
-
-
-	err = p.ParseToEnd()result.Success = true
-
-	if err != nil {result.KillCount = len(result.Kills)
-
-		result.Error = fmt.Sprintf("Error parsing demo: %v", err)return result
-
-		return result}
-
+// Demo parser and causal next-kill training snapshot exporter.
+package main
+
+import (
+	"context"
+	"crypto/sha256"
+	"encoding/hex"
+	"encoding/json"
+	"fmt"
+	"io"
+	"math"
+	"os"
+	"path/filepath"
+	"strconv"
+	"strings"
+
+	dem "github.com/markus-wa/demoinfocs-golang/v6/pkg/demoinfocs"
+	"github.com/markus-wa/demoinfocs-golang/v6/pkg/demoinfocs/common"
+	"github.com/markus-wa/demoinfocs-golang/v6/pkg/demoinfocs/events"
+	"github.com/markus-wa/demoinfocs-golang/v6/pkg/demoinfocs/msg"
+)
+
+const horizonSeconds = 2.0
+const sampleIntervalSeconds = 0.5
+
+type Position struct {
+	X float64 `json:"x"`
+	Y float64 `json:"y"`
+	Z float64 `json:"z"`
+}
+
+type KillEvent struct {
+	Tick            int      `json:"tick"`
+	Time            float64  `json:"time"`
+	AttackerName    string   `json:"attacker_name"`
+	AttackerSteamID string   `json:"attacker_steam_id"`
+	AttackerPos     Position `json:"attacker_pos"`
+	VictimName      string   `json:"victim_name"`
+	VictimSteamID   string   `json:"victim_steam_id"`
+	VictimPos       Position `json:"victim_pos"`
+	Weapon          string   `json:"weapon"`
+	IsHeadshot      bool     `json:"is_headshot"`
+	Wallbang        bool     `json:"wallbang"`
+	AttackerTeam    string   `json:"attacker_team"`
+	VictimTeam      string   `json:"victim_team"`
+	MapName         string   `json:"map_name"`
+	RoundNumber     int      `json:"round_number"`
+	Distance        float64  `json:"distance"`
+	AngleDiff       float64  `json:"angle_diff"`
+	AttackerViewX   float64  `json:"attacker_view_x"`
+	AttackerViewY   float64  `json:"attacker_view_y"`
+	VictimViewX     float64  `json:"victim_view_x"`
+	VictimViewY     float64  `json:"victim_view_y"`
+	DemoFile        string   `json:"demo_file"`
+}
+
+type PlayerState struct {
+	Health int `json:"health"`
+	Armor  int `json:"armor"`
+}
+
+type WeaponState struct {
+	Name     string `json:"name"`
+	State    string `json:"state"`
+	AmmoClip int    `json:"ammo_clip"`
+}
+
+type PlayerSnapshot struct {
+	Name     string                 `json:"name"`
+	Team     string                 `json:"team"`
+	Position string                 `json:"position"`
+	Forward  string                 `json:"forward"`
+	State    PlayerState            `json:"state"`
+	Weapons  map[string]WeaponState `json:"weapons"`
+}
+
+type MapSnapshot struct {
+	Name  string `json:"name"`
+	Round int    `json:"round"`
+}
+
+type GameSnapshot struct {
+	AllPlayers map[string]PlayerSnapshot `json:"allplayers"`
+	Map        MapSnapshot               `json:"map"`
+	Round      map[string]string         `json:"round"`
+	Provider   map[string]float64        `json:"provider"`
+}
+
+type PredictionSample struct {
+	DemoID         string       `json:"demo_id"`
+	SampleTick     int          `json:"sample_tick"`
+	SampleTime     float64      `json:"sample_time"`
+	HorizonSeconds float64      `json:"horizon_seconds"`
+	GameState      GameSnapshot `json:"gamestate"`
+	PlayerID       string       `json:"player_id"`
+	Label          int          `json:"label"`
+	Target         string       `json:"target"`
+	SnapshotPhase  string       `json:"snapshot_phase"`
+}
+
+type pendingSnapshot struct {
+	Tick  int
+	Time  float64
+	Round int
+	State GameSnapshot
+}
+
+type DemoResult struct {
+	DemoFile          string                 `json:"demo_file"`
+	DemoID            string                 `json:"demo_id"`
+	MapName           string                 `json:"map_name"`
+	ServerName        string                 `json:"server_name,omitempty"`
+	PatchVersion      *int32                 `json:"patch_version,omitempty"`
+	BuildNum          *int32                 `json:"build_num,omitempty"`
+	DemoVersionName   string                 `json:"demo_version_name,omitempty"`
+	DemoType          string                 `json:"demo_type"`
+	Kills             []KillEvent            `json:"kills"`
+	PredictionSamples []PredictionSample     `json:"prediction_samples"`
+	DataQuality       map[string]interface{} `json:"data_quality"`
+	Error             string                 `json:"error,omitempty"`
+	Success           bool                   `json:"success"`
+	KillCount         int                    `json:"kill_count"`
+}
+
+func teamToString(team common.Team) string {
+	switch team {
+	case common.TeamTerrorists:
+		return "T"
+	case common.TeamCounterTerrorists:
+		return "CT"
+	default:
+		return "UNKNOWN"
 	}
+}
+
+func calculateDistance(a, b Position) float64 {
+	dx, dy, dz := a.X-b.X, a.Y-b.Y, a.Z-b.Z
+	return math.Sqrt(dx*dx + dy*dy + dz*dz)
+}
+
+func aimYawError(attacker, target Position, yaw float64) float64 {
+	targetYaw := math.Atan2(target.Y-attacker.Y, target.X-attacker.X) * 180 / math.Pi
+	return math.Abs(math.Mod(targetYaw-yaw+540, 360) - 180)
+}
+
+func forwardVector(yawDegrees, pitchDegrees float64) string {
+	yaw, pitch := yawDegrees*math.Pi/180, pitchDegrees*math.Pi/180
+	return fmt.Sprintf("%.8f, %.8f, %.8f", math.Cos(pitch)*math.Cos(yaw), math.Cos(pitch)*math.Sin(yaw), -math.Sin(pitch))
+}
+
+func weaponName(name string) string {
+	clean := strings.ToLower(strings.NewReplacer("-", "", " ", "", "_", "").Replace(name))
+	aliases := map[string]string{
+		"usps": "usp_silencer", "m4a1": "m4a1_silencer", "m4a1s": "m4a1_silencer",
+		"m4a4": "m4a1", "sg553": "sg556", "deserteagle": "deagle", "glock18": "glock",
+		"dualberettas": "elite", "p2000": "hkp2000", "ppbizon": "bizon",
+		"r8revolver": "revolver", "cz75auto": "cz75a", "decoygrenade": "decoy",
+		"incendiarygrenade": "incgrenade", "zeusx27": "taser",
+	}
+	if alias, ok := aliases[clean]; ok {
+		clean = alias
+	}
+	return "weapon_" + clean
+}
+
+// Labels are derived only after the entire horizon has been observed. Death events
+// at/before the snapshot tick are excluded, including events in its own frame.
+func labelSnapshot(snapshot pendingSnapshot, kills []KillEvent, demoID string) []PredictionSample {
+	samples := make([]PredictionSample, 0, len(snapshot.State.AllPlayers))
+	for playerID := range snapshot.State.AllPlayers {
+		label := 0
+		for _, kill := range kills {
+			if kill.RoundNumber == snapshot.Round && kill.Tick > snapshot.Tick &&
+				kill.Time > snapshot.Time && kill.Time <= snapshot.Time+horizonSeconds &&
+				kill.AttackerSteamID == playerID && kill.AttackerTeam != kill.VictimTeam {
+				label = 1
+				break
+			}
+		}
+		samples = append(samples, PredictionSample{
+			DemoID: demoID, SampleTick: snapshot.Tick, SampleTime: snapshot.Time, HorizonSeconds: horizonSeconds,
+			GameState: snapshot.State, PlayerID: playerID, Label: label,
+			Target: "kill_within_horizon", SnapshotPhase: "pre_event",
+		})
+	}
+	return samples
+}
+
+func matureSnapshots(pending []pendingSnapshot, kills []KillEvent, demoID string, now float64) ([]PredictionSample, []pendingSnapshot) {
+	samples := []PredictionSample{}
+	remaining := []pendingSnapshot{}
+	for _, snapshot := range pending {
+		if now >= snapshot.Time+horizonSeconds {
+			samples = append(samples, labelSnapshot(snapshot, kills, demoID)...)
+		} else {
+			remaining = append(remaining, snapshot)
+		}
+	}
+	return samples, remaining
+}
+
+func parseDemoFile(filePath string) (result *DemoResult) {
+	result = &DemoResult{
+		DemoFile: filepath.Base(filePath), DemoType: "CS2",
+		Kills: []KillEvent{}, PredictionSamples: []PredictionSample{},
+		DataQuality: map[string]interface{}{
+			"sample_interval_seconds": sampleIntervalSeconds, "horizon_seconds": horizonSeconds,
+			"snapshot_phase": "pre_event", "partial_horizons": "discarded",
+			"positions": "demo_player_feet", "angles": "demo_view_angles",
+			"timestamp_basis": "demo_elapsed_seconds", "parser_version": "demoinfocs/v6.0.0-rc.1",
+		},
+	}
+	defer func() {
+		if recovered := recover(); recovered != nil {
+			result.Success = false
+			result.Error = fmt.Sprintf("Parser panic: %v", recovered)
+			result.PredictionSamples = []PredictionSample{}
+		}
+	}()
+	file, err := os.Open(filePath)
+	if err != nil {
+		result.Error = fmt.Sprintf("Open demo: %v", err)
+		return result
+	}
+	defer file.Close()
+	hasher := sha256.New()
+	if _, err = io.Copy(hasher, file); err != nil {
+		result.Error = fmt.Sprintf("Hash demo: %v", err)
+		return result
+	}
+	result.DemoID = hex.EncodeToString(hasher.Sum(nil))
+	if _, err = file.Seek(0, io.SeekStart); err != nil {
+		result.Error = err.Error()
+		return result
+	}
+	parser := dem.NewParser(file)
+	defer parser.Close()
+	// Source 2 headers are exposed through net-message handlers.
+	parser.RegisterNetMessageHandler(func(header *msg.CDemoFileHeader) {
+		result.MapName = header.GetMapName()
+		result.ServerName = header.GetServerName()
+		result.PatchVersion = header.PatchVersion
+		result.BuildNum = header.BuildNum
+		result.DemoVersionName = header.GetDemoVersionName()
+		if header.PatchVersion != nil {
+			result.DataQuality["patch_version"] = *header.PatchVersion
+		}
+		if header.BuildNum != nil {
+			result.DataQuality["build_num"] = *header.BuildNum
+		}
+		if result.DemoVersionName != "" {
+			result.DataQuality["demo_version_name"] = result.DemoVersionName
+		}
+	})
+	roundLive := false
+	currentRound := 1
+	pending := []pendingSnapshot{}
+	lastSampleTime := math.Inf(-1)
+	discarded := 0
+
+	// Only complete horizons wholly inside one live round are retained.
+	mature := func(now float64) {
+		samples, remaining := matureSnapshots(pending, result.Kills, result.DemoID, now)
+		result.PredictionSamples = append(result.PredictionSamples, samples...)
+		pending = remaining
+	}
+	startLiveRound := func() {
+		if roundLive {
+			return
+		}
+		roundLive = true
+		currentRound = parser.GameState().TotalRoundsPlayed() + 1
+		lastSampleTime = math.Inf(-1)
+	}
+	parser.RegisterEventHandler(func(event events.RoundFreezetimeEnd) {
+		startLiveRound()
+	})
+	parser.RegisterEventHandler(func(event events.RoundFreezetimeChanged) {
+		// Source 2's mimicked events use this state transition rather than
+		// always delivering the legacy RoundFreezetimeEnd event.
+		if event.OldIsFreezetime && !event.NewIsFreezetime {
+			startLiveRound()
+		} else if event.NewIsFreezetime {
+			discarded += len(pending)
+			pending = nil
+			roundLive = false
+		}
+	})
+	parser.RegisterEventHandler(func(event events.RoundEnd) {
+		mature(parser.CurrentTime().Seconds())
+		discarded += len(pending)
+		pending = nil
+		roundLive = false
+	})
+	parser.RegisterEventHandler(func(event events.RoundStart) {
+		discarded += len(pending)
+		pending = nil
+		roundLive = false
+		currentRound = parser.GameState().TotalRoundsPlayed() + 1
+	})
+	parser.RegisterEventHandler(func(event events.Kill) {
+		if event.Killer == nil || event.Victim == nil || event.Killer == event.Victim {
+			return
+		}
+		killer, victim := event.Killer, event.Victim
+		kp, vp := killer.Position(), victim.Position()
+		attackerPos := Position{kp.X, kp.Y, kp.Z}
+		victimPos := Position{vp.X, vp.Y, vp.Z}
+		weapon := "unknown"
+		if event.Weapon != nil {
+			weapon = weaponName(event.Weapon.String())
+		}
+		result.Kills = append(result.Kills, KillEvent{
+			Tick: parser.GameState().IngameTick(), Time: parser.CurrentTime().Seconds(),
+			AttackerName: killer.Name, AttackerSteamID: strconv.FormatUint(killer.SteamID64, 10),
+			AttackerPos: attackerPos, VictimName: victim.Name,
+			VictimSteamID: strconv.FormatUint(victim.SteamID64, 10), VictimPos: victimPos,
+			Weapon: weapon, IsHeadshot: event.IsHeadshot, Wallbang: event.PenetratedObjects > 0,
+			AttackerTeam: teamToString(killer.Team), VictimTeam: teamToString(victim.Team),
+			MapName: result.MapName, RoundNumber: currentRound,
+			Distance:      calculateDistance(attackerPos, victimPos),
+			AngleDiff:     aimYawError(attackerPos, victimPos, float64(killer.ViewDirectionX())),
+			AttackerViewX: float64(killer.ViewDirectionX()), AttackerViewY: float64(killer.ViewDirectionY()),
+			VictimViewX: float64(victim.ViewDirectionX()), VictimViewY: float64(victim.ViewDirectionY()),
+			DemoFile: result.DemoFile,
+		})
+	})
+	parser.RegisterEventHandler(func(event events.FrameDone) {
+		gs := parser.GameState()
+		now := parser.CurrentTime().Seconds()
+		if !roundLive || gs.IsWarmupPeriod() || gs.IsFreezetimePeriod() {
+			return
+		}
+		mature(now)
+		if now-lastSampleTime < sampleIntervalSeconds {
+			return
+		}
+		players := map[string]PlayerSnapshot{}
+		for _, player := range gs.Participants().Playing() {
+			if player == nil || player.PlayerPawnEntity() == nil || !player.IsAlive() || player.SteamID64 == 0 ||
+				(player.Team != common.TeamTerrorists && player.Team != common.TeamCounterTerrorists) {
+				continue
+			}
+			pos := player.Position()
+			weapons := map[string]WeaponState{}
+			if active := player.ActiveWeapon(); active != nil {
+				weapons["weapon_0"] = WeaponState{Name: weaponName(active.String()), State: "active", AmmoClip: active.AmmoInMagazine()}
+			}
+			playerID := strconv.FormatUint(player.SteamID64, 10)
+			players[playerID] = PlayerSnapshot{
+				Name: player.Name, Team: teamToString(player.Team),
+				Position: fmt.Sprintf("%.8f, %.8f, %.8f", pos.X, pos.Y, pos.Z),
+				Forward:  forwardVector(float64(player.ViewDirectionX()), float64(player.ViewDirectionY())),
+				State:    PlayerState{Health: player.Health(), Armor: player.Armor()}, Weapons: weapons,
+			}
+		}
+		hasT, hasCT := false, false
+		for _, player := range players {
+			hasT = hasT || player.Team == "T"
+			hasCT = hasCT || player.Team == "CT"
+		}
+		if !hasT || !hasCT {
+			return
+		}
+		pending = append(pending, pendingSnapshot{
+			Tick: gs.IngameTick(), Time: now, Round: currentRound,
+			State: GameSnapshot{AllPlayers: players, Map: MapSnapshot{Name: result.MapName, Round: currentRound - 1},
+				Round: map[string]string{"phase": "live"}, Provider: map[string]float64{"timestamp": now}},
+		})
+		lastSampleTime = now
+	})
+	if err = parser.ParseToEnd(context.Background()); err != nil {
+		result.Error = fmt.Sprintf("Parse demo: %v", err)
+		result.PredictionSamples = []PredictionSample{}
+		return result
+	}
+	// No RoundEnd event is guaranteed at EOF. These horizons are censored.
+	discarded += len(pending)
+	result.DataQuality["discarded_partial_snapshots"] = discarded
+	result.KillCount = len(result.Kills)
+	result.Success = true
+	return result
+}
 
 func main() {
-
-	result.Success = trueif len(os.Args) < 2 {
-
-	result.KillCount = len(result.Kills)log.Fatal("Usage: demo_parser_with_positions.exe <demo_file_path>")
-
-	result.MapName = mapName}
-
-	return result
-
-}demoPath := os.Args[1]
-
-
-
-func main() {if _, err := os.Stat(demoPath); os.IsNotExist(err) {
-
-	if len(os.Args) < 2 {result := &DemoResult{
-
-		log.Fatal("Usage: demo_parser_with_positions.exe <demo_file_path>")DemoFile: filepath.Base(demoPath),
-
-	}Success:  false,
-
-Error:    fmt.Sprintf("Demo file does not exist: %s", demoPath),
-
-	demoPath := os.Args[1]Kills:    []KillEvent{},
-
-}
-
-	if _, err := os.Stat(demoPath); os.IsNotExist(err) {output, _ := json.MarshalIndent(result, "", "  ")
-
-		result := &DemoResult{fmt.Println(string(output))
-
-			DemoFile: filepath.Base(demoPath),return
-
-			Success:  false,}
-
-			Error:    fmt.Sprintf("Demo file does not exist: %s", demoPath),
-
-			Kills:    []KillEvent{},result := parseDemoFile(demoPath)
-
-		}
-
-		output, _ := json.MarshalIndent(result, "", "  ")output, err := json.MarshalIndent(result, "", "  ")
-
-		fmt.Println(string(output))if err != nil {
-
-		returnlog.Printf("Error marshaling JSON: %v", err)
-
-	}fmt.Println(`{"success": false, "error": "Failed to create JSON output"}`)
-
-} else {
-
-	result := parseDemoFile(demoPath)fmt.Println(string(output))
-
-}
-
-	output, err := json.MarshalIndent(result, "", "  ")}
-
-	if err != nil {
-		log.Printf("Error marshaling JSON: %v", err)
-		fmt.Println(`{"success": false, "error": "Failed to create JSON output"}`)
-	} else {
-		fmt.Println(string(output))
+	if len(os.Args) != 2 {
+		fmt.Fprintln(os.Stderr, "Usage: demo_parser_with_positions.exe <demo_file_path>")
+		os.Exit(2)
+	}
+	result := parseDemoFile(os.Args[1])
+	if err := json.NewEncoder(os.Stdout).Encode(result); err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
+	if !result.Success {
+		os.Exit(1)
 	}
 }

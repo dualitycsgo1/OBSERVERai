@@ -1,0 +1,341 @@
+{
+  "date": "2026-11-01",
+  "baseline_commit": "de89700fc5304df473e688692aee84fba531df99",
+  "scope": "Static held-out future-kill forecasts; not broadcast camera kill capture",
+  "target": "kill_within_horizon",
+  "horizon_seconds": 2.0,
+  "sample_interval_seconds": 0.5,
+  "canonical_training_row_order": [
+    "demo_id",
+    "sample_tick",
+    "player_id"
+  ],
+  "model_sha256": "e20f305807016fc088f8de715d9ced23eb530a401448a3ccb399683a37ea96e2",
+  "dataset": [
+    {
+      "map_name": "de_ancient",
+      "kills": 181,
+      "samples": 19207,
+      "positive_samples": 604
+    },
+    {
+      "map_name": "de_inferno",
+      "kills": 109,
+      "samples": 11641,
+      "positive_samples": 365
+    },
+    {
+      "map_name": "de_dust2",
+      "kills": 172,
+      "samples": 23260,
+      "positive_samples": 595
+    },
+    {
+      "map_name": "de_cache",
+      "kills": 133,
+      "samples": 16700,
+      "positive_samples": 450
+    },
+    {
+      "map_name": "de_dust2",
+      "kills": 161,
+      "samples": 19725,
+      "positive_samples": 549
+    }
+  ],
+  "training_demos": 3,
+  "validation_demos": 2,
+  "training_samples": 50573,
+  "validation_samples": 39960,
+  "evaluation": {
+    "candidate": {
+      "brier_score": 0.022900130698288737,
+      "log_loss": 0.09618159823978362,
+      "average_precision": 0.21776661858762922,
+      "accuracy_at_0_5": 0.9734734734734735,
+      "top1_kill_coverage": 0.5079702444208289,
+      "action_snapshots": 941,
+      "samples": 39960,
+      "positive_samples": 1045
+    },
+    "prevalence_baseline": {
+      "brier_score": 0.02548220562841038,
+      "log_loss": 0.12136531197873733,
+      "average_precision": 0.02615115115115115,
+      "accuracy_at_0_5": 0.9738488488488488,
+      "top1_kill_coverage": 0.11689691817215728,
+      "action_snapshots": 941,
+      "samples": 39960,
+      "positive_samples": 1045
+    },
+    "nearest_enemy_top1_coverage": 0.3028692879914984,
+    "brier_improvement_over_baseline": {
+      "mean": 0.002550953674714826,
+      "ci95_low": 0.0023613796859867533,
+      "ci95_high": 0.0027405276634428987,
+      "independent_demos": 2
+    },
+    "minimum_brier_improvement": 1e-06,
+    "scope": "fixed held-out demos; repeated model selection can overfit this validation set",
+    "promotion_passed": true,
+    "rejection_reasons": []
+  },
+  "per_validation_demo": [
+    {
+      "map_name": "de_dust2",
+      "candidate": {
+        "brier_score": 0.02220518596292137,
+        "log_loss": 0.09354887511717994,
+        "average_precision": 0.2309198482144516,
+        "accuracy_at_0_5": 0.9743766122098022,
+        "top1_kill_coverage": 0.5148698884758365,
+        "action_snapshots": 538,
+        "samples": 23260,
+        "positive_samples": 595
+      },
+      "prevalence_baseline": {
+        "brier_score": 0.024945713626364264,
+        "log_loss": 0.11938162316664544,
+        "average_precision": 0.025580395528804815,
+        "accuracy_at_0_5": 0.9744196044711951,
+        "top1_kill_coverage": 0.09665427509293681,
+        "action_snapshots": 538,
+        "samples": 23260,
+        "positive_samples": 595
+      },
+      "nearest_enemy_top1_coverage": 0.275092936802974
+    },
+    {
+      "map_name": "de_cache",
+      "candidate": {
+        "brier_score": 0.02386805971293814,
+        "log_loss": 0.09984849284048788,
+        "average_precision": 0.20442359259237936,
+        "accuracy_at_0_5": 0.9722155688622754,
+        "top1_kill_coverage": 0.4987593052109181,
+        "action_snapshots": 403,
+        "samples": 16700,
+        "positive_samples": 450
+      },
+      "prevalence_baseline": {
+        "brier_score": 0.026229439398924897,
+        "log_loss": 0.12412822226432162,
+        "average_precision": 0.02694610778443114,
+        "accuracy_at_0_5": 0.9730538922155688,
+        "top1_kill_coverage": 0.14392059553349876,
+        "action_snapshots": 403,
+        "samples": 16700,
+        "positive_samples": 450
+      },
+      "nearest_enemy_top1_coverage": 0.3399503722084367
+    }
+  ],
+  "learning_curve": [
+    {
+      "training_demo_count": 1,
+      "training_samples": 19725,
+      "candidate": {
+        "brier_score": 0.023268933392626208,
+        "log_loss": 0.09847170836448867,
+        "average_precision": 0.20153645781780624,
+        "accuracy_at_0_5": 0.9733233233233233,
+        "top1_kill_coverage": 0.4814027630180659,
+        "action_snapshots": 941,
+        "samples": 39960,
+        "positive_samples": 1045
+      },
+      "promotion_passed": true,
+      "rejection_reasons": [],
+      "brier_improvement_over_incumbent": null
+    },
+    {
+      "training_demo_count": 2,
+      "training_samples": 38932,
+      "candidate": {
+        "brier_score": 0.022978157563619338,
+        "log_loss": 0.09703338347950607,
+        "average_precision": 0.21784094456481998,
+        "accuracy_at_0_5": 0.9735735735735735,
+        "top1_kill_coverage": 0.5228480340063762,
+        "action_snapshots": 941,
+        "samples": 39960,
+        "positive_samples": 1045
+      },
+      "promotion_passed": true,
+      "rejection_reasons": [],
+      "brier_improvement_over_incumbent": {
+        "mean": 0.00029778949523309045,
+        "ci95_low": 0.0002550660040136021,
+        "ci95_high": 0.0003405129864525788,
+        "independent_demos": 2
+      }
+    },
+    {
+      "training_demo_count": 3,
+      "training_samples": 50573,
+      "candidate": {
+        "brier_score": 0.022900130698288737,
+        "log_loss": 0.09618159823978362,
+        "average_precision": 0.21776661858762922,
+        "accuracy_at_0_5": 0.9734734734734735,
+        "top1_kill_coverage": 0.5079702444208289,
+        "action_snapshots": 941,
+        "samples": 39960,
+        "positive_samples": 1045
+      },
+      "promotion_passed": false,
+      "rejection_reasons": [
+        "No demonstrated improvement over the deployed model on unseen demos"
+      ],
+      "brier_improvement_over_incumbent": {
+        "mean": 7.280791707987512e-05,
+        "ci95_low": 4.101688474771743e-05,
+        "ci95_high": 0.0001045989494120328,
+        "independent_demos": 2
+      }
+    }
+  ],
+  "strict_next_killer_evaluation": {
+    "action_snapshots": 942,
+    "model_correct": 460,
+    "nearest_enemy_correct": 270,
+    "next_killer_missing_from_candidates": 1,
+    "simultaneous_killer_snapshots": 0,
+    "model_coverage": 0.4883227176220807,
+    "nearest_enemy_coverage": 0.28662420382165604,
+    "validation_demos": 2,
+    "definition": "First enemy kill in (sample_time, sample_time+2s], later tick, same live round; same-tick ties use demo event order. Static ranking without mesh filtering or camera cooldown."
+  },
+  "strict_next_killer_per_demo": [
+    {
+      "map_name": "de_dust2",
+      "action_snapshots": 539,
+      "model_correct": 267,
+      "nearest_enemy_correct": 139,
+      "next_killer_missing_from_candidates": 1,
+      "simultaneous_killer_snapshots": 0
+    },
+    {
+      "map_name": "de_cache",
+      "action_snapshots": 403,
+      "model_correct": 193,
+      "nearest_enemy_correct": 131,
+      "next_killer_missing_from_candidates": 0,
+      "simultaneous_killer_snapshots": 0
+    }
+  ],
+  "geometry_benchmark": {
+    "de_dust2": {
+      "triangles": 239848,
+      "mesh_sha256": "a21f26cb5df390dd03e10a8b43da8c89781b5f5c7cf1216a31748fd23a341766",
+      "build_seconds": 0.557911299999887,
+      "ray_count": 500,
+      "visible": 112,
+      "blocked": 388,
+      "ray_mean_ms": 0.26108380000005127,
+      "ray_p95_ms": 0.5983800002240968,
+      "pair_count": 50,
+      "pair_mean_ms": 2.900075999996261,
+      "pair_p95_ms": 8.865349999996397
+    },
+    "de_inferno": {
+      "triangles": 547829,
+      "mesh_sha256": "897e6f22dc76ecd3815ce8214ae1eb3254b07f72ba7b5f9470430bd8749ed632",
+      "build_seconds": 1.2795157999998992,
+      "ray_count": 500,
+      "visible": 221,
+      "blocked": 279,
+      "ray_mean_ms": 0.22372639997956867,
+      "ray_p95_ms": 0.6572299998879312,
+      "pair_count": 50,
+      "pair_mean_ms": 2.3312539999642468,
+      "pair_p95_ms": 6.800760000101036,
+      "official_reference_visible": true,
+      "official_reference_occluded": false
+    }
+  },
+  "limitations": [
+    "Only two independent held-out demos",
+    "Correlated overlapping two-second windows",
+    "Fixed validation set can be overfit by repeated selection",
+    "Static collision mesh does not model smoke, doors, penetration or precise animated hitboxes",
+    "Packaged applications and actual CS2 input delivery were not tested"
+  ],
+  "sampled_camera_replay": {
+    "model_sha256": "e20f305807016fc088f8de715d9ced23eb530a401448a3ccb399683a37ea96e2",
+    "source_sha256": "2324408157b8d8b34bda778f93795d060cfe4699d4c78233f42d60e90ba40bb3",
+    "variants": {
+      "matched_mesh": {
+        "snapshots": 5558,
+        "strict_action_snapshots": 942,
+        "raw_model_top1": {
+          "hits": 460,
+          "total": 942,
+          "coverage": 0.4883227176220807
+        },
+        "next_killer_in_duel_pool": {
+          "hits": 518,
+          "total": 942,
+          "coverage": 0.5498938428874734
+        },
+        "duel_pool_model_top1": {
+          "hits": 295,
+          "total": 942,
+          "coverage": 0.31316348195329086
+        },
+        "held_camera_next_killer": {
+          "hits": 237,
+          "total": 942,
+          "coverage": 0.2515923566878981
+        },
+        "emitted_switch_keys": 399,
+        "actual_target_changes": 399,
+        "processing_errors": 0,
+        "blocked_native_input_attempts": 0,
+        "camera_internal_mismatches": 0,
+        "snapshots_target_absent": 233,
+        "mean_processing_seconds": 0.054696213098238584
+      },
+      "unknown_geometry_fallback": {
+        "snapshots": 5558,
+        "strict_action_snapshots": 942,
+        "raw_model_top1": {
+          "hits": 460,
+          "total": 942,
+          "coverage": 0.4883227176220807
+        },
+        "next_killer_in_duel_pool": {
+          "hits": 932,
+          "total": 942,
+          "coverage": 0.9893842887473461
+        },
+        "duel_pool_model_top1": {
+          "hits": 460,
+          "total": 942,
+          "coverage": 0.4883227176220807
+        },
+        "held_camera_next_killer": {
+          "hits": 263,
+          "total": 942,
+          "coverage": 0.2791932059447983
+        },
+        "emitted_switch_keys": 615,
+        "actual_target_changes": 615,
+        "processing_errors": 0,
+        "blocked_native_input_attempts": 0,
+        "camera_internal_mismatches": 0,
+        "snapshots_target_absent": 5,
+        "mean_processing_seconds": 0.012075446509536267
+      }
+    },
+    "scope": "sampled offline observer state-machine replay; not actual POV kill capture or live latency",
+    "model_runtime_jobs": 1
+  },
+  "validation": {
+    "python_tests_passed": 86,
+    "python_subtests_passed": 4,
+    "go_tests_passed": 7,
+    "parser_build": "passed",
+    "real_demos_parsed": 5
+  }
+}

@@ -15,17 +15,17 @@ def create_final_build():
     """Create the final production build"""
     print("CS2 Observer AI - Final Build v4.2.0")
     print("=" * 45)
-    
+
     project_root = Path.cwd()
     build_dir = project_root / "final_build"
-    
+
     # Clean and create build directory
     if build_dir.exists():
         shutil.rmtree(build_dir)
     build_dir.mkdir()
-    
+
     print("Step 1: Creating standalone executables...")
-    
+
     # Build main CS2 Observer
     cmd_observer = [
         sys.executable, "-m", "PyInstaller",
@@ -34,31 +34,32 @@ def create_final_build():
         "--add-data=demo_parser_with_positions.exe;.",
         "--add-data=config.json;.",
         "--add-data=observer_ai_model.pkl;.",
-        "--add-data=enhanced_positional_models;enhanced_positional_models", 
+        "--add-data=enhanced_positional_models;enhanced_positional_models",
         "--add-data=complete_positional_dataset_all_85_demos.json;.",
         "--add-data=complete_kill_analysis.json;.",
         "--add-data=maps;maps",
         "--add-data=training_data;training_data",
         "--hidden-import=numpy",
-        "--hidden-import=pandas", 
+        "--hidden-import=pandas",
         "--hidden-import=sklearn",
         "--hidden-import=joblib",
         "--hidden-import=positional_observer_ai",
         "--hidden-import=demo_analyzer",
+        "--hidden-import=observer_model",
         "--hidden-import=line_of_sight",
         "--console",
         "cs2_duel_detector.py"
     ]
-    
+
     print("  Building CS2Observer.exe...")
     result = subprocess.run(cmd_observer, cwd=project_root)
     if result.returncode != 0:
         print("  ERROR: Failed to build CS2Observer.exe")
         return False
-        
+
     # Build AI Trainer GUI
     cmd_trainer = [
-        sys.executable, "-m", "PyInstaller", 
+        sys.executable, "-m", "PyInstaller",
         "--onefile",
         "--name=CS2AITrainer",
         "--windowed",
@@ -72,43 +73,46 @@ def create_final_build():
         "--add-data=maps;maps",
         "--hidden-import=tkinter",
         "--hidden-import=ai_trainer",
+        "--hidden-import=observer_model",
+        "--hidden-import=observer_training",
+        "--hidden-import=zstandard",
         "--hidden-import=numpy",
         "--hidden-import=pandas",
         "--hidden-import=sklearn",
         "--hidden-import=joblib",
         "ai_trainer_gui.py"
     ]
-    
+
     print("  Building CS2AITrainer.exe...")
     result = subprocess.run(cmd_trainer, cwd=project_root)
     if result.returncode != 0:
         print("  ERROR: Failed to build CS2AITrainer.exe")
         return False
-        
+
     print("Step 2: Creating distribution package...")
-    
+
     # Copy executables to build directory
     dist_dir = project_root / "dist"
     shutil.copy2(dist_dir / "CS2Observer.exe", build_dir)
     shutil.copy2(dist_dir / "CS2AITrainer.exe", build_dir)
-    
+
     # Copy additional files
     additional_files = [
         "config.json",
-        "config_duel.json", 
+        "config_duel.json",
         "gamestate_integration_obs_updated.cfg",
         "README.md",
         "INSTALLATION.md"
     ]
-    
+
     for file in additional_files:
         src = project_root / file
         if src.exists():
             shutil.copy2(src, build_dir)
-            
+
     # Create startup scripts
     print("Step 3: Creating startup scripts...")
-    
+
     start_observer = build_dir / "Start_CS2_Observer.bat"
     start_observer.write_text("""@echo off
 title CS2 Observer AI
@@ -145,8 +149,8 @@ pause""", encoding='utf-8')
 
     # Create installation guide
     print("Step 4: Creating installation guide...")
-    
-    install_guide = build_dir / "INSTALLATION_GUIDE.txt" 
+
+    install_guide = build_dir / "INSTALLATION_GUIDE.txt"
     install_guide.write_text("""CS2 Observer AI v4.2.0 - Installation Guide
 
 QUICK START:
@@ -185,18 +189,18 @@ For support and updates, visit the project repository.
 Enjoy your AI-powered CS2 observing experience!""", encoding='utf-8')
 
     print("Step 5: Creating ZIP distribution...")
-    
+
     # Create ZIP file
     zip_path = project_root / f"CS2ObserverAI_v4.2.0_Complete.zip"
-    
+
     with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
         for file_path in build_dir.rglob('*'):
             if file_path.is_file():
                 arcname = file_path.relative_to(build_dir)
                 zipf.write(file_path, arcname)
-                
+
     file_size = zip_path.stat().st_size / (1024 * 1024)
-    
+
     print("BUILD COMPLETED SUCCESSFULLY!")
     print("=" * 35)
     print(f"Build folder: {build_dir}")
@@ -212,7 +216,7 @@ Enjoy your AI-powered CS2 observing experience!""", encoding='utf-8')
     print("READY FOR DEPLOYMENT!")
     print("Users can download the ZIP, extract, and run immediately.")
     print("No Python, Go, or other dependencies required!")
-    
+
     return True
 
 if __name__ == "__main__":

@@ -1,370 +1,228 @@
 #!/usr/bin/env python3
-"""
-Comprehensive Demo Processor - Combines header extraction and full demo parsing
-Uses both cs2_header_extractor.exe and demo_parser_with_positions.exe to get complete data
-"""
+"""Run the demo tools without turning missing or failed data into training data."""
 
 import json
+import logging
+import math
 import os
 import subprocess
-import logging
-from typing import Dict, List, Optional, Tuple
 import sys
+import tempfile
+import shutil
+from contextlib import contextmanager
+from typing import Dict, List, Optional
+
 
 def get_base_dir():
-    """Get the base directory for the application"""
-    if hasattr(get_base_dir, '_cached_dir'):
-        return get_base_dir._cached_dir
-    
-    if getattr(sys, 'frozen', False):
-        base_dir = os.path.dirname(sys.executable)
-    else:
-        base_dir = os.path.dirname(os.path.abspath(__file__))
-    
-    get_base_dir._cached_dir = base_dir
-    return base_dir
+    return os.path.dirname(sys.executable if getattr(sys, "frozen", False) else os.path.abspath(__file__))
+
+
+def _finite(value):
+    return isinstance(value, (int, float)) and not isinstance(value, bool) and math.isfinite(value)
+
+
+def _position(value):
+    if isinstance(value, dict) and all(_finite(value.get(axis)) for axis in "xyz"):
+        return {axis: float(value[axis]) for axis in "xyz"}
+    return None
+
+
+@contextmanager
+def uncompressed_demo(demo_path):
+    """Expose .dem or stream .dem.zst into a temporary file; preserve the source."""
+    demo_path = os.path.abspath(demo_path)
+    if not demo_path.lower().endswith(".dem.zst"):
+        yield demo_path
+        return
+    try:
+        import zstandard
+    except ImportError as exc:
+        raise RuntimeError("Reading .dem.zst requires zstandard; install the project requirements") from exc
+    with tempfile.TemporaryDirectory(prefix="observer-demo-") as directory:
+        output = os.path.join(directory, os.path.basename(demo_path)[:-4])
+        with open(demo_path, "rb") as compressed, open(output, "wb") as destination:
+            with zstandard.ZstdDecompressor().stream_reader(compressed) as reader:
+                shutil.copyfileobj(reader, destination, length=1024 * 1024)
+        yield output
+
+
+def _empty_result(demo_path):
+    return {
+        "demo_file": os.path.basename(demo_path), "demo_path": demo_path,
+        "success": False, "header_info": None, "kill_data": None,
+        "map_name": None, "server_name": None, "demo_type": None,
+        "kills": [], "kill_count": 0, "prediction_samples": [],
+        "training_ready": False, "error": None,
+    }
+
 
 class ComprehensiveDemoProcessor:
-    """Processes demos with both header extraction and full parsing"""
-    
     def __init__(self):
         self.base_dir = get_base_dir()
         self.header_extractor = os.path.join(self.base_dir, "cs2_header_extractor.exe")
         self.demo_parser = os.path.join(self.base_dir, "demo_parser_with_positions.exe")
-        
         self.logger = logging.getLogger(__name__)
-        
-        # Check if both extractors exist
-        if not os.path.exists(self.header_extractor):
-            self.logger.warning(f"Header extractor not found: {self.header_extractor}")
-        if not os.path.exists(self.demo_parser):
-            self.logger.warning(f"Demo parser not found: {self.demo_parser}")
-    
-    def extract_header_info(self, demo_path: str) -> Optional[Dict]:
-        """Extract header information using cs2_header_extractor.exe"""
-        try:
-            if not os.path.exists(self.header_extractor):
-                self.logger.warning(f"Header extractor not found at: {self.header_extractor}")
-                return None
-            
-            # Set environment for Go executable
-            env = os.environ.copy()
-            env["TEMP"] = self.base_dir  # Use base directory for temp files
-            env["TMP"] = self.base_dir
-            
-            result = subprocess.run(
-                [self.header_extractor, demo_path], 
-                capture_output=True, 
-                text=True, 
-                timeout=60,  # Extended timeout for header extraction
-                cwd=self.base_dir,  # Set working directory to where the executables are
-                env=env  # Pass environment variables
-            )
-            
-            if result.returncode == 0:
-                return json.loads(result.stdout)
-            else:
-                self.logger.warning(f"Header extraction failed for {demo_path}")
-                self.logger.warning(f"Return code: {result.returncode}")
-                self.logger.warning(f"Stderr: {result.stderr}")
-                self.logger.warning(f"Stdout: {result.stdout}")
-                return None
-                
-        except subprocess.TimeoutExpired:
-            self.logger.error(f"Header extraction timed out for {demo_path} (exceeded 1 minute)")
+        self.last_errors = []
+
+    def _run_tool(self, executable, demo_path, timeout):
+        if not os.path.isfile(executable):
+            error = f"Required tool not found: {executable}"
+            self.last_errors.append(error)
+            self.logger.warning(error)
             return None
-        except Exception as e:
-            self.logger.error(f"Error extracting header from {demo_path}: {e}")
-            return None
-    
-    def parse_demo_content(self, demo_path: str) -> Optional[Dict]:
-        """Parse demo content using demo_parser_with_positions.exe"""
         try:
-            if not os.path.exists(self.demo_parser):
-                self.logger.warning(f"Demo parser not found at: {self.demo_parser}")
-                return None
-            
-            # Set environment for Go executable
-            env = os.environ.copy()
-            env["TEMP"] = self.base_dir  # Use base directory for temp files
-            env["TMP"] = self.base_dir
-            
-            result = subprocess.run(
-                [self.demo_parser, demo_path], 
-                capture_output=True, 
-                text=True, 
-                timeout=300,  # Extended timeout for large professional demos (5 minutes)
-                cwd=self.base_dir,  # Set working directory to where the executables are
-                env=env  # Pass environment variables
+            # Resolve before changing cwd: relative demo paths must name the same file.
+            completed = subprocess.run(
+                [os.path.abspath(executable), os.path.abspath(demo_path)],
+                capture_output=True, text=True, encoding="utf-8", errors="strict",
+                timeout=timeout, cwd=self.base_dir,
             )
-            
-            if result.returncode == 0:
+            if completed.returncode:
+                details = completed.stderr[:500]
                 try:
-                    parsed_data = json.loads(result.stdout)
-                    # Debug: log the structure we got
-                    self.logger.info(f"Demo parser output keys: {list(parsed_data.keys()) if isinstance(parsed_data, dict) else 'Not a dict'}")
-                    return parsed_data
-                except json.JSONDecodeError as e:
-                    self.logger.error(f"Failed to parse JSON from demo parser: {e}")
-                    self.logger.debug(f"Raw output: {result.stdout[:500]}...")
-                    return None
-            else:
-                self.logger.warning(f"Demo parsing failed for {demo_path}")
-                self.logger.warning(f"Return code: {result.returncode}")
-                self.logger.warning(f"Stderr: {result.stderr}")
-                self.logger.warning(f"Stdout: {result.stdout[:500]}...")  # First 500 chars of stdout
-                return None
-                
-        except subprocess.TimeoutExpired:
-            self.logger.error(f"Demo parsing timed out for {demo_path} (exceeded 5 minutes)")
+                    payload = json.loads(completed.stdout)
+                    if isinstance(payload, dict):
+                        details = payload.get("error") or payload.get("error_message") or details
+                except ValueError:
+                    pass
+                raise ValueError(f"exit {completed.returncode}: {details}")
+            data = json.loads(completed.stdout)
+            if not isinstance(data, dict):
+                raise ValueError("expected a JSON object")
+            if data.get("success") is False or data.get("error") or data.get("error_message"):
+                raise ValueError(data.get("error") or data.get("error_message") or "tool reported failure")
+            return data
+        except (OSError, ValueError, subprocess.TimeoutExpired) as exc:
+            error = f"{os.path.basename(executable)} failed: {exc}"
+            self.last_errors.append(error)
+            self.logger.error(error)
             return None
-        except Exception as e:
-            self.logger.error(f"Error parsing demo {demo_path}: {e}")
+
+    def extract_header_info(self, demo_path: str) -> Optional[Dict]:
+        # The full Go parser already decodes the Source 2 protobuf header.
+        # This legacy helper is optional and its absence is not a demo error.
+        if not os.path.isfile(self.header_extractor):
             return None
-    
+        return self._run_tool(self.header_extractor, demo_path, 60)
+
+    def parse_demo_content(self, demo_path: str) -> Optional[Dict]:
+        return self._run_tool(self.demo_parser, demo_path, 300)
+
     def process_demo_comprehensive(self, demo_path: str) -> Dict:
-        """
-        Process a demo with both extractors and combine the results
-        
-        Returns:
-            Combined demo data with header info and kill events
-        """
-        demo_file = os.path.basename(demo_path)
-        
-        # Initialize result structure
-        result = {
-            "demo_file": demo_file,
-            "demo_path": demo_path,
-            "success": False,
-            "header_info": None,
-            "kill_data": None,
-            "map_name": None,
-            "server_name": None,
-            "demo_type": None,
-            "kills": [],
-            "kill_count": 0,
-            "error": None
-        }
-        
-        self.logger.info(f"Processing demo comprehensively: {demo_file}")
-        
-        # Step 1: Extract header information
-        header_info = self.extract_header_info(demo_path)
-        if header_info and header_info.get('success'):
-            result["header_info"] = header_info
-            result["map_name"] = header_info.get("map_name")
-            result["server_name"] = header_info.get("server_name")
-            result["demo_type"] = header_info.get("demo_type")
-            self.logger.info(f"Header extracted: {header_info.get('map_name')} ({header_info.get('demo_type')})")
-        else:
-            self.logger.warning(f"Failed to extract header from {demo_file}")
-        
-        # Step 2: Parse full demo content
-        kill_data = self.parse_demo_content(demo_path)
-        if kill_data:
-            result["kill_data"] = kill_data
-            
-            # Debug: log what we got from demo parser
-            self.logger.info(f"Demo parser returned: {type(kill_data)} with keys: {list(kill_data.keys()) if isinstance(kill_data, dict) else 'No keys'}")
-            
-            # Handle different demo parser formats
-            events = kill_data.get("events", [])
-            kills = kill_data.get("kills", [])  # Original format
-            
-            # Log what we found
-            self.logger.info(f"Found {len(events)} events and {len(kills)} kills")
-            
-            # Filter and convert kill events from the events list
-            if events:
-                kill_events = [event for event in events if event.get('type') == 'kill']
-                converted_kills = []
-                for event in kill_events:
-                    converted_kill = self.convert_event_to_kill_format(event, result.get("map_name", "unknown"))
-                    if converted_kill:
-                        converted_kills.append(converted_kill)
-                result["kills"] = converted_kills
-            else:
-                result["kills"] = kills if kills else []
-            
-            result["kill_count"] = len(result["kills"])
-            
-            # If header extraction failed, try to get map name from demo parser
-            if not result["map_name"] and kill_data.get("map_name"):
-                result["map_name"] = kill_data.get("map_name")
-            
-            self.logger.info(f"Demo parsed: {result['kill_count']} kills found")
-            
-            # Log sample event data if available
-            if result["kills"]:
-                sample_event = result["kills"][0]
-                self.logger.info(f"Sample event keys: {list(sample_event.keys()) if isinstance(sample_event, dict) else 'Not a dict'}")
-                if isinstance(sample_event, dict) and 'data' in sample_event:
-                    sample_data = sample_event.get('data', {})
-                    self.logger.info(f"Sample event data keys: {list(sample_data.keys()) if isinstance(sample_data, dict) else 'No data keys'}")
-                
-                # Look for kill events specifically
-                kill_events = [event for event in result["kills"] if event.get('type') == 'kill']
-                self.logger.info(f"Found {len(kill_events)} kill events out of {len(result['kills'])} total events")
-                
-                if kill_events:
-                    sample_kill = kill_events[0] 
-                    kill_data = sample_kill.get('data', {})
-                    self.logger.info(f"Sample kill event data keys: {list(kill_data.keys()) if isinstance(kill_data, dict) else 'No kill data'}")
-                
-        else:
-            self.logger.warning(f"Failed to parse demo content from {demo_file}")
-        
-        # Step 3: Enhance kill events with header information
-        if result["kills"] and result["header_info"]:
-            for kill_event in result["kills"]:
-                # Override map name with header extraction (more reliable)
-                if result["map_name"]:
-                    kill_event["map_name"] = result["map_name"]
-                
-                # Add server and demo type information
-                kill_event["server_name"] = result.get("server_name", "")
-                kill_event["demo_type"] = result.get("demo_type", "Unknown")
-        
-        # Determine overall success
-        result["success"] = bool(result["header_info"] or result["kill_data"])
-        
-        if not result["success"]:
-            result["error"] = "Both header extraction and demo parsing failed"
-        
-        return result
-    
-    def process_multiple_demos(self, demo_paths: List[str]) -> List[Dict]:
-        """Process multiple demos comprehensively"""
-        results = []
-        
-        for demo_path in demo_paths:
-            try:
-                result = self.process_demo_comprehensive(demo_path)
-                results.append(result)
-            except Exception as e:
-                self.logger.error(f"Failed to process {demo_path}: {e}")
-                results.append({
-                    "demo_file": os.path.basename(demo_path),
-                    "demo_path": demo_path,
-                    "success": False,
-                    "error": str(e)
-                })
-        
-        return results
-    
-    def get_training_data_from_results(self, results: List[Dict]) -> List[Dict]:
-        """
-        Convert comprehensive demo results into training data format
-        with proper map names from header extraction
-        """
-        training_data = []
-        
-        for result in results:
-            if result.get("success") and result.get("kills"):
-                demo_data = {
-                    "demo_file": result["demo_file"],
-                    "map_name": result.get("map_name", "unknown"),
-                    "server_name": result.get("server_name", ""),
-                    "demo_type": result.get("demo_type", "Unknown"),
-                    "kills": result["kills"],
-                    "kill_count": result["kill_count"]
-                }
-                training_data.append(demo_data)
-        
-        return training_data
-
-    def convert_event_to_kill_format(self, event: Dict, map_name: str) -> Optional[Dict]:
-        """
-        Convert the new event format to the original kill format expected by AI trainer
-        """
+        source_path = os.path.abspath(demo_path)
         try:
-            event_data = event.get('data', {})
-            
-            # Handle different data structures
-            def safe_get(obj, key, default=None):
-                if isinstance(obj, dict):
-                    return obj.get(key, default)
-                else:
-                    return default
-            
-            # Extract killer and victim info (they might be strings or dicts)
-            killer = safe_get(event_data, 'killer', {})
-            victim = safe_get(event_data, 'victim', {})
-            
-            # Extract positions
-            killer_pos = safe_get(event_data, 'killer_pos', {})
-            victim_pos = safe_get(event_data, 'victim_pos', {})
-            killer_angle = safe_get(event_data, 'killer_angle', {})
-            
-            # Convert to the expected format
-            kill_event = {
-                'tick': event.get('tick', 0),
-                'attacker_name': safe_get(killer, 'name', str(killer) if isinstance(killer, str) else 'Unknown'),
-                'attacker_steam_id': str(safe_get(killer, 'steam_id', 0)),
-                'attacker_pos': {
-                    'x': safe_get(killer_pos, 'x', 0),
-                    'y': safe_get(killer_pos, 'y', 0),
-                    'z': safe_get(killer_pos, 'z', 0)
-                },
-                'victim_name': safe_get(victim, 'name', str(victim) if isinstance(victim, str) else 'Unknown'),
-                'victim_steam_id': str(safe_get(victim, 'steam_id', 0)),
-                'victim_pos': {
-                    'x': safe_get(victim_pos, 'x', 0),
-                    'y': safe_get(victim_pos, 'y', 0),
-                    'z': safe_get(victim_pos, 'z', 0)
-                },
-                'weapon': safe_get(event_data, 'weapon', 'unknown'),
-                'is_headshot': safe_get(event_data, 'headshot', False),
-                'attacker_team': safe_get(killer, 'team', 'UNKNOWN'),
-                'victim_team': safe_get(victim, 'team', 'UNKNOWN'),
-                'map_name': map_name,
-                'round_number': safe_get(event_data, 'round_number', 1),
-                'distance': safe_get(event_data, 'distance', 0),
-                'angle_diff': safe_get(killer_angle, 'yaw', 0),
-                'attacker_view_x': safe_get(killer_angle, 'yaw', 0),
-                'attacker_view_y': safe_get(killer_angle, 'pitch', 0),
-                'victim_view_x': 0,  # Not available in new format
-                'victim_view_y': 0,  # Not available in new format
-                'demo_file': os.path.basename(map_name) if map_name else 'unknown'
-            }
-            
-            return kill_event
-            
-        except Exception as e:
-            self.logger.error(f"Error converting event to kill format: {e}")
-            self.logger.debug(f"Event data: {event}")
+            with uncompressed_demo(source_path) as parser_input:
+                result = self._process_uncompressed_demo(parser_input)
+            result["demo_path"] = source_path
+            result["demo_file"] = os.path.basename(source_path)
+            for kill in result.get("kills", []):
+                kill["demo_file"] = result["demo_file"]
+            return result
+        except Exception as exc:
+            result = _empty_result(source_path)
+            result["error"] = f"Demo decompression/processing failed: {exc}"
+            self.logger.error(result["error"])
+            return result
+
+    def _process_uncompressed_demo(self, demo_path: str) -> Dict:
+        self.last_errors = []
+        demo_path = os.path.abspath(demo_path)
+        result = _empty_result(demo_path)
+        if not os.path.isfile(demo_path):
+            result["error"] = f"Demo file not found: {demo_path}"
+            return result
+
+        header = self.extract_header_info(demo_path)
+        parsed = self.parse_demo_content(demo_path)
+        if header:
+            result["header_info"] = header
+            for field in ("map_name", "server_name", "demo_type"):
+                result[field] = header.get(field)
+        # A header is metadata only. It cannot establish that a demo was parsed.
+        if not isinstance(parsed, dict) or parsed.get("success") is False:
+            result["error"] = "; ".join(self.last_errors) or "Demo content parsing failed"
+            return result
+        result["kill_data"] = parsed
+        for field in ("map_name", "server_name", "demo_type"):
+            # The full parser uses demoinfocs' protobuf decoder; prefer it to
+            # the optional legacy header extractor's simplified byte parser.
+            if parsed.get(field):
+                result[field] = parsed.get(field)
+
+        raw_events = parsed.get("events", [])
+        raw_kills = parsed.get("kills", [])
+        samples = parsed.get("prediction_samples", [])
+        if not all(isinstance(value, list) for value in (raw_events, raw_kills, samples)):
+            result["error"] = "Invalid demo schema: events, kills and prediction_samples must be lists"
+            return result
+        events = [e for e in raw_events if isinstance(e, dict) and e.get("type") == "kill"]
+        # Non-kill events must not hide a parser's legacy kill list.
+        if events:
+            result["kills"] = [converted for event in events if (
+                converted := self.convert_event_to_kill_format(event, result["map_name"], result["demo_file"])
+            ) is not None]
+        else:
+            result["kills"] = [dict(kill, map_name=result["map_name"], demo_file=result["demo_file"])
+                               for kill in raw_kills if isinstance(kill, dict)]
+        result["kill_count"] = len(result["kills"])
+        result["prediction_samples"] = samples
+        result["demo_id"] = parsed.get("demo_id")
+        result["data_quality"] = parsed.get("data_quality", {})
+        for field in ("patch_version", "build_num", "demo_version_name"):
+            if field in parsed:
+                result[field] = parsed[field]
+        result["training_ready"] = bool(samples)
+        result["success"] = bool(result["kills"] or samples)
+        if not result["success"]:
+            result["error"] = "Parser produced no kill events or prediction samples"
+        elif not samples:
+            result["training_warning"] = (
+                "Kill events alone cannot train future-kill prediction. Rebuild the parser "
+                "to extract pre-event snapshots with positive and negative labels."
+            )
+        return result
+
+    def process_multiple_demos(self, demo_paths: List[str]) -> List[Dict]:
+        return [self.process_demo_comprehensive(path) for path in demo_paths]
+
+    def get_training_data_from_results(self, results: List[Dict]) -> List[Dict]:
+        """Only prediction snapshots, never post-outcome kill-only records, are trainable."""
+        return [sample for result in results if result.get("success")
+                for sample in result.get("prediction_samples", [])]
+
+    def convert_event_to_kill_format(self, event: Dict, map_name: str,
+                                     demo_file: str = "unknown") -> Optional[Dict]:
+        data = event.get("data")
+        if not isinstance(data, dict):
             return None
-
-def test_comprehensive_processing():
-    """Test the comprehensive demo processing"""
-    processor = ComprehensiveDemoProcessor()
-    
-    demo_dir = "demos"
-    if not os.path.exists(demo_dir):
-        print("No demos directory found")
-        return
-    
-    demo_files = [f for f in os.listdir(demo_dir) if f.endswith('.dem')]
-    if not demo_files:
-        print("No demo files found")
-        return
-    
-    # Test with first demo
-    demo_path = os.path.join(demo_dir, demo_files[0])
-    print(f"Testing comprehensive processing with: {demo_files[0]}")
-    
-    result = processor.process_demo_comprehensive(demo_path)
-    
-    print(f"Success: {result['success']}")
-    print(f"Map Name: {result.get('map_name', 'N/A')}")
-    print(f"Server: {result.get('server_name', 'N/A')}")
-    print(f"Demo Type: {result.get('demo_type', 'N/A')}")
-    print(f"Kill Count: {result.get('kill_count', 0)}")
-    
-    if result.get('kills'):
-        sample_kill = result['kills'][0]
-        print(f"Sample Kill Map: {sample_kill.get('map_name', 'N/A')}")
-
-if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO)
-    test_comprehensive_processing()
+        killer = data.get("killer")
+        victim = data.get("victim")
+        killer_info = killer if isinstance(killer, dict) else {}
+        victim_info = victim if isinstance(victim, dict) else {}
+        attacker_pos = _position(data.get("killer_pos"))
+        victim_pos = _position(data.get("victim_pos"))
+        angle = data.get("killer_angle") if isinstance(data.get("killer_angle"), dict) else {}
+        yaw = angle.get("yaw") if _finite(angle.get("yaw")) else None
+        pitch = angle.get("pitch") if _finite(angle.get("pitch")) else None
+        distance = angle_diff = None
+        if attacker_pos is not None and victim_pos is not None:
+            delta = {axis: victim_pos[axis] - attacker_pos[axis] for axis in "xyz"}
+            distance = math.sqrt(sum(value * value for value in delta.values()))
+            if yaw is not None and (delta["x"] or delta["y"]):
+                target_yaw = math.degrees(math.atan2(delta["y"], delta["x"]))
+                angle_diff = abs((target_yaw - yaw + 180) % 360 - 180)
+        return {
+            "tick": event.get("tick"),
+            "attacker_name": killer_info.get("name", killer if isinstance(killer, str) else None),
+            "attacker_steam_id": str(killer_info["steam_id"]) if "steam_id" in killer_info else None,
+            "attacker_pos": attacker_pos, "victim_pos": victim_pos,
+            "victim_name": victim_info.get("name", victim if isinstance(victim, str) else None),
+            "victim_steam_id": str(victim_info["steam_id"]) if "steam_id" in victim_info else None,
+            "weapon": data.get("weapon"), "is_headshot": data.get("headshot"),
+            "wallbang": data.get("wallbang"), "attacker_team": killer_info.get("team"),
+            "victim_team": victim_info.get("team"), "map_name": map_name,
+            "round_number": data.get("round_number"), "distance": distance,
+            "angle_diff": angle_diff, "attacker_view_x": yaw, "attacker_view_y": pitch,
+            "victim_view_x": None, "victim_view_y": None, "demo_file": demo_file,
+            "snapshot_phase": "kill_event",
+        }

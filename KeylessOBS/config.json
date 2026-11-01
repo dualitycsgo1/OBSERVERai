@@ -10,6 +10,9 @@
     "height_difference_max": 220.0,
     "ttc_max": 3.2
   },
+  "geometry": {
+    "require_verified_visibility": false
+  },
   "scoring": {
     "w_orientation_adv": 0.33,
     "w_distance_suit": 0.14,

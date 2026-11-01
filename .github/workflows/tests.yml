@@ -1,0 +1,23 @@
+name: Tests
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  regression:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: KeylessOBS/go.mod
+          cache-dependency-path: KeylessOBS/go.sum
+      - run: python -m pip install numpy scikit-learn pytest keyboard zstandard
+      - run: python -m pytest tests test_demo_processing.py -q
+        working-directory: KeylessOBS
+      - run: go test ./...
+        working-directory: KeylessOBS
+      - run: go build -o demo_parser_with_positions.exe .
+        working-directory: KeylessOBS

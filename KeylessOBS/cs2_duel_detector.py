@@ -63,90 +63,42 @@ except ImportError:
     MODEL_UPDATER_AVAILABLE = False
 
 class ModelHotReloader:
-    """Hot reload models when they are updated"""
-    
+    """Poll the model file itself; retain the last validated bundle on bad writes."""
+
     def __init__(self, models_dir="models"):
         self.models_dir = os.path.join(get_base_dir(), models_dir)
         self.model_cache = {}
-        self.last_check = 0
-        self.check_interval = 30  # seconds
-        
+        self.last_check = 0.0
+        self.check_interval = 30.0
+
     def get_model(self, model_name, model_path):
-        """Get model with hot reloading support"""
-        current_time = time.time()
-        
-        # Check for updates every check_interval seconds
-        if current_time - self.last_check > self.check_interval:
-            self._check_for_updates()
-            self.last_check = current_time
-            
-        # Return cached model or load new one
-        cache_key = f"{model_name}_{model_path}"
-        
-        if cache_key in self.model_cache:
-            return self.model_cache[cache_key]['model']
-        else:
-            return self._load_model(model_name, model_path)
-            
-    def _check_for_updates(self):
-        """Check for model update notifications"""
+        cache_key = (model_name, os.path.abspath(model_path))
+        cached = self.model_cache.get(cache_key)
+        now = time.monotonic()
+        if cached and now - cached['checked_at'] < self.check_interval:
+            return cached['model']
+        if cached:
+            cached['checked_at'] = now
         try:
-            for file in os.listdir(self.models_dir):
-                if file.startswith("model_update_") and file.endswith(".json"):
-                    notification_path = os.path.join(self.models_dir, file)
-                    
-                    with open(notification_path, 'r') as f:
-                        notification = json.load(f)
-                        
-                    model_name = notification.get('model_name')
-                    if model_name:
-                        self._reload_model(model_name)
-                        
-                    # Remove notification file
-                    os.remove(notification_path)
-                    logging.info(f"🔄 Hot-reloaded model: {model_name}")
-                    
-        except Exception as e:
-            logging.debug(f"Update check failed: {e}")
-            
-    def _reload_model(self, model_name):
-        """Reload a specific model"""
-        # Clear from cache to force reload
-        keys_to_remove = [k for k in self.model_cache.keys() if model_name in k]
-        for key in keys_to_remove:
-            del self.model_cache[key]
-            
-    def _load_model(self, model_name, model_path):
-        """Load model and cache it"""
-        try:
+            stat = os.stat(model_path)
+            signature = (stat.st_mtime_ns, stat.st_size)
+            if cached and cached['signature'] == signature:
+                return cached['model']
             import pickle
-            
-            if not os.path.exists(model_path):
-                return None
-                
-            if model_path.endswith('.pkl'):
-                with open(model_path, 'rb') as f:
-                    model = pickle.load(f)
-            elif model_path.endswith('.joblib'):
-                import joblib
-                model = joblib.load(model_path)
-            else:
-                return None
-                
-            # Cache the model
-            cache_key = f"{model_name}_{model_path}"
+            from observer_model import validate_model_bundle
+            with open(model_path, 'rb') as stream:
+                bundle = pickle.load(stream)
+            validate_model_bundle(bundle)
             self.model_cache[cache_key] = {
-                'model': model,
-                'loaded_at': datetime.now(),
-                'path': model_path
+                'model': bundle, 'signature': signature, 'checked_at': now,
             }
-            
-            logging.info(f"🤖 Model loaded: {model_name}")
-            return model
-            
-        except Exception as e:
-            logging.warning(f"Failed to load model {model_name}: {e}")
-            return None
+            logging.info("Observer model loaded: %s", model_path)
+            return bundle
+        except Exception as exc:
+            if os.path.exists(model_path):
+                logging.warning("Observer model rejected: %s", exc)
+            return cached['model'] if cached else None
+
 
 # Windows API setup for keyboard input
 user32 = ctypes.windll.user32
@@ -203,9 +155,10 @@ def send_key(vk_code):
 
 def parse_vec3(s: str) -> Optional[Tuple[float, float, float]]:
     try:
-        x, y, z = map(float, s.split(', '))
-        return x, y, z
-    except:
+        values = s.replace(',', ' ').split() if isinstance(s, str) else s
+        x, y, z = map(float, values)
+        return (x, y, z) if all(math.isfinite(v) for v in (x, y, z)) else None
+    except (TypeError, ValueError):
         return None
 
 def norm2d(v):
@@ -224,19 +177,14 @@ def distance2d(p1, p2) -> float:
 def clamp01(x): return max(0.0, min(1.0, x))
 
 def angle_facing_score(player_pos, player_forward, target_pos):
-    """
-    0..1: 1.0 hvis man kigger direkte mod target (2D), 0 hvis 90+ grader væk.
-    """
+    """Positive cosine of the actual 3D aiming angle, including pitch."""
     try:
-        px, py, _ = player_pos
-        fx, fy, _ = player_forward
-        tx, ty, _ = target_pos
-        to_target = (tx - px, ty - py)
-        f_n = norm2d((fx, fy))
-        t_n = norm2d(to_target)
-        dp = dot2d(f_n, t_n)  # [-1..1]
-        return max(0.0, dp)
-    except:
+        direction = tuple(t - p for t, p in zip(target_pos, player_pos))
+        magnitude = math.sqrt(sum(v*v for v in direction)) * math.sqrt(sum(v*v for v in player_forward))
+        if magnitude <= 0 or not math.isfinite(magnitude):
+            return 0.0
+        return clamp01(sum(a*b for a, b in zip(direction, player_forward)) / magnitude)
+    except (TypeError, ValueError):
         return 0.0
 
 def has_awp(player_data: Dict[str, Any]) -> bool:
@@ -259,36 +207,36 @@ def is_approaching_angle(static_pos, static_forward, moving_pos, moving_prev_pos
     try:
         if not static_pos or not static_forward or not moving_pos or not moving_prev_pos:
             return False
-            
+
         # Calculate if moving player is getting closer to the static player's line of sight
         sx, sy, _ = static_pos
         fx, fy, _ = static_forward
         mx, my, _ = moving_pos
         prev_mx, prev_my, _ = moving_prev_pos
-        
+
         # Vector from static player to moving player (current and previous)
         to_moving_current = (mx - sx, my - sy)
         to_moving_prev = (prev_mx - sx, prev_my - sy)
-        
+
         # Normalize static player's forward vector
         forward_norm = norm2d((fx, fy))
-        
+
         # Calculate distances from moving player to static player's line of sight
         # (perpendicular distance to the line)
         current_cross = abs(to_moving_current[0] * forward_norm[1] - to_moving_current[1] * forward_norm[0])
         prev_cross = abs(to_moving_prev[0] * forward_norm[1] - to_moving_prev[1] * forward_norm[0])
-        
+
         # Check if moving player is also moving in the general direction of static player's aim
         dot_current = dot2d(to_moving_current, forward_norm)
         dot_prev = dot2d(to_moving_prev, forward_norm)
-        
+
         # Player is approaching angle if:
         # 1. They're getting closer to the line of sight (smaller cross product)
         # 2. They're moving in the general direction of the AWPer's aim
         # 3. The distance along the aim line is decreasing (getting closer)
         is_approaching_line = current_cross < prev_cross
         is_in_aim_direction = dot_current > 0 and dot_current > dot_prev
-        
+
         return is_approaching_line and is_in_aim_direction
     except:
         return False
@@ -370,7 +318,7 @@ class CS2DuelDetector:
         self.height_diff_max = dd.get('height_difference_max', 450.0)  # Increased for Dust2-style elevation differences
         self.extreme_height_diff_max = dd.get('extreme_height_difference_max', 800.0)  # For very vertical maps
         self.ttc_max = dd.get('ttc_max', 4.0)  # Allow longer approach times
-        
+
         # AWP-specific detection settings
         awp_settings = dd.get('awp_settings', {})
         self.awp_max_distance = awp_settings.get('max_distance', 2800.0)  # Much longer for AWP angles
@@ -440,11 +388,11 @@ class CS2DuelDetector:
         self.crosshair_precision_history: Dict[str, deque] = defaultdict(lambda: deque(maxlen=15))  # INCREASED - more history for better prediction
         self.movement_pattern_tracker: Dict[str, deque] = defaultdict(lambda: deque(maxlen=20))  # INCREASED - longer movement pattern tracking
         self.hardcore_confidence_threshold = 0.45  # MASSIVELY LOWERED - predict approaches much earlier
-        
+
         # High confidence switching override
         self._force_high_confidence_switch = False  # Flag for bypassing cooldowns
         self._high_confidence_level = 0.0  # Store confidence level for switching speed
-        
+
         # Viewing quality protection
         self._recent_switches = deque(maxlen=5)  # Track recent switches for quality control
         self._max_switches_per_10s = 3  # Limit switches for viewing comfort
@@ -470,66 +418,26 @@ class CS2DuelDetector:
         self.pre_engagement_facing_threshold = 0.15  # Lenient facing requirement for pre-engagement
         self.approach_speed_threshold = 5.0  # Minimum approach speed for pre-engagement detection
         self.positioning_time_threshold = 2.0  # Time players must be positioning for lock activation
-        
+
         # Anti-rapid-switching system
         self.last_duel_switch_time: Optional[datetime] = None
         self.duel_switch_cooldown_seconds = 3.0  # Minimum time between duel switches
         self.duel_lock_persistence_bonus = 0.3  # Score bonus for continuing current duel
         self.minimum_duel_lock_duration = 2.5  # Minimum time to stay locked onto a duel
 
-        # Pattern-Aware AI Integration with Memory System
-        self.ai_analyzer = None
+        # Use the same versioned feature/target contract as the trainer.
         self.use_ai = self.config.get('ai', {}).get('enabled', True)
+        self.auto_model_updates = self.config.get('ai', {}).get('auto_updates', True)
         self.ai_boost_factor = self.config.get('ai', {}).get('boost_factor', 1.5)
-        self.use_pattern_memory = self.config.get('ai', {}).get('use_pattern_memory', True)
-        
-        # Try to load pattern-aware AI system first
-        if AI_AVAILABLE and self.use_ai:
-            try:
-                # First try pattern-aware AI with memory
-                if self.use_pattern_memory:
-                    from pattern_memory_ai import EnhancedPatternAwareAI
-                    self.ai_analyzer = EnhancedPatternAwareAI()
-                    if (self.ai_analyzer.base_ai and self.ai_analyzer.base_ai.models_loaded and 
-                        self.ai_analyzer.base_ai.model and self.ai_analyzer.pattern_memory):
-                        logging.info("🧠 AI System: Pattern-memory with 95.7% accuracy")
-                    else:
-                        raise ImportError("Pattern memory system incomplete")
-                else:
-                    # Use enhanced AI without pattern memory
-                    from enhanced_observer_ai import EnhancedObserverAI
-                    self.ai_analyzer = EnhancedObserverAI()
-                    if self.ai_analyzer.models_loaded and self.ai_analyzer.model:
-                        logging.info("🧠 AI System: Enhanced model ready")
-                    else:
-                        raise ImportError("Enhanced AI model not available")
-                        
-            except ImportError:
-                # Fallback to original analyzer
-                try:
-                    self.ai_analyzer = DemoAnalyzer()
-                    
-                    # Try to use hot-reloader if available
-                    if self.model_reloader:
-                        model_path = os.path.join(get_base_dir(), "models", "observer_ai_model.pkl")
-                        model = self.model_reloader.get_model("observer_ai_model", model_path)
-                        if model:
-                            self.ai_analyzer.model = model
-                            self.ai_analyzer.models_loaded = True
-                            logging.info("🧠 AI System: Basic model loaded with hot-reload support")
-                        else:
-                            self.ai_analyzer = None
-                    elif self.ai_analyzer.load_model('observer_ai_model.pkl'):
-                        logging.info("🧠 AI System: Basic model loaded")
-                    else:
-                        self.ai_analyzer = None
-                except:
-                    self.ai_analyzer = None
+        self.model_reloader = ModelHotReloader()
+        self.ai_analyzer = DemoAnalyzer() if AI_AVAILABLE and self.use_ai else None
+        self._geometry_cache = {}
+        self._refresh_observer_model()
 
         # Complete Kill Pattern Analysis Integration - WORLD CLASS DATA (12,092 kills!)
         self.kill_pattern_system = None
         self.use_complete_kill_analysis = self.config.get('kill_analysis', {}).get('enabled', True)
-        
+
         if self.use_complete_kill_analysis:
             try:
                 # Load the complete kill analysis results
@@ -541,20 +449,20 @@ class CS2DuelDetector:
                     kill_analysis_path = os.path.join(get_base_dir(), 'complete_kill_analysis.json')
                 with open(kill_analysis_path, 'r', encoding='utf-8') as f:
                     self.kill_analysis_data = json.load(f)
-                    
+
                 # Extract prediction model for fast access
                 self.prediction_model = self.kill_analysis_data.get('prediction_model', {})
                 self.weapon_effectiveness = self.prediction_model.get('weapon_effectiveness', {})
                 self.map_hotspots = self.prediction_model.get('map_hotspots', {})
-                
+
                 # Load statistical insights from the analysis
                 self.weapon_kill_rates = self.kill_analysis_data['analysis_stats']['weapon_stats']
                 self.map_kill_distributions = self.kill_analysis_data['analysis_stats']['maps_analyzed']
-                
+
                 total_kills = self.kill_analysis_data['analysis_stats']['total_kills_extracted']
                 demos_count = self.kill_analysis_data['analysis_stats']['demos_processed']
                 logging.info(f"🎯 Kill Analysis: {total_kills} kills from {demos_count} demos")
-                
+
             except Exception as e:
                 self.kill_analysis_data = None
                 self.prediction_model = {}
@@ -563,38 +471,23 @@ class CS2DuelDetector:
                 self.weapon_kill_rates = {}
                 self.map_kill_distributions = {}
 
-        # Model Hot-Reloading System - Auto-update models from AI trainer
-        self.model_updater = None
-        self.model_reloader = None
-        self.auto_model_updates = self.config.get('ai', {}).get('auto_updates', True)
-        
-        if MODEL_UPDATER_AVAILABLE and self.auto_model_updates:
-            try:
-                self.model_updater = ModelUpdater()
-                self.model_reloader = ModelHotReloader()
-                logging.info("🔄 Model Auto-Update System: Ready for hot-reloading")
-            except Exception as e:
-                logging.warning(f"Model updater initialization failed: {e}")
-                self.model_updater = None
-                self.model_reloader = None
-
         # NAV-Aware Predictive Observer System
         self.predictive_observer = None
         self.use_predictive_observer = self.config.get('predictive', {}).get('enabled', True)
-        
+
         if self.use_predictive_observer:
             try:
                 from kill_pattern_analyzer import DemoKillAnalyzer
                 from predictive_observer import PredictiveObserver
-                
+
                 self.kill_analyzer = DemoKillAnalyzer()
                 self.predictive_observer = PredictiveObserver(
-                    existing_detector=self, 
+                    existing_detector=self,
                     kill_analyzer=self.kill_analyzer
                 )
-                
+
                 logging.info("🔮 Predictive Observer: NAV-aware with 18k+ areas")
-                
+
             except Exception as e:
                 self.use_predictive_observer = False
                 self.predictive_observer = None
@@ -606,11 +499,11 @@ class CS2DuelDetector:
         """Log a clean system status summary"""
         systems = []
         if self.positional_ai: systems.append("Positional AI")
-        if self.ai_analyzer: systems.append("Pattern AI")  
+        if self.ai_analyzer and self.ai_analyzer.models_loaded: systems.append("Validated kill model")
         if self.geometry_manager: systems.append("Line of Sight")
         if self.kill_analysis_data: systems.append("Kill Analysis")
         if self.predictive_observer: systems.append("Predictive Observer")
-        
+
         if systems:
             logging.info(f"🚀 Systems ready: {', '.join(systems)}")
         else:
@@ -651,7 +544,7 @@ class CS2DuelDetector:
             },
             "scoring": {
                 "w_orientation_adv": 0.20,     # Increased - current engagement matters
-                "w_distance_suit": 0.12,       # Increased - weapon effectiveness matters  
+                "w_distance_suit": 0.12,       # Increased - weapon effectiveness matters
                 "w_health": 0.10,              # Increased - current state matters
                 "w_weapon_quality": 0.14,      # Increased - current loadout matters
                 "w_duel_proximity": 0.25,      # MASSIVELY increased - active duels are key
@@ -687,7 +580,7 @@ class CS2DuelDetector:
             },
             "triggers": {
                 "kill_focus_time": 4.5,      # Much longer focus after kills (AI insight!)
-                "damage_drop_hp": 20,        # Even lower threshold for responsiveness  
+                "damage_drop_hp": 20,        # Even lower threshold for responsiveness
                 "damage_focus_time": 2.0,    # Reduced - kills are more important than damage
                 "multi_kill_bonus": 2.0      # Extra time for multi-kills
             },
@@ -703,7 +596,7 @@ class CS2DuelDetector:
             "kill_analysis": {
                 "enabled": True,              # Use complete kill analysis data (12,092 kills!)
                 "use_weapon_effectiveness": True,  # Use real weapon performance data
-                "use_map_intelligence": True,  # Use map-specific kill patterns  
+                "use_map_intelligence": True,  # Use map-specific kill patterns
                 "confidence_boost": 1.15,    # Boost confidence when real data available
                 "weapon_data_weight": 0.30,  # Weight for weapon effectiveness (was 0.25)
                 "map_data_weight": 0.05      # Weight for map-specific patterns
@@ -711,7 +604,7 @@ class CS2DuelDetector:
             "kill_prediction": {
                 "enabled": True,              # Enable predictive kill detection
                 "confidence_threshold": 0.55,  # MASSIVELY LOWERED - predict approaches 2-3 seconds earlier
-                "high_confidence_override": 0.70,  # LOWERED - much faster early switching  
+                "high_confidence_override": 0.70,  # LOWERED - much faster early switching
                 "ultra_high_confidence": 0.85,  # LOWERED - more early predictions
                 "prediction_window": 5.0,    # INCREASED - longer prediction window for approaches
                 "viewing_quality_protection": True,  # Limit switches for spectator comfort
@@ -749,7 +642,7 @@ class CS2DuelDetector:
             fwd = parse_vec3(p.get('forward', '')) if p.get('forward') else None
 
             self.history.update(sid, pos, fwd, hp, rk, now_ts)
-            
+
             # Update death detection tracking
             self.last_player_health[sid] = hp
 
@@ -758,7 +651,7 @@ class CS2DuelDetector:
             if rk > prev_rk:
                 kill_diff = rk - prev_rk
                 base_focus_time = kill_focus_time
-                
+
                 # Multi-kill bonus (AI insight: kills are everything!)
                 if kill_diff >= 2:  # Double kill or more
                     multi_kill_bonus = trig_cfg.get('multi_kill_bonus', 2.0)
@@ -766,17 +659,17 @@ class CS2DuelDetector:
                     logging.info(f"🔥 {p.get('name','?')} multi-kill! ({kill_diff}x)")
                 else:
                     logging.info(f"💀 {p.get('name','?')} got a kill")
-                
+
                 self.kill_focus_sid = sid
                 self.kill_focus_until = now_ts + base_focus_time
-                
+
                 # Force immediate switch for kills (overrides cooldowns)
                 if self._can_switch_now() or kill_diff >= 2:
                     slot = self.get_player_slot(sid, gamestate)
                     if slot:
                         self.switch_to_player(slot)
                         self._update_current_target(sid, 1.0)  # Max score for kill focus
-                        
+
             self.last_rk[sid] = rk
 
             # Damage trigger (HP faldt markant)
@@ -803,20 +696,20 @@ class CS2DuelDetector:
         """Check if currently spectated player died and handle immediate switching"""
         if not self.current_target_sid:
             return
-            
+
         current_player = allplayers.get(self.current_target_sid, {})
         current_hp = current_player.get('state', {}).get('health', 0)
         previous_hp = self.last_player_health.get(self.current_target_sid, current_hp)
-        
+
         # Detect death (health went from >0 to 0)
         if previous_hp > 0 and current_hp <= 0:
             victim_name = current_player.get('name', 'Unknown')
             logging.info(f"☠️ {victim_name} died - switching away")
-            
+
             # Priority 1: Switch to other active duel if available
             duels = self.find_potential_duels(allplayers)
             best_duel_target = self._find_best_alternative_duel(duels, allplayers, now_ts)
-            
+
             if best_duel_target:
                 slot = self.get_player_slot(best_duel_target, gamestate)
                 if slot:
@@ -825,7 +718,7 @@ class CS2DuelDetector:
                     target_name = allplayers.get(best_duel_target, {}).get('name', 'Unknown')
                     logging.info(f"⚔️ Switching to {target_name} (alternative duel)")
                     return
-            
+
             # Priority 2: Switch to the killer if no other duels
             killer_sid = self._find_killer_by_recent_kills(allplayers)
             if killer_sid:
@@ -833,35 +726,35 @@ class CS2DuelDetector:
                 if slot:
                     self.switch_to_player(slot)
                     self._update_current_target(killer_sid, 0.75)  # Good priority for killer
-                    
+
                     # Set death switch priority to keep focus on killer briefly
                     self.death_switch_target = killer_sid
                     self.death_switch_active_until = now_ts + self.death_switch_priority_duration
-                    
+
                     killer_name = allplayers.get(killer_sid, {}).get('name', 'Unknown')
                     logging.info(f"🎯 Switching to {killer_name} (killer priority)")
                     return
-            
+
             # Priority 3: End duel tracking if current target died
             if self._is_duel_active() and self.current_target_sid in self.active_duel_participants:
                 pass  # Ending duel tracking
                 self._end_duel_tracking()
-            
+
             pass  # No immediate alternative found
 
     def _find_best_alternative_duel(self, duels: List[Tuple[str, str, float]], allplayers: Dict[str, Any], now_ts: float) -> Optional[str]:
         """Find the best alternative duel target when current spectated player dies"""
         if not duels:
             return None
-            
+
         best_target = None
         best_score = 0.0
-        
+
         for sid1, sid2, dist in duels:
             # Score both participants
             score1 = self.score_player_in_duel(sid1, sid2, allplayers, dist, now_ts)
             score2 = self.score_player_in_duel(sid2, sid1, allplayers, dist, now_ts)
-            
+
             # Pick the better one from this duel
             if score1 > score2 and score1 > best_score:
                 best_target = sid1
@@ -869,74 +762,74 @@ class CS2DuelDetector:
             elif score2 > best_score:
                 best_target = sid2
                 best_score = score2
-                
+
         return best_target
 
     def _find_killer_by_recent_kills(self, allplayers: Dict[str, Any]) -> Optional[str]:
         """Find player who most likely got the kill by looking for recent kill count increase"""
         best_killer = None
         best_score = 0.0
-        
+
         for sid, player in allplayers.items():
             if sid == 'total':
                 continue
-                
+
             current_kills = player.get('state', {}).get('round_kills', 0)
             previous_kills = self.last_rk.get(sid, current_kills)
-            
+
             # Look for recent kill increase
             if current_kills > previous_kills:
                 kill_diff = current_kills - previous_kills
-                
+
                 # Calculate killer score based on kill recency and other factors
                 killer_score = kill_diff * 2.0  # Base score for kills
-                
+
                 # Boost for players with better positioning/weapons
                 player_hp = player.get('state', {}).get('health', 0)
                 if player_hp > 0:  # Must be alive
                     weapon_score, _, _ = self.get_best_weapon_score(player, self.config.get('weapon_scores', {}))
                     killer_score += weapon_score * 0.5
-                    
+
                     # Boost for higher HP (survivor advantage)
                     killer_score += (player_hp / 100.0) * 0.3
-                    
+
                     if killer_score > best_score:
                         best_killer = sid
                         best_score = killer_score
-        
+
         return best_killer
 
     def _is_rifle_weapon(self, weapon_name: str, weapon_type: str) -> bool:
         """Check if weapon is a rifle (AK, M4, etc.)"""
         rifle_names = ['ak47', 'ak-47', 'm4a4', 'm4a1', 'aug', 'sg553', 'sg556', 'famas', 'galil']
         return any(rifle in weapon_name.lower() for rifle in rifle_names) or 'rifle' in weapon_type.lower()
-    
+
     def _is_close_range_weapon(self, weapon_name: str, weapon_type: str) -> bool:
         """Check if weapon is pistol/SMG (close range)"""
         close_range_names = ['glock', 'usp', 'p250', 'tec-9', 'cz75', 'five-seven', 'dual', 'deagle',
                            'mp9', 'mac-10', 'mp7', 'ump', 'p90', 'bizon', 'mp5']
-        return (any(name in weapon_name.lower() for name in close_range_names) or 
+        return (any(name in weapon_name.lower() for name in close_range_names) or
                 'smg' in weapon_type.lower() or 'pistol' in weapon_type.lower())
-    
+
     def _get_weapon_aware_max_distance(self, p1_awp: bool, p2_awp: bool, p1_rifle: bool, p2_rifle: bool,
                                      p1_close: bool, p2_close: bool, current_dist: float) -> float:
         """Calculate maximum duel distance based on weapons involved"""
-        
+
         # AWP gets maximum distance
         if p1_awp or p2_awp:
             return self.awp_max_distance  # 2800 units
-            
+
         # Rifle vs anything = extended distance (rifles dominate at range)
         if p1_rifle or p2_rifle:
             if p1_rifle and p2_rifle:
                 return 2200.0  # Rifle vs rifle - long range duels common
             else:
                 return 1800.0  # Rifle vs pistol/SMG - rifle advantage at range
-                
+
         # Both close-range weapons = standard distance
         if p1_close and p2_close:
             return self.max_duel_distance  # 1200 units
-            
+
         # Mixed unknown weapons = standard distance
         return self.max_duel_distance
 
@@ -947,72 +840,74 @@ class CS2DuelDetector:
         """
         if not self.hardcore_prediction_active:
             return None
-            
+
         best_prediction = None
         best_confidence = 0.0
-        
+
         # Analyze all players for pre-engagement indicators
         for sid1, p1 in allplayers.items():
             if sid1 == 'total' or p1.get('state', {}).get('health', 0) <= 0:
                 continue
-                
+
             # Get player positioning and weapon info
             p1_pos = parse_vec3(p1.get('position', ''))
             p1_fwd = parse_vec3(p1.get('forward', ''))
             p1_weapon_score, p1_weapon_name, p1_weapon_type = self.get_best_weapon_score(p1, self.config.get('weapon_scores', {}))
-            
+
             if not p1_pos or not p1_fwd:
                 continue
-                
+
             # Look for potential targets this player might engage
             for sid2, p2 in allplayers.items():
                 if sid2 == 'total' or sid2 == sid1 or p2.get('state', {}).get('health', 0) <= 0:
                     continue
-                    
+
                 if p1.get('team', '') == p2.get('team', ''):
                     continue  # Same team
-                    
+
                 p2_pos = parse_vec3(p2.get('position', ''))
                 if not p2_pos:
                     continue
-                    
+
                 # Calculate hardcore prediction confidence
                 hardcore_confidence = self._calculate_hardcore_prediction_confidence(
                     sid1, sid2, p1, p2, p1_pos, p2_pos, p1_fwd, now_ts
                 )
-                
+
                 if hardcore_confidence > best_confidence and hardcore_confidence >= self.hardcore_confidence_threshold:
                     best_confidence = hardcore_confidence
                     best_prediction = sid1
-                    
+
         if best_prediction and best_confidence >= self.hardcore_confidence_threshold:
             pred_name = allplayers.get(best_prediction, {}).get('name', 'Unknown')
             logging.info(f"🎯 Pre-engagement: {pred_name} ({best_confidence:.0%} confidence)")
             return best_prediction, best_confidence
-            
+
         return None
 
-    def _calculate_hardcore_prediction_confidence(self, attacker_sid: str, target_sid: str, 
+    def _calculate_hardcore_prediction_confidence(self, attacker_sid: str, target_sid: str,
                                                 attacker: Dict[str, Any], target: Dict[str, Any],
                                                 attacker_pos: Tuple[float, float, float], target_pos: Tuple[float, float, float],
                                                 attacker_fwd: Tuple[float, float, float], now_ts: float) -> float:
         """Calculate confidence for hardcore pre-engagement prediction"""
-        
+
+        if not self._direct_duel_allowed(attacker, target):
+            return 0.0
         confidence = 0.0
         distance = distance2d(attacker_pos, target_pos)
-        
+
         # 1. Crosshair Pre-placement (30% weight) - MOST IMPORTANT for hardcore prediction
         crosshair_score = angle_facing_score(attacker_pos, attacker_fwd, target_pos)
         self.crosshair_precision_history[attacker_sid].append((now_ts, crosshair_score))
-        
+
         # Check crosshair consistency over time (pre-aiming)
-        recent_crosshair_scores = [score for ts, score in self.crosshair_precision_history[attacker_sid] 
+        recent_crosshair_scores = [score for ts, score in self.crosshair_precision_history[attacker_sid]
                                  if now_ts - ts <= 2.0]  # Last 2 seconds
-        
+
         if len(recent_crosshair_scores) >= 3:  # LOWERED - need less data for faster prediction
             avg_crosshair = sum(recent_crosshair_scores) / len(recent_crosshair_scores)
             consistency = 1.0 - (max(recent_crosshair_scores) - min(recent_crosshair_scores))  # Lower variance = higher consistency
-            
+
             if avg_crosshair > 0.5 and consistency > 0.6:  # LOWERED - Good pre-aiming (was 0.7/0.8)
                 confidence += 0.30  # Full 30% for good pre-aim
             elif avg_crosshair > 0.3 and consistency > 0.4:  # LOWERED - Decent pre-aiming (was 0.5/0.6)
@@ -1021,57 +916,57 @@ class CS2DuelDetector:
                 confidence += 0.15  # INCREASED - reward any directional aiming
             elif avg_crosshair > 0.05:  # NEW - Minimal aiming gets some reward
                 confidence += 0.08  # NEW - catch very early positioning
-        
+
         # 2. Movement Pattern Analysis (25% weight) - positioning for advantage
         movement_confidence = self._analyze_hardcore_movement_patterns(attacker_sid, target_sid, now_ts)
         confidence += 0.25 * movement_confidence
-        
+
         # 3. Weapon Advantage at Current Distance (20% weight)
         attacker_weapon_score, attacker_weapon_name, attacker_weapon_type = self.get_best_weapon_score(attacker, self.config.get('weapon_scores', {}))
         target_weapon_score, _, _ = self.get_best_weapon_score(target, self.config.get('weapon_scores', {}))
-        
+
         weapon_advantage = attacker_weapon_score / max(target_weapon_score, 0.1)
         distance_suitability = self.weapon_distance_suitability(attacker_weapon_name, attacker_weapon_type, distance)
         weapon_confidence = min(weapon_advantage * distance_suitability, 1.0)
         confidence += 0.20 * weapon_confidence
-        
+
         # 4. Positional Advantage (15% weight) - cover, angles, etc.
         positional_confidence = self._analyze_positional_advantage(attacker_sid, target_sid, attacker_pos, target_pos, now_ts)
         confidence += 0.15 * positional_confidence
-        
+
         # 5. Target Vulnerability (10% weight) - target not aware, low HP, etc.
         target_state = target.get('state', {})
         target_hp = float(target_state.get('health', 100))
         target_fwd = parse_vec3(target.get('forward', ''))
-        
+
         vulnerability = 0.0
         if target_hp < 50:  # Low HP target
             vulnerability += 0.6
         elif target_hp < 80:
             vulnerability += 0.3
-            
+
         # Check if target is looking away
         if target_fwd:
             target_awareness = angle_facing_score(target_pos, target_fwd, attacker_pos)
             if target_awareness < 0.3:  # Target not looking at attacker
                 vulnerability += 0.4
-                
+
         confidence += 0.10 * min(vulnerability, 1.0)
-        
+
         return min(confidence, 1.0)
 
     def _analyze_hardcore_movement_patterns(self, attacker_sid: str, target_sid: str, now_ts: float) -> float:
         """Analyze movement patterns for hardcore prediction"""
-        
+
         attacker_history = self.history.store.get(attacker_sid, deque())
         if len(attacker_history) < 3:
             return 0.0
-            
+
         movement_confidence = 0.0
-        
+
         # Check for tactical positioning (slowing down, taking cover, etc.)
         recent_positions = [(h['t'], h['pos']) for h in list(attacker_history)[-5:] if h.get('pos')]
-        
+
         if len(recent_positions) >= 3:
             # Calculate speed changes
             speeds = []
@@ -1080,10 +975,10 @@ class CS2DuelDetector:
                 dist = distance2d(recent_positions[i][1], recent_positions[i-1][1])
                 speed = dist / dt
                 speeds.append(speed)
-                
+
             if speeds:
                 recent_speed = speeds[-1] if speeds else 0
-                
+
                 # Slowing down for precise aim = good indicator
                 if recent_speed < 10:  # Very slow/stopped
                     movement_confidence += 0.8
@@ -1091,33 +986,33 @@ class CS2DuelDetector:
                     movement_confidence += 0.5
                 elif recent_speed < 60:  # Moderate movement
                     movement_confidence += 0.2
-                    
+
         return min(movement_confidence, 1.0)
 
-    def _analyze_positional_advantage(self, attacker_sid: str, target_sid: str, 
-                                    attacker_pos: Tuple[float, float, float], target_pos: Tuple[float, float, float], 
+    def _analyze_positional_advantage(self, attacker_sid: str, target_sid: str,
+                                    attacker_pos: Tuple[float, float, float], target_pos: Tuple[float, float, float],
                                     now_ts: float) -> float:
         """Analyze positional advantages for hardcore prediction"""
-        
+
         positional_confidence = 0.0
-        
+
         # Height advantage
         height_diff = attacker_pos[2] - target_pos[2]
         if height_diff > 50:  # Attacker above target
             positional_confidence += 0.3
         elif height_diff < -50:  # Attacker below (disadvantage)
             positional_confidence -= 0.2
-            
+
         # Distance analysis based on historical patterns
         distance = distance2d(attacker_pos, target_pos)
-        
+
         # Check if this is a known strong position (simplified heuristic)
         # In a real implementation, you'd have map-specific position data
         if 200 < distance < 800:  # Medium range = often advantageous
             positional_confidence += 0.2
         elif distance < 200:  # Close range = depends on weapons
             positional_confidence += 0.1
-            
+
         return max(0.0, min(positional_confidence, 1.0))
 
     def _predict_imminent_kills(self, allplayers: Dict[str, Any], duels: List[Tuple[str, str, float]], now_ts: float) -> Optional[Tuple[str, float]]:
@@ -1127,62 +1022,64 @@ class CS2DuelDetector:
         """
         if not self.kill_prediction_active or not duels:
             return None
-            
+
         best_prediction = None
         best_confidence = 0.0
-        
+
         for sid1, sid2, dist in duels:
             p1 = allplayers.get(sid1, {})
             p2 = allplayers.get(sid2, {})
-            
+
             if not p1 or not p2:
                 continue
-                
+
             # Analyze both directions of the duel
             confidence1 = self._calculate_kill_probability(sid1, sid2, p1, p2, dist, allplayers, now_ts)
             confidence2 = self._calculate_kill_probability(sid2, sid1, p2, p1, dist, allplayers, now_ts)
-            
+
             # Take the higher confidence prediction
             if confidence1 > best_confidence and confidence1 >= self.prediction_confidence_threshold:
                 best_prediction = sid1
                 best_confidence = confidence1
-                
+
             if confidence2 > best_confidence and confidence2 >= self.prediction_confidence_threshold:
                 best_prediction = sid2
                 best_confidence = confidence2
-                
+
         if best_prediction and best_confidence >= self.prediction_confidence_threshold:
             pred_name = allplayers.get(best_prediction, {}).get('name', 'Unknown')
             logging.info(f"🔮 Kill prediction: {pred_name} ({best_confidence:.0%} confidence)")
             return best_prediction, best_confidence
-            
+
         return None
 
-    def _calculate_kill_probability(self, attacker_sid: str, target_sid: str, attacker: Dict[str, Any], 
+    def _calculate_kill_probability(self, attacker_sid: str, target_sid: str, attacker: Dict[str, Any],
                                   target: Dict[str, Any], distance: float, allplayers: Dict[str, Any], now_ts: float) -> float:
         """Calculate probability that attacker will kill target based on 12,092 real kills analysis"""
-        
+
+        if not self._direct_duel_allowed(attacker, target):
+            return 0.0
         attacker_state = attacker.get('state', {})
         target_state = target.get('state', {})
-        
+
         # Base factors
         attacker_hp = float(attacker_state.get('health', 0))
         target_hp = float(target_state.get('health', 0))
-        
+
         if attacker_hp <= 0 or target_hp <= 0:
             return 0.0
-            
+
         confidence = 0.0
-        
+
         # 1. Health Advantage (18% weight) - slightly reduced for weapon focus
         health_ratio = attacker_hp / max(target_hp, 1.0)
         health_confidence = min(health_ratio / 2.0, 1.0)  # Normalize to 0-1
         confidence += 0.18 * health_confidence
-        
+
         # 2. Real-World Weapon Advantage (30% weight) - INCREASED using our 12,092 kill dataset
         attacker_weapon_score, attacker_weapon, _ = self.get_best_weapon_score(attacker, self.config.get('weapon_scores', {}))
         target_weapon_score, target_weapon, _ = self.get_best_weapon_score(target, self.config.get('weapon_scores', {}))
-        
+
         # Enhanced weapon analysis using real data
         weapon_confidence = 0.0
         if hasattr(self, 'weapon_kill_rates') and self.weapon_kill_rates:
@@ -1190,22 +1087,22 @@ class CS2DuelDetector:
             attacker_kills = self._get_weapon_kill_count(attacker_weapon)
             target_kills = self._get_weapon_kill_count(target_weapon)
             total_kills = sum(self.weapon_kill_rates.values())
-            
+
             if total_kills > 0:
                 attacker_effectiveness = attacker_kills / total_kills
                 target_effectiveness = target_kills / total_kills
-                
+
                 # Real-world weapon advantage calculation
                 if target_effectiveness > 0:
                     weapon_advantage = attacker_effectiveness / target_effectiveness
                     weapon_confidence = min(weapon_advantage / 3.0, 1.0)  # Normalize
                 else:
                     weapon_confidence = min(attacker_effectiveness * 5.0, 1.0)
-                
+
                 # Special bonuses for dominant weapons from our analysis
                 if attacker_kills > 4000:  # AK-47 dominance (4422 kills)
                     weapon_confidence = min(weapon_confidence * 1.2, 1.0)
-                elif attacker_kills > 2000:  # M4A1 strength (2097 kills) 
+                elif attacker_kills > 2000:  # M4A1 strength (2097 kills)
                     weapon_confidence = min(weapon_confidence * 1.15, 1.0)
                 elif attacker_kills > 900 and 'awp' in attacker_weapon.lower():  # AWP precision (953 kills)
                     weapon_confidence = min(weapon_confidence * 1.25, 1.0)  # Higher bonus for AWP
@@ -1213,63 +1110,14 @@ class CS2DuelDetector:
             # Fallback to basic calculation
             weapon_advantage = attacker_weapon_score / max(target_weapon_score, 0.1)
             weapon_confidence = min(weapon_advantage / 2.0, 1.0)
-            
+
         confidence += 0.30 * weapon_confidence
-        
-        # 2.5. Enhanced Positional AI Predictions (15% weight) - NEW!
-        if self.positional_ai:
-            try:
-                attacker_pos_vec = parse_vec3(attacker.get('position', ''))
-                target_pos_vec = parse_vec3(target.get('position', ''))
-                
-                if attacker_pos_vec and target_pos_vec:
-                    potential_kill = {
-                        'killer': {
-                            'position': {
-                                'x': attacker_pos_vec[0],
-                                'y': attacker_pos_vec[1],
-                                'z': attacker_pos_vec[2]
-                            },
-                            'angles': {
-                                'yaw': float(attacker_state.get('yaw', 0)),
-                                'pitch': float(attacker_state.get('pitch', 0))
-                            },
-                            'weapon': attacker_weapon.lower() if attacker_weapon else 'unknown'
-                        },
-                        'victim': {
-                            'position': {
-                                'x': target_pos_vec[0],
-                                'y': target_pos_vec[1],
-                                'z': target_pos_vec[2]
-                            }
-                        }
-                    }
-                    
-                    gamestate = self._last_gamestate
-                    ai_predictions = self.positional_ai.predict_kill_outcome(gamestate, potential_kill)
-                    
-                    # Combine AI predictions into confidence
-                    ai_confidence = (
-                        ai_predictions.get('headshot_probability', 0.5) * 0.4 +  # Headshot likelihood
-                        ai_predictions.get('weapon_effectiveness', 0.5) * 0.3 +  # Weapon effectiveness in position
-                        (1.0 - ai_predictions.get('wallbang_probability', 0.1)) * 0.2 +  # Lower wallbang = cleaner shot
-                        ai_predictions.get('confidence', 0.5) * 0.1  # AI's own confidence
-                    )
-                    
-                    confidence += 0.15 * ai_confidence
-                    
-                    # Debug log for high-confidence AI predictions
-                    if ai_predictions.get('confidence', 0) > 0.7:
-                        pass  # Positional AI prediction
-                
-            except Exception as e:
-                pass  # AI prediction error
-        
+
         # 3. Positioning Advantage (17% weight) - Crosshair on target (reduced from 20% to make room for AI)
         attacker_pos = parse_vec3(attacker.get('position', ''))
         target_pos = parse_vec3(target.get('position', ''))
         attacker_fwd = parse_vec3(attacker.get('forward', ''))
-        
+
         crosshair_confidence = 0.0
         if attacker_pos and target_pos and attacker_fwd:
             crosshair_score = angle_facing_score(attacker_pos, attacker_fwd, target_pos)
@@ -1281,29 +1129,29 @@ class CS2DuelDetector:
             elif crosshair_score > 0.4:  # Decent aim
                 crosshair_confidence = 0.4
         confidence += 0.17 * crosshair_confidence
-        
+
         # 4. Movement Pattern Analysis (13% weight) - reduced to make room for AI
         movement_confidence = self._analyze_movement_for_kill_prediction(attacker_sid, target_sid, now_ts)
         confidence += 0.13 * movement_confidence
-        
+
         # 5. Distance Suitability (10% weight)
         distance_confidence = self.weapon_distance_suitability(attacker_weapon, "", distance)
         confidence += 0.10 * distance_confidence
-        
+
         # 6. Recent Performance Boost (10% weight)
         recent_kills = attacker_state.get('round_kills', 0)
         performance_confidence = min(recent_kills * 0.3, 1.0)  # Each kill adds confidence
         confidence += 0.10 * performance_confidence
-        
+
         # 7. Special bonuses for high-tension situations
         duel_key = tuple(sorted([attacker_sid, target_sid]))
         if duel_key in self.high_tension_duels:
             tension_data = self.high_tension_duels[duel_key]
             tension_duration = now_ts - tension_data.get('start_time', now_ts)
-            
+
             # Weapon-aware tension bonuses
             is_rifle_duel = self._is_rifle_weapon(attacker_weapon, "")
-            
+
             if is_rifle_duel:
                 # Rifle duels can develop over longer distances/time
                 if tension_duration > 2.0:  # Rifles = longer buildup time
@@ -1316,7 +1164,7 @@ class CS2DuelDetector:
                     confidence += 0.15
                 elif tension_duration > 0.5:
                     confidence += 0.08
-        
+
         # 8. Map-Specific Intelligence from Real Data (5% weight)
         map_confidence = 0.0
         if hasattr(self, 'map_kill_distributions') and self.map_kill_distributions:
@@ -1325,85 +1173,85 @@ class CS2DuelDetector:
             current_map = getattr(self, '_current_map', 'unknown')
             if current_map == 'unknown' and hasattr(self, '_last_gamestate'):
                 current_map = self._last_gamestate.get('map', {}).get('name', '').lower()
-            
+
             if current_map in self.map_kill_distributions:
                 map_kills = self.map_kill_distributions[current_map]
                 total_map_kills = sum(self.map_kill_distributions.values())
-                
+
                 if total_map_kills > 0:
                     # Higher kill volume maps = more predictable patterns
                     map_activity_factor = min(map_kills / total_map_kills * 8.0, 1.0)
                     map_confidence = map_activity_factor
-                    
+
                     # Special bonuses for high-activity maps from our data
                     if map_kills > 2500:  # de_ancient/de_nuke tier (2800+ kills)
                         map_confidence *= 1.1  # More predictable on active maps
                     elif map_kills > 2000:  # de_inferno tier (2021 kills)
                         map_confidence *= 1.05
-        
+
         confidence += 0.05 * map_confidence
-        
+
         # 9. Escalation bonus - situations getting more intense
         escalation_bonus = self._get_escalation_bonus(attacker_sid, target_sid, now_ts)
         confidence += escalation_bonus
-        
+
         return min(confidence, 1.0)  # Cap at 100%
 
     def _analyze_movement_for_kill_prediction(self, attacker_sid: str, target_sid: str, now_ts: float) -> float:
         """Analyze movement patterns to predict kill likelihood"""
-        
+
         attacker_prev, attacker_curr = self.history.last2(attacker_sid)
         target_prev, target_curr = self.history.last2(target_sid)
-        
+
         if not all([attacker_prev, attacker_curr, target_prev, target_curr]):
             return 0.0
-            
+
         # Calculate relative movement
         closing_speed = relative_approach_speed_2d(attacker_prev, attacker_curr, target_prev, target_curr)
-        
+
         movement_confidence = 0.0
-        
+
         # ULTRA SENSITIVE approach detection - catch even slow movements 2-3 seconds earlier
         if closing_speed > 30:  # LOWERED - Fast approach (was 50)
             movement_confidence += 0.7  # INCREASED confidence
-        elif closing_speed > 10:  # LOWERED - Medium approach (was 20)  
+        elif closing_speed > 10:  # LOWERED - Medium approach (was 20)
             movement_confidence += 0.5  # INCREASED confidence
         elif closing_speed > 2:  # MASSIVELY LOWERED - Slow approach (was 0, now catch crawling)
             movement_confidence += 0.35  # INCREASED - even slow movement matters
         elif closing_speed > -5:  # NEW - Even stationary positioning gets some confidence
             movement_confidence += 0.15  # NEW - reward good positioning
-            
+
         # Check if attacker stopped moving (aiming for precise shot)
         attacker_pos_prev = attacker_prev.get('pos')
         attacker_pos_curr = attacker_curr.get('pos')
-        
+
         if attacker_pos_prev and attacker_pos_curr:
             attacker_movement = distance2d(attacker_pos_prev, attacker_pos_curr)
             time_diff = attacker_curr.get('t', 0) - attacker_prev.get('t', 0)
-            
+
             if time_diff > 0:
                 attacker_speed = attacker_movement / time_diff
-                
+
                 # Standing still often indicates preparing to shoot
                 if attacker_speed < 5:  # Very slow/still
                     movement_confidence += 0.4
                 elif attacker_speed < 15:  # Slow movement
                     movement_confidence += 0.2
-        
+
         return min(movement_confidence, 1.0)
 
     def _get_escalation_bonus(self, attacker_sid: str, target_sid: str, now_ts: float) -> float:
         """Calculate bonus for escalating situations - FASTER escalation detection"""
-        
+
         duel_key = tuple(sorted([attacker_sid, target_sid]))
-        
+
         if duel_key not in self.engagement_escalation_tracker:
             self.engagement_escalation_tracker[duel_key] = now_ts
             return 0.0
-            
+
         # How long has this engagement been building? - ULTRA AGGRESSIVE for 2-3 second early switching
         escalation_time = now_ts - self.engagement_escalation_tracker[duel_key]
-        
+
         if escalation_time > 1.5:  # MASSIVELY REDUCED - high probability after just 1.5s
             return 0.20  # INCREASED bonus for longer engagement
         elif escalation_time > 0.8:  # MASSIVELY REDUCED - medium probability after 0.8s
@@ -1412,57 +1260,57 @@ class CS2DuelDetector:
             return 0.10  # INCREASED bonus
         elif escalation_time > 0.1:  # NEW - Any engagement tracking gets some bonus
             return 0.05  # NEW - immediate small bonus
-            
+
         return 0.0
 
     def _track_high_tension_situations(self, duels: List[Tuple[str, str, float]], allplayers: Dict[str, Any], now_ts: float):
         """Track situations that are building to kills"""
-        
+
         current_duels = set()
-        
+
         for sid1, sid2, dist in duels:
             duel_key = tuple(sorted([sid1, sid2]))
             current_duels.add(duel_key)
-            
+
             p1 = allplayers.get(sid1, {})
             p2 = allplayers.get(sid2, {})
-            
+
             # Check for tension indicators
             tension_indicators = 0
-            
+
             # 1. Close distance
             if dist < 400:
                 tension_indicators += 1
-                
+
             # 2. Both players aiming at each other
             p1_pos = parse_vec3(p1.get('position', ''))
             p2_pos = parse_vec3(p2.get('position', ''))
             p1_fwd = parse_vec3(p1.get('forward', ''))
             p2_fwd = parse_vec3(p2.get('forward', ''))
-            
+
             if all([p1_pos, p2_pos, p1_fwd, p2_fwd]):
                 p1_aiming = angle_facing_score(p1_pos, p1_fwd, p2_pos) > 0.5
                 p2_aiming = angle_facing_score(p2_pos, p2_fwd, p1_pos) > 0.5
-                
+
                 if p1_aiming and p2_aiming:
                     tension_indicators += 2  # Mutual aiming is high tension
                 elif p1_aiming or p2_aiming:
                     tension_indicators += 1
-                    
+
             # 3. Recent damage taken
             p1_hp = p1.get('state', {}).get('health', 100)
             p2_hp = p2.get('state', {}).get('health', 100)
-            
+
             if p1_hp < 80 or p2_hp < 80:  # Someone took damage
                 tension_indicators += 1
-                
+
             # 4. Good weapons
             p1_weapon_score, _, _ = self.get_best_weapon_score(p1, self.config.get('weapon_scores', {}))
             p2_weapon_score, _, _ = self.get_best_weapon_score(p2, self.config.get('weapon_scores', {}))
-            
+
             if p1_weapon_score > 0.6 or p2_weapon_score > 0.6:
                 tension_indicators += 1
-                
+
             # Track high tension situations - LOWERED threshold for faster detection
             if tension_indicators >= 2:  # REDUCED from 3 to 2 - faster tension detection
                 if duel_key not in self.high_tension_duels:
@@ -1477,10 +1325,10 @@ class CS2DuelDetector:
                 else:
                     # Update existing tension
                     self.high_tension_duels[duel_key]['max_tension'] = max(
-                        self.high_tension_duels[duel_key]['max_tension'], 
+                        self.high_tension_duels[duel_key]['max_tension'],
                         tension_indicators
                     )
-        
+
         # Clean up resolved tensions
         resolved_duels = set(self.high_tension_duels.keys()) - current_duels
         for duel_key in resolved_duels:
@@ -1527,7 +1375,7 @@ class CS2DuelDetector:
             if 'knife' in name and len(weapons) > 1:
                 continue
             sc = 0.12
-            
+
             # Use real-world weapon effectiveness data from 12,092 kills dataset
             if hasattr(self, 'weapon_kill_rates') and self.weapon_kill_rates:
                 # Map weapon names to our dataset (AK-47: 4422 kills, M4A1: 2097 kills, etc.)
@@ -1542,14 +1390,14 @@ class CS2DuelDetector:
                     weapon_key = 'AWP'
                 elif 'usp' in name:
                     weapon_key = 'USP-S'
-                
+
                 weapon_kills = self.weapon_kill_rates.get(weapon_key, 0)
                 if weapon_kills > 0:
                     # Calculate real-world effectiveness based on actual kill data
                     total_kills = sum(self.weapon_kill_rates.values())
                     real_world_score = min(weapon_kills / total_kills * 8.0, 1.0)  # Scale to realistic range
                     sc = max(sc, real_world_score)
-                    
+
                     # Special bonuses for top performers from our dataset
                     if weapon_kills > 4000:  # AK-47 tier (4422 kills)
                         sc = max(sc, 0.95)
@@ -1559,7 +1407,7 @@ class CS2DuelDetector:
                         sc = max(sc, 0.92)  # AWP gets high score despite lower volume
                     elif weapon_kills > 500:  # Strong secondary weapons
                         sc = max(sc, 0.75)
-            
+
             # Use weapon effectiveness model if available
             if hasattr(self, 'weapon_effectiveness') and self.weapon_effectiveness:
                 weapon_clean = name.replace('-', '').replace('_', '').lower()
@@ -1569,7 +1417,7 @@ class CS2DuelDetector:
                     prediction_boost = effectiveness_data.get('prediction_boost', 1.0)
                     model_score = kill_rate * prediction_boost
                     sc = max(sc, model_score)
-            
+
             # Fallback to config-based scoring
             for key, val in weapon_scores.items():
                 if key in name:
@@ -1584,13 +1432,13 @@ class CS2DuelDetector:
         """Get actual kill count for a weapon from our 12,092 kill dataset"""
         if not hasattr(self, 'weapon_kill_rates') or not self.weapon_kill_rates:
             return 0
-            
+
         # Map weapon names to dataset keys
         weapon_key = weapon_name.upper()
         if 'ak47' in weapon_name.lower() or 'ak-47' in weapon_name.lower():
             weapon_key = 'AK-47'
         elif 'm4a1' in weapon_name.lower():
-            weapon_key = 'M4A1'  
+            weapon_key = 'M4A1'
         elif 'm4a4' in weapon_name.lower():
             weapon_key = 'M4A4'
         elif 'awp' in weapon_name.lower():
@@ -1607,7 +1455,7 @@ class CS2DuelDetector:
             weapon_key = 'FAMAS'
         elif 'galil' in weapon_name.lower():
             weapon_key = 'Galil AR'
-            
+
         return self.weapon_kill_rates.get(weapon_key, 0)
 
     def weapon_distance_suitability(self, weapon_name: str, weapon_type: str, dist: float) -> float:
@@ -1657,6 +1505,8 @@ class CS2DuelDetector:
 
         me = allplayers.get(sid_me, {})
         op = allplayers.get(sid_op, {})
+        if not self._direct_duel_allowed(me, op):
+            return 0.0
         me_state = me.get('state', {}) or {}
         op_state = op.get('state', {}) or {}
 
@@ -1707,14 +1557,107 @@ class CS2DuelDetector:
         )
         score *= clamp01(0.6 + 0.4*ttc_bonus)
         score *= (1.0 - blind_pen)
-        
+
         # AWP-specific scoring bonus for long-range engagements
         if has_awp(me) and dist > 800:  # AWP at long range
             awp_bonus = min(1.3, 1.0 + (dist - 800) / 2000)  # Up to 30% bonus for very long ranges
             score *= awp_bonus
             pass  # AWP bonus applied
-        
+
         return clamp01(score)
+
+    def _refresh_observer_model(self):
+        if not self.ai_analyzer:
+            return
+        if (not self.auto_model_updates and self.ai_analyzer.models_loaded):
+            return
+        path = os.path.join(get_base_dir(), 'models', 'observer_ai_model.pkl')
+        bundle = self.model_reloader.get_model('observer_ai', path)
+        if bundle is not None and bundle is not self.ai_analyzer.model:
+            self.ai_analyzer.set_model_bundle(bundle)
+
+    def _has_validated_forecast(self):
+        analyzer = getattr(self, 'ai_analyzer', None)
+        return bool(analyzer and analyzer.models_loaded and analyzer.model is not None)
+
+    def _rank_model_candidates(self, gamestate, candidates):
+        """Use one probability scale for normal selection and locked duels."""
+        if not self._has_validated_forecast():
+            return []
+        from observer_model import predict_probabilities
+        try:
+            scores = predict_probabilities(self.ai_analyzer.model, gamestate, sorted(set(candidates)))
+            return sorted(scores.items(), key=lambda item: (-item[1], item[0]))
+        except (TypeError, ValueError, IndexError) as exc:
+            logging.debug('Kill forecast failed: %s', exc)
+            return []
+
+    def _active_trigger_target(self, allplayers, now_ts):
+        """Keep short event holds, restricted to a valid locked duel when present."""
+        for sid, until in ((self.death_switch_target, self.death_switch_active_until),
+                           (self.kill_focus_sid, self.kill_focus_until),
+                           (self.damage_focus_sid, self.damage_focus_until)):
+            if (sid and now_ts <= until and allplayers.get(sid, {}).get('state', {}).get('health', 0) > 0
+                    and (not self._is_duel_locked() or sid in self.locked_duel_participants)):
+                return sid
+        return None
+
+    def _duel_visibility(self, p1, p2):
+        """Return cached tri-state geometry shared by every scoring path."""
+        pos1 = parse_vec3(p1.get('position'))
+        pos2 = parse_vec3(p2.get('position'))
+        if pos1 is None or pos2 is None:
+            return None
+        visibility = None
+        if LOS_AVAILABLE and self.geometry_manager:
+            try:
+                # Repeated prediction paths share the same geometry work per update.
+                crouched_a = bool(p1.get('state', {}).get('ducking', False))
+                crouched_b = bool(p2.get('state', {}).get('ducking', False))
+                cache = getattr(self, '_geometry_cache', {})
+                # The query samples both players, so swapping their order is
+                # the same geometric question and can share the result.
+                if (pos1, crouched_a) > (pos2, crouched_b):
+                    pos1, pos2 = pos2, pos1
+                    crouched_a, crouched_b = crouched_b, crouched_a
+                key = (getattr(self.geometry_manager, 'current_map', None),
+                       pos1, pos2, crouched_a, crouched_b)
+                if key not in cache:
+                    cache[key] = duel_geometrically_possible(
+                        pos1, pos2, self.geometry_manager,
+                        crouched_a=crouched_a, crouched_b=crouched_b)
+                visibility = cache[key]
+                self._geometry_cache = cache
+            except Exception as exc:
+                logging.debug('Geometry query failed: %s', exc)
+        return visibility
+
+    def _direct_duel_allowed(self, p1, p2):
+        """Filter direct engagements; unknown stays a declared fallback.
+
+        This does not simulate bullet penetration, smoke, doors, or player hitboxes.
+        Set geometry.require_verified_visibility to exclude unknown geometry too.
+        """
+        if parse_vec3(p1.get('position')) is None or parse_vec3(p2.get('position')) is None:
+            return False
+        visibility = self._duel_visibility(p1, p2)
+        if visibility is False:
+            return False
+        strict = self.config.get('geometry', {}).get('require_verified_visibility', False)
+        return visibility is True or not strict
+
+    def _player_has_direct_target(self, sid, allplayers):
+        player = allplayers.get(sid, {})
+        if player.get('state', {}).get('health', 0) <= 0:
+            return False
+        return any(
+            other_sid != 'total' and other_sid != sid
+            and enemy.get('team') and player.get('team')
+            and enemy.get('team') != player.get('team')
+            and enemy.get('state', {}).get('health', 0) > 0
+            and self._direct_duel_allowed(player, enemy)
+            for other_sid, enemy in allplayers.items()
+        )
 
     # ------------- Duel-finder -------------
 
@@ -1731,93 +1674,54 @@ class CS2DuelDetector:
                 pos2 = parse_vec3(p2.get('position','')) if p2.get('position') else None
                 if not pos1 or not pos2:
                     continue
-                
+
                 dist = distance2d(pos1, pos2)
-                
+
                 # Advanced weapon-aware distance detection
                 p1_has_awp = has_awp(p1)
                 p2_has_awp = has_awp(p2)
                 p1_weapon_score, p1_weapon_name, p1_weapon_type = self.get_best_weapon_score(p1, self.config.get('weapon_scores', {}))
                 p2_weapon_score, p2_weapon_name, p2_weapon_type = self.get_best_weapon_score(p2, self.config.get('weapon_scores', {}))
-                
+
                 # Determine weapon categories for distance logic
                 p1_has_rifle = self._is_rifle_weapon(p1_weapon_name, p1_weapon_type)
                 p2_has_rifle = self._is_rifle_weapon(p2_weapon_name, p2_weapon_type)
                 p1_has_pistol_smg = self._is_close_range_weapon(p1_weapon_name, p1_weapon_type)
                 p2_has_pistol_smg = self._is_close_range_weapon(p2_weapon_name, p2_weapon_type)
-                
+
                 # Dynamic distance limits based on weapons involved
                 max_distance = self._get_weapon_aware_max_distance(
-                    p1_has_awp, p2_has_awp, p1_has_rifle, p2_has_rifle, 
+                    p1_has_awp, p2_has_awp, p1_has_rifle, p2_has_rifle,
                     p1_has_pistol_smg, p2_has_pistol_smg, dist
                 )
-                
+
                 # Dynamic facing threshold based on weapon types
                 facing_threshold = self.awp_facing_threshold if (p1_has_awp or p2_has_awp) else self.facing_threshold
-                
+
                 if dist > max_distance or dist < self.min_duel_distance:
                     continue
-                    
-                # Smart elevation logic - context-aware height difference checking
-                try:
-                    height_diff = abs(pos1[2] - pos2[2])
-                    
-                    # Dynamic height threshold based on distance and weapon type
-                    effective_height_threshold = self.height_diff_max
-                    
-                    # For longer distances, allow more height difference (angled shots, ramps, etc.)
-                    if dist > 800:
-                        effective_height_threshold = self.extreme_height_diff_max
-                    elif dist > 400:
-                        # Graduated height allowance based on distance
-                        height_multiplier = 1.0 + (dist - 400) / 800  # 1.0 to 1.5x
-                        effective_height_threshold = self.height_diff_max * height_multiplier
-                    
-                    # AWP gets even more height tolerance (long-range angle shots)
-                    if p1_has_awp or p2_has_awp:
-                        effective_height_threshold *= 1.5
-                    
-                    # Skip only if height difference is extreme
-                    if height_diff > effective_height_threshold:
-                        if ELEVATION_DEBUG:
-                            pass  # Skip elevated duel
-                        continue
-                    elif height_diff > self.height_diff_max:
-                        if ELEVATION_DEBUG:
-                            pass  # Allow elevated duel
-                        
-                except:
-                    continue
 
-                # Line of Sight check - prevent duels through walls
-                if LOS_AVAILABLE:
-                    try:
-                        if not duel_geometrically_possible(pos1, pos2, self.geometry_manager):
-                            pass  # LOS blocked
-                            continue
-                        else:
-                            pass  # LOS clear
-                    except Exception as e:
-                        pass  # LOS error
-                        # Continue without LOS check on error
+                # Mesh geometry decides obstruction; height alone cannot establish it.
+                if not self._direct_duel_allowed(p1, p2):
+                    continue
 
                 # Weapon-specific approach detection and facing logic
                 should_include_duel = False
                 awp_involved = p1_has_awp or p2_has_awp
                 rifle_involved = p1_has_rifle or p2_has_rifle
-                
+
                 if awp_involved:
                     # For AWP scenarios, use more sophisticated detection
                     f1 = parse_vec3(p1.get('forward','')) if p1.get('forward') else None
                     f2 = parse_vec3(p2.get('forward','')) if p2.get('forward') else None
-                    
+
                     if p1_has_awp and f1:
                         # Check if p2 is approaching p1's angle or in p1's line of sight
                         facing_score = angle_facing_score(pos1, f1, pos2)
                         if facing_score >= facing_threshold:
                             should_include_duel = True
                             pass  # AWP duel detected
-                        
+
                         # Check if p2 is approaching p1's angle
                         if self.awp_approach_detection:
                             p2_prev, p2_curr = self.history.last2(sid2)
@@ -1826,14 +1730,14 @@ class CS2DuelDetector:
                                 if p2_prev_pos and is_approaching_angle(pos1, f1, pos2, p2_prev_pos):
                                     should_include_duel = True
                                     pass  # AWP approach detected
-                    
+
                     if p2_has_awp and f2:
                         # Check if p1 is approaching p2's angle or in p2's line of sight
                         facing_score = angle_facing_score(pos2, f2, pos1)
                         if facing_score >= facing_threshold:
                             should_include_duel = True
                             pass  # AWP duel detected
-                        
+
                         # Check if p1 is approaching p2's angle
                         if self.awp_approach_detection:
                             p1_prev, p1_curr = self.history.last2(sid1)
@@ -1842,13 +1746,13 @@ class CS2DuelDetector:
                                 if p1_prev_pos and is_approaching_angle(pos2, f2, pos1, p1_prev_pos):
                                     should_include_duel = True
                                     pass  # AWP approach detected
-                
+
                 else:
                     # Standard duel detection (non-AWP)
                     p1_prev, p1_curr = self.history.last2(sid1)
                     p2_prev, p2_curr = self.history.last2(sid2)
                     closing = relative_approach_speed_2d(p1_prev, p1_curr, p2_prev, p2_curr)
-                    
+
                     if closing >= 0.05 or dist <= 600:
                         should_include_duel = True
                     else:
@@ -1860,7 +1764,7 @@ class CS2DuelDetector:
                         if pos2 and f2 and pos1: fscore = max(fscore, angle_facing_score(pos2, f2, pos1))
                         if fscore >= facing_threshold:
                             should_include_duel = True
-                
+
                 if should_include_duel:
                     if awp_involved:
                         duel_type = "AWP"
@@ -1870,7 +1774,7 @@ class CS2DuelDetector:
                         duel_type = "CLOSE-RANGE"
                     pass  # Duel found
                     duels.append((sid1, sid2, dist))
-                    
+
         return duels
 
     # ------------- Valg og switching -------------
@@ -1879,22 +1783,36 @@ class CS2DuelDetector:
         allplayers = gamestate.get('allplayers', {}) or {}
         duels = self.find_potential_duels(allplayers)
         now_t = time.time()
-        
+
+        # A validated forecast ranks viable candidates directly. Legacy heuristic
+        # overrides remain the fallback when no compatible trained model exists.
+        if self._has_validated_forecast():
+            candidates = sorted({sid for a, b, _ in duels for sid in (a, b)})
+            if self._is_duel_locked():
+                # A pre-engagement lock can begin just outside legacy range/facing
+                # gates. Its validated pair remains eligible for model ranking.
+                candidates = list(self.locked_duel_participants)
+            ranked = self._rank_model_candidates(gamestate, candidates)
+            if ranked:
+                second = ranked[1] if len(ranked) > 1 else (None, 0.0)
+                return ranked[0][0], ranked[0][1], second[0], second[1]
+            return None, 0.0, None, 0.0
+
         # Track high tension situations for kill prediction
         self._track_high_tension_situations(duels, allplayers, now_t)
-        
+
         # HARDCORE Prediction - detect pre-engagement setups (but respect duel locks)
         hardcore_prediction = self._detect_hardcore_pre_engagement(allplayers, now_t)
         if hardcore_prediction:
             hardcore_killer, hardcore_confidence = hardcore_prediction
-            
+
             # Hardcore predictions must respect duel locks
-            if (hardcore_killer != self.current_target_sid and 
+            if (hardcore_killer != self.current_target_sid and
                 hardcore_confidence >= self.hardcore_confidence_threshold):
-                
+
                 # DUEL LOCK PROTECTION: Hardcore predictions cannot override locked duels
                 should_use_hardcore = True
-                
+
                 if self._is_duel_locked():
                     # Only allow hardcore predictions within the locked duel
                     if hardcore_killer in self.locked_duel_participants:
@@ -1904,27 +1822,27 @@ class CS2DuelDetector:
                         hardcore_name = allplayers.get(hardcore_killer, {}).get('name', 'Unknown')
                         pass  # Prediction blocked by duel lock
                         should_use_hardcore = False
-                
+
                 if self.death_switch_target:
                     should_use_hardcore = False  # Still respect death switches
-                
+
                 if should_use_hardcore:
                     hardcore_name = allplayers.get(hardcore_killer, {}).get('name', 'Unknown')
                     logging.info(f"🎯 Early setup: {hardcore_name} ({hardcore_confidence:.0%})")
                     return hardcore_killer, hardcore_confidence, None, 0.0
-        
+
         # Advanced Kill Prediction - predict imminent kills BEFORE they happen (but respect duel locks)
         kill_prediction = self._predict_imminent_kills(allplayers, duels, now_t)
         if kill_prediction:
             predicted_killer, prediction_confidence = kill_prediction
-            
+
             # If prediction is strong and target is different, return prediction as best choice
-            if (predicted_killer != self.current_target_sid and 
+            if (predicted_killer != self.current_target_sid and
                 prediction_confidence >= self.prediction_confidence_threshold):
-                
+
                 # DUEL LOCK PROTECTION: Kill predictions must respect locked duels
                 should_use_prediction = True
-                
+
                 if self._is_duel_locked():
                     # Only allow predictions within the locked duel
                     if predicted_killer in self.locked_duel_participants:
@@ -1934,7 +1852,7 @@ class CS2DuelDetector:
                         pred_name = allplayers.get(predicted_killer, {}).get('name', 'Unknown')
                         pass  # Prediction blocked by duel lock
                         should_use_prediction = False
-                
+
                 # HIGH CONFIDENCE PREDICTIONS - quality-focused approach
                 if should_use_prediction and prediction_confidence >= self.high_confidence_override_threshold:
                     # Respect existing high-priority situations for viewing continuity
@@ -1951,44 +1869,44 @@ class CS2DuelDetector:
                         should_use_prediction = False
                     elif self._is_duel_active() and prediction_confidence < 0.75:
                         should_use_prediction = False
-                
+
                 if should_use_prediction:
                     pred_name = allplayers.get(predicted_killer, {}).get('name', 'Unknown')
                     confidence_desc = "HIGH CONFIDENCE" if prediction_confidence >= 0.85 else "MEDIUM CONFIDENCE"
                     logging.info(f"🔮 Prioritizing {pred_name} ({prediction_confidence:.0%})")
-                    
+
                     # Mark this as a high confidence prediction for fast switching
                     if prediction_confidence >= self.high_confidence_override_threshold:
                         self._force_high_confidence_switch = True
                         self._high_confidence_level = prediction_confidence  # Store confidence for switching speed
-                    
+
                     return predicted_killer, prediction_confidence, None, 0.0
-        
+
         # Check if current duel is resolved
         if self._is_duel_active() and self._is_duel_resolved(allplayers):
             self._end_duel_tracking()
-        
+
         # If we're actively tracking a duel and it's not resolved, stick with it
         if self._is_duel_active() and not self._is_duel_resolved(allplayers):
             current_target = self.active_duel_target
             sid1, sid2 = self.active_duel_participants
-            
+
             # Make sure both duel participants are still alive and in a duel
             target_duel = self._find_duel_for_player(current_target, duels)
             if target_duel:
                 # Score both participants to see if we should switch within the duel
                 p1, p2 = target_duel
                 dist = next((d for s1, s2, d in duels if (s1 == p1 and s2 == p2) or (s1 == p2 and s2 == p1)), 0)
-                
+
                 score1 = self.score_player_in_duel(p1, p2, allplayers, dist, time.time())
                 score2 = self.score_player_in_duel(p2, p1, allplayers, dist, time.time())
-                
+
                 # Determine best target with higher threshold and debouncing
                 can_switch_within_duel = True
                 if self.last_duel_switch_time:
                     time_since_switch = (datetime.now() - self.last_duel_switch_time).total_seconds()
                     can_switch_within_duel = time_since_switch >= self.duel_switch_cooldown
-                
+
                 # Only switch if there's a significant advantage and cooldown has passed
                 if can_switch_within_duel and score1 > score2 * self.duel_switch_threshold:
                     best_target = p1
@@ -2002,7 +1920,7 @@ class CS2DuelDetector:
                     best_score = score1 if current_target == p1 else score2
                     if not can_switch_within_duel:
                         pass  # Duel switch cooldown
-                
+
                 # Update duel target if we're switching within the duel
                 if best_target != current_target:
                     self.active_duel_target = best_target
@@ -2010,13 +1928,13 @@ class CS2DuelDetector:
                     target_name = allplayers.get(best_target, {}).get('name', '?')
                     score_diff = max(score1, score2) / min(score1, score2) if min(score1, score2) > 0 else 0
                     logging.info(f"🔄 Duel switch → {target_name}")
-                
+
                 return best_target, best_score, None, 0.0  # No second choice during duel lock
             else:
                 # Current target is no longer in a duel, end tracking
                 logging.info("🔓 Duel ended")
                 self._end_duel_tracking()
-        
+
         if not duels:
             return None, 0.0, None, 0.0
 
@@ -2030,11 +1948,11 @@ class CS2DuelDetector:
             s1 = self.score_player_in_duel(sid1, sid2, allplayers, dist, now_t)
             s2 = self.score_player_in_duel(sid2, sid1, allplayers, dist, now_t)
             duel_candidates.extend([(sid1, s1), (sid2, s2)])
-        
+
         # Sort by rule-based score to get top candidates
         duel_candidates.sort(key=lambda x: x[1], reverse=True)
         top_candidates = duel_candidates[:4]  # Top 4 candidates
-        
+
         # Try AI prediction on top candidates only (not stuck on one player)
         ai_prediction = None
         ai_confidence = 0.0
@@ -2042,13 +1960,13 @@ class CS2DuelDetector:
             try:
                 # Create mini-gamestate with just top candidates for AI
                 ai_candidates = [sid for sid, _ in top_candidates]
-                ai_result = self.ai_analyzer.predict_best_observer_target(gamestate, candidates=ai_candidates)
+                ai_result = self.ai_analyzer.predict_best_observer_target(gamestate, candidates=top_candidates)
                 if isinstance(ai_result, tuple):
                     ai_prediction, ai_confidence = ai_result
                 else:
                     ai_prediction = ai_result
                     ai_confidence = 0.8  # Default confidence
-                
+
                 # Only use AI prediction if it's among the top rule-based candidates
                 if ai_prediction in ai_candidates:
                     # Check if we're using pattern memory
@@ -2067,12 +1985,12 @@ class CS2DuelDetector:
             player = allplayers.get(sid, {})
             player_state = player.get('state', {})
             recent_kills = int(player_state.get('round_kills', 0))
-            
+
             # AI boost with kill-aware weighting
             if ai_prediction == sid and sid != self.current_target_sid:
                 # Base boost factor
                 base_boost = 1.1 + (0.4 * ai_confidence)  # 1.1-1.5x
-                
+
                 # MASSIVE boost for players with recent kills (AI insight!)
                 if recent_kills >= 2:
                     kill_multiplier = 1.8  # 80% extra boost for multi-kills
@@ -2080,20 +1998,20 @@ class CS2DuelDetector:
                     kill_multiplier = 1.4  # 40% extra boost for single kills
                 else:
                     kill_multiplier = 1.0  # No kill bonus
-                
+
                 final_boost = base_boost * kill_multiplier
                 sc *= final_boost
-                
+
                 if kill_multiplier > 1.0:
                     pass  # AI+Kill boost applied
                 else:
                     pass  # AI boost applied
-            
+
             # Additional kill-based scoring boost (rule-based)
             if recent_kills > 0:
                 kill_bonus = min(recent_kills * 0.2, 0.6)  # Up to 60% bonus for kills
                 sc += kill_bonus
-            
+
             if sc > best_score:
                 second_sid, second_score = best_sid, best_score
                 best_sid, best_score = sid, sc
@@ -2140,18 +2058,18 @@ class CS2DuelDetector:
     def _can_switch_now(self, force_high_confidence: bool = False, confidence_level: float = 0.85) -> bool:
         if self._numbers_lockout_active():
             return False
-        
+
         # Viewing quality protection - prevent too many switches
         now = datetime.now()
         recent_switches = [t for t in self._recent_switches if (now - t).total_seconds() <= 10.0]
         if len(recent_switches) >= self._max_switches_per_10s:
             pass  # Limiting switches for quality
             return False
-        
+
         # HIGH CONFIDENCE PREDICTIONS with quality-focused timing
         if force_high_confidence:
             now = datetime.now()
-            
+
             # Ultra-high confidence (90%+) = moderate speed for quality viewing
             if confidence_level >= self.ultra_high_confidence_threshold:
                 if (now - self.last_switch_time).total_seconds() < 0.6:  # Reasonable cooldown for viewing
@@ -2159,7 +2077,7 @@ class CS2DuelDetector:
                 if self.current_target_start and (now - self.current_target_start).total_seconds() < 1.0:  # Allow time to see the setup
                     return False
                 return True
-            
+
             # High confidence (85-90%) = slight speed increase for important moments
             else:
                 if (now - self.last_switch_time).total_seconds() < 0.7:  # Slightly faster than normal
@@ -2167,7 +2085,7 @@ class CS2DuelDetector:
                 if self.current_target_start and (now - self.current_target_start).total_seconds() < 1.2:  # Slightly faster than normal
                     return False
                 return True
-        
+
         # Normal cooldown logic
         now = datetime.now()
         if (now - self.last_switch_time).total_seconds() < self.switch_cooldown:
@@ -2192,10 +2110,18 @@ class CS2DuelDetector:
     def switch_to_player(self, slot: int):
         """Tryk på 1..0 for at skifte – respekterer 19s freezetime-lås."""
         try:
+            # Re-selecting the held player is not a camera change. In particular,
+            # an idle/failsafe request must not restart the switch cooldown and
+            # delay the next genuine challenger.
+            current_sid = getattr(self, 'current_target_sid', None)
+            if current_sid:
+                current_slot = self.get_player_slot(current_sid, getattr(self, '_last_gamestate', {}))
+                if current_slot == slot:
+                    return False
             if self._numbers_lockout_active():
                 # Log kun på debug-niveau for ikke at støje
                 pass  # Numbers lockout active
-                return
+                return False
             if slot in VK_CODES:
                 vk_code = VK_CODES[slot]
                 if send_key(vk_code):
@@ -2203,8 +2129,10 @@ class CS2DuelDetector:
                     logging.info(f"→ Switched to {key_name}")
                     self.last_switch_time = datetime.now()
                     self.last_any_switch = time.time()
+                    return True
         except Exception as e:
             pass  # Switch error
+        return False
 
     def toggle_active(self):
         self.active = not self.active
@@ -2227,13 +2155,11 @@ class CS2DuelDetector:
                 return
 
             self._last_gamestate = gamestate
+            self._geometry_cache = {}
             allplayers = gamestate.get('allplayers', {}) or {}
             now_ts = time.time()
             now = datetime.now()
-            
-            # PRIORITY 1: Track pre-engagement duels and lock onto them FIRST
-            self._update_duel_lock_tracking(allplayers, now)
-            
+
             # Track current map for kill analysis integration
             map_info = gamestate.get('map', {})
             current_map = None
@@ -2243,13 +2169,13 @@ class CS2DuelDetector:
                     # Only set if different from current
                     if current_map != getattr(self, '_current_map', None):
                         self._current_map = current_map
-                        
+
                         # Log map-specific kill analysis data (only once per map)
                         if hasattr(self, 'map_kill_distributions') and self.map_kill_distributions:
                             map_kills = self.map_kill_distributions.get(current_map, 0)
                             if map_kills > 0:
                                 logging.info(f"🗺️ Map: {current_map}")
-            
+
                 # Update map geometry if available - FIXED: Only when map actually changes
                 if self.geometry_manager and LOS_AVAILABLE:
                     # Check if map actually changed (not just missing attribute)
@@ -2261,7 +2187,10 @@ class CS2DuelDetector:
                             logging.info(f"🗺️ Map: {current_map}")
                         except Exception as e:
                             pass  # Geometry load failed
-            
+
+            # Set the map before any geometry-dependent scoring or duel locks.
+            self._refresh_observer_model()
+            self._update_duel_lock_tracking(allplayers, now)
             self.update_history_and_triggers(allplayers, now_ts, gamestate)
 
             # fase
@@ -2302,109 +2231,50 @@ class CS2DuelDetector:
                 pass  # Numbers lockout active
                 return
 
-            # DUEL LOCK PROTECTION: If duel is locked, triggers are heavily restricted
-            if self._is_duel_locked():
-                # ABSOLUTE DUEL LOCK PRIORITY - only allow triggers within the locked duel
-                trigger_sid = None
-                
-                # Check if any trigger is within the locked duel
-                potential_triggers = []
-                if self.death_switch_target and now_ts <= self.death_switch_active_until:
-                    if self.death_switch_target in self.locked_duel_participants:
-                        potential_triggers.append(('death', self.death_switch_target))
-                
-                if self.kill_focus_sid and self.kill_focus_sid in self.locked_duel_participants:
-                    potential_triggers.append(('kill', self.kill_focus_sid))
-                
-                if self.damage_focus_sid and self.damage_focus_sid in self.locked_duel_participants:
-                    potential_triggers.append(('damage', self.damage_focus_sid))
-                
-                # Only honor triggers within the locked duel
-                if potential_triggers:
-                    # Prioritize death > kill > damage for duel participants
-                    trigger_type, trigger_sid = potential_triggers[0]  # Already sorted by priority
-                    
-                    if trigger_sid != self.current_target_sid:
-                        # Switch within locked duel
-                        can_switch = self._can_switch_now()
-                        if can_switch:
-                            slot = self.get_player_slot(trigger_sid, gamestate)
-                            if slot:
-                                self.switch_to_player(slot)
-                                self._update_current_target(trigger_sid, 0.9)
-                                self.locked_duel_target = trigger_sid  # Update duel target
-                                trigger_name = allplayers.get(trigger_sid, {}).get('name', '?')
-                                logging.info(f"🎯 → {trigger_name} ({trigger_type})")
-                                return
-                        else:
-                            pass  # Trigger ignored - cooldown
-                
-                # If no valid triggers within duel, ignore all external triggers
-                if self.death_switch_target and self.death_switch_target not in self.locked_duel_participants:
-                    logging.info(f"🎯 [DUEL LOCK PROTECTION] Ignoring death trigger - not in locked duel")
-                if self.kill_focus_sid and self.kill_focus_sid not in self.locked_duel_participants:
-                    logging.info(f"🎯 [DUEL LOCK PROTECTION] Ignoring kill trigger - not in locked duel")
-                if self.damage_focus_sid and self.damage_focus_sid not in self.locked_duel_participants:
-                    logging.info(f"🎯 [DUEL LOCK PROTECTION] Ignoring damage trigger - not in locked duel")
-                
-                # Skip all trigger processing - duel lock is absolute
-                return
-            
-            # NORMAL TRIGGER PRIORITY: Only when no duel is locked
-            trigger_sid = None
-            if self.death_switch_target and now_ts <= self.death_switch_active_until:
-                trigger_sid = self.death_switch_target
-                logging.debug(f"[DEATH PRIORITY] Maintaining focus on killer for {self.death_switch_active_until - now_ts:.1f}s more")
-            elif self.kill_focus_sid:
-                trigger_sid = self.kill_focus_sid
-            elif self.damage_focus_sid:
-                trigger_sid = self.damage_focus_sid
-
-            if trigger_sid and trigger_sid != self.current_target_sid:
-                # Normal trigger processing (when no duel locked)
-                should_switch = True
-                
-                # High-confidence predictions can override cooldowns for trigger switches
+            # Event holds expire independently of model scores. A locked duel
+            # restricts event targets, but must not stop normal model selection.
+            trigger_sid = self._active_trigger_target(allplayers, now_ts)
+            if trigger_sid:
+                if trigger_sid == self.current_target_sid:
+                    return
                 can_switch = self._can_switch_now(
                     force_high_confidence=self._force_high_confidence_switch,
-                    confidence_level=self._high_confidence_level
-                )
+                    confidence_level=self._high_confidence_level)
                 if not can_switch and trigger_sid == self.death_switch_target:
-                    # Death switches always override cooldowns
-                    can_switch = True
+                    can_switch = not self._numbers_lockout_active()
                 elif not can_switch and trigger_sid == self.kill_focus_sid:
-                    # Kill triggers can override short cooldowns
-                    time_since_switch = (datetime.now() - self.last_switch_time).total_seconds()
-                    if time_since_switch >= 0.5:  # Reduced from full cooldown
-                        can_switch = True
-                        logging.info(f"[KILL TRIGGER OVERRIDE] Overriding cooldown for kill trigger")
-                
-                if should_switch and can_switch:
+                    can_switch = (datetime.now() - self.last_switch_time).total_seconds() >= 0.5
+                if can_switch:
                     slot = self.get_player_slot(trigger_sid, gamestate)
                     if slot:
                         self.switch_to_player(slot)
                         self._update_current_target(trigger_sid, 0.9)
-                        return  # trigger har forrang i kort tid
+                        if self._is_duel_locked():
+                            self.locked_duel_target = trigger_sid
+                return
 
             # NAV-AWARE PREDICTIVE ANALYSIS (2-4 seconds ahead prediction)
             predictive_override_sid = None
-            if self.use_predictive_observer and self.predictive_observer:
+            if (self.use_predictive_observer and self.predictive_observer
+                    and not (self.ai_analyzer and self.ai_analyzer.models_loaded)):
                 try:
                     map_name = getattr(self, '_current_map', 'de_dust2')
                     suggested_player = self.predictive_observer.update_existing_detector(allplayers, map_name)
-                    
+
                     if suggested_player:
                         # Find steam ID for suggested player
                         for sid, player_data in allplayers.items():
                             if sid != 'total' and player_data.get('name') == suggested_player:
                                 predictive_override_sid = sid
                                 break
-                                
+
+                        if predictive_override_sid and not self._player_has_direct_target(predictive_override_sid, allplayers):
+                            predictive_override_sid = None
                         if predictive_override_sid and predictive_override_sid != self.current_target_sid:
                             # Get prediction confidence for logging
                             predictions = self.predictive_observer.active_predictions
                             confidence = predictions.get(suggested_player, type('obj', (object,), {'confidence': 0.0})()).confidence
-                            
+
                             # High confidence predictions override normal selection
                             if confidence >= self.predictive_observer.high_confidence_threshold:
                                 if self._can_switch_now():
@@ -2419,10 +2289,10 @@ class CS2DuelDetector:
 
             # NORMAL VALG
             # DUEL LOCK: If pre-engagement duel detected, only allow switching within that duel
-            if self._is_duel_locked():
-                current_in_duel = (self.current_target_sid and 
+            if self._is_duel_locked() and not self._has_validated_forecast():
+                current_in_duel = (self.current_target_sid and
                                  self.current_target_sid in self.locked_duel_participants)
-                
+
                 if current_in_duel:
                     # We're watching one participant - check if we should switch to the other
                     other_participant = None
@@ -2430,21 +2300,21 @@ class CS2DuelDetector:
                         if participant != self.current_target_sid:
                             other_participant = participant
                             break
-                    
+
                     if other_participant:
                         other_player = allplayers.get(other_participant, {})
                         current_player = allplayers.get(self.current_target_sid, {})
-                        
+
                         # Switch if other participant has higher kill probability
                         try:
-                            other_score = self.score_player_in_duel(other_participant, self.current_target_sid, allplayers, 
+                            other_score = self.score_player_in_duel(other_participant, self.current_target_sid, allplayers,
                                                                    distance2d(parse_vec3(other_player.get('position', '')) or (0,0,0),
                                                                             parse_vec3(current_player.get('position', '')) or (0,0,0)), now_ts)
                             current_score = self.current_target_score_ema
                         except Exception:
                             # Skip switching if position calculation fails
                             return
-                        
+
                         # Easier switching within locked duel (especially as engagement intensifies)
                         if other_score > current_score * 1.1 and self._can_switch_now():  # Lower threshold for duel switching
                             slot = self.get_player_slot(other_participant, gamestate)
@@ -2455,43 +2325,43 @@ class CS2DuelDetector:
                                 other_name = allplayers.get(other_participant, {}).get('name', '?')
                                 logging.info(f"🎯 [DUEL SWITCH] Switched from {current_name} to {other_name} within locked duel")
                                 self.locked_duel_target = other_participant
-                    
+
                     return  # LOCKED - don't consider any other targets during duel
-                
+
                 else:
                     # We're not watching the locked duel - switch to it immediately
                     # Use the pre-determined target or pick the participant with higher kill probability
                     target_sid = self.locked_duel_target
-                    
+
                     if not target_sid or target_sid not in self.locked_duel_participants:
                         # Re-calculate best target in locked duel
                         p1, p2 = self.locked_duel_participants
                         p1_data = allplayers.get(p1, {})
                         p2_data = allplayers.get(p2, {})
-                        
+
                         if p1_data and p2_data:
                             try:
                                 p1_pos = parse_vec3(p1_data.get('position', '')) or (0,0,0)
                                 p2_pos = parse_vec3(p2_data.get('position', '')) or (0,0,0)
                                 dist = distance2d(p1_pos, p2_pos)
-                                
+
                                 p1_score = self.score_player_in_duel(p1, p2, allplayers, dist, now_ts)
                                 p2_score = self.score_player_in_duel(p2, p1, allplayers, dist, now_ts)
-                                
+
                                 target_sid = p1 if p1_score >= p2_score else p2
                                 self.locked_duel_target = target_sid
                             except Exception:
                                 # Fallback to first participant if scoring fails
                                 target_sid = p1
                                 self.locked_duel_target = target_sid
-                    
+
                     if target_sid:
                         slot = self.get_player_slot(target_sid, gamestate)
-                        
+
                         if slot and self._can_switch_now(force_high_confidence=True, confidence_level=0.9):
                             self.switch_to_player(slot)
                             try:
-                                target_score = max(self.score_player_in_duel(target_sid, other_sid, allplayers, 
+                                target_score = max(self.score_player_in_duel(target_sid, other_sid, allplayers,
                                                                            distance2d(parse_vec3(allplayers.get(target_sid, {}).get('position', '')) or (0,0,0),
                                                                                     parse_vec3(allplayers.get(other_sid, {}).get('position', '')) or (0,0,0)), now_ts)
                                                  for other_sid in self.locked_duel_participants if other_sid != target_sid)
@@ -2500,7 +2370,7 @@ class CS2DuelDetector:
                             self._update_current_target(target_sid, target_score)
                             target_name = allplayers.get(target_sid, {}).get('name', '?')
                             logging.info(f"🎯 [DUEL LOCK] Switched to {target_name} - locked pre-engagement duel!")
-                    
+
                     return  # LOCKED - duel takes absolute priority
 
             best_sid, best_score, second_sid, second_score = self.choose_best_player(gamestate)
@@ -2508,14 +2378,27 @@ class CS2DuelDetector:
                 # Anti-stall
                 if now_ts - self.last_any_switch > self.failsafe_interval and self._can_switch_now():
                     candidate = self._pick_any_live(allplayers)
-                    if candidate:
+                    if candidate and candidate != self.current_target_sid:
                         slot = self.get_player_slot(candidate, gamestate)
                         if slot:
                             self.switch_to_player(slot)
                             self._update_current_target(candidate, 0.4)
                 return
 
-            if best_score < 0.28:
+            forecast_active = self._has_validated_forecast()
+            if forecast_active:
+                # Trigger/heuristic scores (0.9/1.0) are not two-second kill
+                # probabilities. Compare current and challenger on this snapshot.
+                current = (self._rank_model_candidates(gamestate, [self.current_target_sid])
+                           if self.current_target_sid and self._player_has_direct_target(self.current_target_sid, allplayers) else [])
+                self.current_target_score_ema = current[0][1] if current else 0.0
+                self._force_high_confidence_switch = False
+                self._high_confidence_level = 0.0
+
+            if not forecast_active and best_score < 0.28:
+                if best_sid == self.current_target_sid:
+                    self._update_current_target(best_sid, best_score)
+                    return
                 if now_ts - self.last_any_switch > self.failsafe_interval and self._can_switch_now():
                     slot = self.get_player_slot(best_sid, gamestate)
                     if slot:
@@ -2579,7 +2462,7 @@ class CS2DuelDetector:
 
     def _is_duel_active(self) -> bool:
         """Check if we're currently locked onto an active duel"""
-        return (self.active_duel_participants is not None and 
+        return (self.active_duel_participants is not None and
                 self.active_duel_start_time is not None and
                 self.active_duel_target is not None)
 
@@ -2587,18 +2470,22 @@ class CS2DuelDetector:
         """Check if the current active duel has been resolved"""
         if not self._is_duel_active():
             return True
-            
+
         sid1, sid2 = self.active_duel_participants
         p1 = allplayers.get(sid1, {})
         p2 = allplayers.get(sid2, {})
-        
+
         # Check if either player died
         p1_hp = p1.get('state', {}).get('health', 0)
         p2_hp = p2.get('state', {}).get('health', 0)
         if p1_hp <= 0 or p2_hp <= 0:
             logging.info(f"[DUEL RESOLVED] Player death - {p1.get('name', '?')} ({p1_hp}hp) vs {p2.get('name', '?')} ({p2_hp}hp)")
             return True
-            
+
+        if (not p1.get('team') or not p2.get('team') or p1.get('team') == p2.get('team')
+                or not self._direct_duel_allowed(p1, p2)):
+            return True
+
         # Check if players are too far apart (duel broke off)
         try:
             pos1 = parse_vec3(p1.get('position', '')) if p1.get('position') else None
@@ -2611,14 +2498,14 @@ class CS2DuelDetector:
         except Exception:
             # Ignore position parsing errors for duel resolution
             pass
-                
+
         # Safety timeout - don't lock onto duels forever
         if self.active_duel_start_time:
             elapsed = (datetime.now() - self.active_duel_start_time).total_seconds()
             if elapsed > self.duel_max_duration:
                 logging.info(f"[DUEL RESOLVED] Safety timeout after {elapsed:.1f}s")
                 return True
-                
+
         return False
 
     def _start_duel_tracking(self, sid1: str, sid2: str, target_sid: str, allplayers: Dict[str, Any]):
@@ -2627,11 +2514,11 @@ class CS2DuelDetector:
         self.active_duel_start_time = datetime.now()
         self.active_duel_target = target_sid
         self.last_duel_switch_time = datetime.now()  # Initialize switch cooldown
-        
+
         p1_name = allplayers.get(sid1, {}).get('name', '?')
         p2_name = allplayers.get(sid2, {}).get('name', '?')
         target_name = allplayers.get(target_sid, {}).get('name', '?')
-        
+
         logging.info(f"🔒 Duel lock: {p1_name} vs {p2_name} → watching {target_name}")
 
     def _end_duel_tracking(self):
@@ -2653,26 +2540,26 @@ class CS2DuelDetector:
         Returns tuple of (player1_sid, player2_sid) if pre-engagement duel detected.
         """
         pre_engagement_pairs = []
-        
+
         # Find potential pre-engagement duels
         for sid1, p1 in allplayers.items():
             if sid1 == 'total' or p1.get('state', {}).get('health', 0) <= 0:
                 continue
-                
+
             for sid2, p2 in allplayers.items():
                 if sid2 == 'total' or sid2 == sid1 or p2.get('state', {}).get('health', 0) <= 0:
                     continue
-                
+
                 # Must be on different teams
                 if p1.get('team', '') == p2.get('team', ''):
                     continue
-                
+
                 # Check if they're in pre-engagement positioning
                 pre_engagement_score = self._calculate_pre_engagement_score(sid1, sid2, p1, p2, allplayers, now)
-                
+
                 if pre_engagement_score >= 0.65:  # INCREASED threshold to reduce noise
                     pre_engagement_pairs.append((sid1, sid2, pre_engagement_score))
-        
+
         # SMART PRIORITIZATION - avoid rapid switching between similar duels
         if pre_engagement_pairs:
             # 1. PERSISTENCE BONUS: If we already have a locked duel, heavily favor continuing it
@@ -2684,39 +2571,45 @@ class CS2DuelDetector:
                         # MASSIVE bonus for continuing current duel (reduces switching)
                         enhanced_score = score + 0.3  # Big persistence bonus
                         return current_pair  # Strong preference to continue
-            
+
             # 2. SPECTATOR TARGET PRIORITY: If current target is in a duel, prefer that duel
             if self.current_target_sid:
                 for sid1, sid2, score in pre_engagement_pairs:
                     if self.current_target_sid in (sid1, sid2) and score >= 0.7:  # Higher threshold
                         return tuple(sorted([sid1, sid2]))
-            
+
             # 3. QUALITY OVER QUANTITY: Only switch to significantly better duels
             pre_engagement_pairs.sort(key=lambda x: x[2], reverse=True)
             best_score = pre_engagement_pairs[0][2]
-            
+
             # Require high-quality duel for switching (0.75+ score)
             if best_score >= 0.75:
                 return tuple(sorted([pre_engagement_pairs[0][0], pre_engagement_pairs[0][1]]))
-            
+
         return None
 
-    def _calculate_pre_engagement_score(self, sid1: str, sid2: str, p1: Dict[str, Any], p2: Dict[str, Any], 
+    def _calculate_pre_engagement_score(self, sid1: str, sid2: str, p1: Dict[str, Any], p2: Dict[str, Any],
                                        allplayers: Dict[str, Any], now: datetime) -> float:
         """Calculate how likely these two players are to engage in a duel soon - ENHANCED with NAV intelligence"""
-        
+
         # Get positions and orientations
         p1_pos = parse_vec3(p1.get('position', '')) if p1.get('position') else None
         p2_pos = parse_vec3(p2.get('position', '')) if p2.get('position') else None
         p1_fwd = parse_vec3(p1.get('forward', '')) if p1.get('forward') else None
         p2_fwd = parse_vec3(p2.get('forward', '')) if p2.get('forward') else None
-        
+
         if not all([p1_pos, p2_pos, p1_fwd, p2_fwd]):
             return 0.0
-        
+
         score = 0.0
         distance = distance2d(p1_pos, p2_pos)
-        
+        # Cheap policy checks precede the mesh query; distant pairs cannot
+        # qualify for this pre-engagement path regardless of visibility.
+        if distance > self.pre_engagement_detection_distance:
+            return 0.0
+        if not self._direct_duel_allowed(p1, p2):
+            return 0.0
+
         # 1. Distance suitability (20% weight) - must be in reasonable duel range
         if distance <= self.pre_engagement_detection_distance:
             # Sweet spot for engagement prediction
@@ -2729,19 +2622,19 @@ class CS2DuelDetector:
             score += 0.20 * distance_score
         else:
             return 0.0  # Too far for pre-engagement
-        
+
         # 2. ISOLATION FACTOR (25% weight) - CRITICAL for avoiding multi-engagement chaos
         isolation_score = self._calculate_duel_isolation(sid1, sid2, allplayers)
         score += 0.25 * isolation_score
-        
+
         # If this isn't an isolated duel, heavily penalize it
         if isolation_score < 0.5:
             score *= 0.4  # Major penalty for chaotic multi-player situations
-        
+
         # 3. Mutual awareness/facing (20% weight) - are they aware of each other?
         p1_facing_p2 = angle_facing_score(p1_pos, p1_fwd, p2_pos)
         p2_facing_p1 = angle_facing_score(p2_pos, p2_fwd, p1_pos)
-        
+
         # More strict facing requirements to reduce noise
         if p1_facing_p2 >= 0.4 and p2_facing_p1 >= 0.4:  # INCREASED thresholds
             score += 0.20  # Both facing each other clearly
@@ -2749,28 +2642,17 @@ class CS2DuelDetector:
             score += 0.12  # One facing the other clearly
         elif max(p1_facing_p2, p2_facing_p1) >= 0.2:  # INCREASED threshold
             score += 0.06  # Minimal clear awareness
-        
+
         # 4. Approach/positioning movement (20% weight)
         approach_score = self._calculate_approach_score(sid1, sid2, now)
         score += 0.20 * approach_score
-        
-        # 5. Line of sight with NAV intelligence (10% weight)
+
+        # Only actual collision geometry provides visibility evidence.
         if self.geometry_manager and LOS_AVAILABLE:
-            try:
-                if duel_geometrically_possible(p1_pos, p2_pos, self.geometry_manager):
-                    score += 0.10
-                    # NAV BONUS: If this is a known duel spot (common engagement area)
-                    if hasattr(self, 'predictive_observer') and self.predictive_observer:
-                        try:
-                            nav_bonus = self.predictive_observer.get_engagement_area_score(p1_pos, p2_pos)
-                            score += 0.05 * nav_bonus  # Bonus for known engagement areas
-                        except:
-                            pass
-            except:
-                return 0.0  # No line of sight = no duel
-        else:
-            score += 0.03  # Minimal credit without geometry
-        
+            visible = self._duel_visibility(p1, p2)
+            if visible is True:
+                score += 0.10
+
         # 6. Weapon suitability and kill prediction (5% weight)
         if self.positional_ai:
             try:
@@ -2778,7 +2660,7 @@ class CS2DuelDetector:
                 score += 0.05 * ai_confidence
             except:
                 pass
-        
+
         return min(score, 1.0)
 
     def _calculate_duel_isolation(self, sid1: str, sid2: str, allplayers: Dict[str, Any]) -> float:
@@ -2788,52 +2670,52 @@ class CS2DuelDetector:
         """
         p1 = allplayers.get(sid1, {})
         p2 = allplayers.get(sid2, {})
-        
+
         p1_pos = parse_vec3(p1.get('position', '')) if p1.get('position') else None
         p2_pos = parse_vec3(p2.get('position', '')) if p2.get('position') else None
-        
+
         if not p1_pos or not p2_pos:
             return 0.0
-        
+
         # Calculate duel center point
         center_x = (p1_pos[0] + p2_pos[0]) / 2
         center_y = (p1_pos[1] + p2_pos[1]) / 2
         center_pos = (center_x, center_y, 0)
-        
+
         duel_distance = distance2d(p1_pos, p2_pos)
         isolation_radius = max(800, duel_distance * 1.5)  # Dynamic isolation check
-        
+
         # Count other players near this duel
         nearby_enemies = 0
         nearby_allies = 0
-        
+
         p1_team = p1.get('team', '')
         p2_team = p2.get('team', '')
-        
+
         for other_sid, other_player in allplayers.items():
             if other_sid == 'total' or other_sid in (sid1, sid2):
                 continue
-                
+
             if other_player.get('state', {}).get('health', 0) <= 0:
                 continue
-                
+
             other_pos = parse_vec3(other_player.get('position', '')) if other_player.get('position') else None
             if not other_pos:
                 continue
-                
+
             # Distance to duel center
             dist_to_duel = distance2d(other_pos, center_pos)
-            
+
             if dist_to_duel <= isolation_radius:
                 other_team = other_player.get('team', '')
                 if other_team == p1_team or other_team == p2_team:
                     nearby_allies += 1
                 else:
                     nearby_enemies += 1
-        
+
         # Calculate isolation score
         total_nearby = nearby_enemies + nearby_allies
-        
+
         if total_nearby == 0:
             return 1.0  # Perfect isolation - clean 1v1
         elif total_nearby == 1:
@@ -2844,7 +2726,7 @@ class CS2DuelDetector:
             return 0.3  # Poor - getting chaotic
         else:
             return 0.1  # Very poor - multi-player chaos
-        
+
     def _get_positional_ai_confidence(self, sid1: str, sid2: str, p1: Dict[str, Any], p2: Dict[str, Any], distance: float) -> float:
         """Get AI confidence for this potential duel"""
         try:
@@ -2856,7 +2738,7 @@ class CS2DuelDetector:
                 'p1_armor': p1.get('state', {}).get('armor', 0),
                 'p2_armor': p2.get('state', {}).get('armor', 0),
             }
-            
+
             # Get AI prediction
             prediction = self.positional_ai.predict_engagement_quality(features)
             return prediction
@@ -2865,19 +2747,19 @@ class CS2DuelDetector:
 
     def _calculate_approach_score(self, sid1: str, sid2: str, now: datetime) -> float:
         """Calculate how much the players are approaching each other"""
-        
+
         # Get movement history
         p1_prev, p1_curr = self.history.last2(sid1)
         p2_prev, p2_curr = self.history.last2(sid2)
-        
+
         if not all([p1_prev, p1_curr, p2_prev, p2_curr]):
             return 0.0
-        
+
         # Calculate relative approach speed
         closing_speed = relative_approach_speed_2d(p1_prev, p1_curr, p2_prev, p2_curr)
-        
+
         approach_score = 0.0
-        
+
         # Reward approach movement
         if closing_speed > 20:  # Fast approach
             approach_score += 0.8
@@ -2887,11 +2769,11 @@ class CS2DuelDetector:
             approach_score += 0.4
         elif closing_speed > 0:  # Any approach
             approach_score += 0.2
-        
+
         # Check for tactical positioning (slowing down for engagement)
         p1_recent_positions = list(self.history.store.get(sid1, []))[-4:]
         p2_recent_positions = list(self.history.store.get(sid2, []))[-4:]
-        
+
         # Look for deceleration patterns (common before engagement)
         if len(p1_recent_positions) >= 3:
             p1_speeds = []
@@ -2901,36 +2783,44 @@ class CS2DuelDetector:
                     movement = distance2d(p1_recent_positions[i]['pos'], p1_recent_positions[i-1]['pos'])
                     speed = movement / dt
                     p1_speeds.append(speed)
-            
+
             # Check for deceleration (slowing down for engagement)
             if len(p1_speeds) >= 2 and p1_speeds[-1] < p1_speeds[0] * 0.7:  # 30% slower
                 approach_score += 0.2  # Bonus for tactical slowing
-        
+
         return min(approach_score, 1.0)
 
     def _update_duel_lock_tracking(self, allplayers: Dict[str, Any], now: datetime):
         """Update pre-engagement duel lock tracking with anti-rapid-switching"""
-        
+
+        # A death, map/team change or occluded sightline invalidates a lock
+        # immediately. Cooldowns protect valid duels, never stale geometry.
+        if self._is_duel_locked() and self._is_locked_duel_resolved(allplayers, now):
+            self.locked_duel_participants = None
+            self.locked_duel_start_time = None
+            self.locked_duel_target = None
+            self.last_duel_switch_time = None
+
         # ANTI-RAPID-SWITCHING: If we just switched duels, enforce cooldown
-        if (self.last_duel_switch_time and 
+        if (self.last_duel_switch_time and
             (now - self.last_duel_switch_time).total_seconds() < self.duel_switch_cooldown_seconds):
             return  # Still in cooldown - don't switch duels
-        
+
         # PERSISTENCE: If we have a current duel and it hasn't been active long enough, stick with it
-        if (self.locked_duel_participants and self.locked_duel_start_time and 
+        if (self.locked_duel_participants and self.locked_duel_start_time and
             (now - self.locked_duel_start_time).total_seconds() < self.minimum_duel_lock_duration):
             # Check if current duel is still valid (not resolved)
             if not self._is_locked_duel_resolved(allplayers, now):
                 return  # Stay locked to current duel
-        
+
         # Detect new pre-engagement duels
         pre_engagement_duel = self._detect_pre_engagement_duel(allplayers, now)
-        
+
         if pre_engagement_duel:
             if self.locked_duel_participants != pre_engagement_duel:
                 # SWITCHING LOGIC: Only switch if significantly better or current is resolved
                 should_switch = False
-                
+
                 if not self.locked_duel_participants:
                     # No current duel - safe to lock onto new one
                     should_switch = True
@@ -2941,28 +2831,28 @@ class CS2DuelDetector:
                     # Have current duel - only switch if new one is MUCH better
                     current_score = self._calculate_duel_pair_score(self.locked_duel_participants, allplayers, now)
                     new_score = self._calculate_duel_pair_score(pre_engagement_duel, allplayers, now)
-                    
+
                     # Require 40% better score to switch (high bar)
                     if new_score > current_score * 1.4:
                         should_switch = True
                         logging.info(f"🎯 [DUEL OVERRIDE] Switching to much better duel (score: {new_score:.2f} vs {current_score:.2f})")
-                
+
                 if should_switch:
                     # Log the previous duel end if switching
                     if self.locked_duel_participants:
                         prev_p1_name = allplayers.get(self.locked_duel_participants[0], {}).get('name', '?')
                         prev_p2_name = allplayers.get(self.locked_duel_participants[1], {}).get('name', '?')
                         logging.info(f"🎯 [DUEL ENDED] {prev_p1_name} vs {prev_p2_name} - Switching to new duel")
-                    
+
                     # Switch to new duel
                     self.locked_duel_participants = pre_engagement_duel
                     self.locked_duel_start_time = now
                     self.last_duel_switch_time = now  # Record switch time
-                    
+
                     p1_name = allplayers.get(pre_engagement_duel[0], {}).get('name', '?')
                     p2_name = allplayers.get(pre_engagement_duel[1], {}).get('name', '?')
                     logging.info(f"🎯 [DUEL LOCK] {p1_name} vs {p2_name} - Pre-engagement detected, DUEL LOCKED!")
-                    
+
                     # Set initial target to the player with higher kill probability
                     try:
                         p1_data = allplayers.get(pre_engagement_duel[0], {})
@@ -2970,11 +2860,14 @@ class CS2DuelDetector:
                         p1_pos = parse_vec3(p1_data.get('position', '')) or (0,0,0)
                         p2_pos = parse_vec3(p2_data.get('position', '')) or (0,0,0)
                         dist = distance2d(p1_pos, p2_pos)
-                        
-                        p1_score = self.score_player_in_duel(pre_engagement_duel[0], pre_engagement_duel[1], allplayers, dist, now.timestamp())
-                        p2_score = self.score_player_in_duel(pre_engagement_duel[1], pre_engagement_duel[0], allplayers, dist, now.timestamp())
-                        
-                        self.locked_duel_target = pre_engagement_duel[0] if p1_score >= p2_score else pre_engagement_duel[1]
+
+                        ranked = self._rank_model_candidates(getattr(self, '_last_gamestate', {}), pre_engagement_duel)
+                        if ranked:
+                            self.locked_duel_target = ranked[0][0]
+                        else:
+                            p1_score = self.score_player_in_duel(pre_engagement_duel[0], pre_engagement_duel[1], allplayers, dist, now.timestamp())
+                            p2_score = self.score_player_in_duel(pre_engagement_duel[1], pre_engagement_duel[0], allplayers, dist, now.timestamp())
+                            self.locked_duel_target = pre_engagement_duel[0] if p1_score >= p2_score else pre_engagement_duel[1]
                     except Exception:
                         # Fallback to first participant if scoring fails
                         self.locked_duel_target = pre_engagement_duel[0]
@@ -2997,35 +2890,39 @@ class CS2DuelDetector:
         """Calculate overall quality score for a duel pair"""
         if not duel_pair:
             return 0.0
-            
+
         p1_data = allplayers.get(duel_pair[0], {})
         p2_data = allplayers.get(duel_pair[1], {})
-        
+
         if not p1_data or not p2_data:
             return 0.0
-            
+
         return self._calculate_pre_engagement_score(duel_pair[0], duel_pair[1], p1_data, p2_data, allplayers, now)
 
     def _is_duel_locked(self) -> bool:
         """Check if there's an active duel lock that should prevent switching away"""
-        return (self.locked_duel_participants is not None and 
+        return (self.locked_duel_participants is not None and
                 self.locked_duel_start_time is not None)
 
     def _is_locked_duel_resolved(self, allplayers: Dict[str, Any], now: datetime) -> bool:
         """Check if the locked duel has been resolved"""
         if not self._is_duel_locked():
             return True
-            
+
         p1_sid, p2_sid = self.locked_duel_participants
         p1 = allplayers.get(p1_sid, {})
         p2 = allplayers.get(p2_sid, {})
-        
+
         # Check if either player died (duel resolved by elimination)
         p1_hp = p1.get('state', {}).get('health', 0)
         p2_hp = p2.get('state', {}).get('health', 0)
         if p1_hp <= 0 or p2_hp <= 0:
             return True
-            
+
+        if (not p1.get('team') or not p2.get('team') or p1.get('team') == p2.get('team')
+                or not self._direct_duel_allowed(p1, p2)):
+            return True
+
         # Check if players separated too much (duel resolved by disengagement)
         try:
             p1_pos = parse_vec3(p1.get('position', '')) if p1.get('position') else None
@@ -3037,13 +2934,13 @@ class CS2DuelDetector:
         except Exception:
             # Ignore position parsing errors for locked duel resolution
             pass
-                
+
         # Safety timeout - don't lock forever
         if self.locked_duel_start_time:
             elapsed = (now - self.locked_duel_start_time).total_seconds()
             if elapsed > self.duel_lock_max_duration:
                 return True
-                
+
         return False
 
 
@@ -3097,7 +2994,7 @@ def control_interface():
         try:
             cmd = input("> ").strip()
             cmd_lower = cmd.lower()
-            
+
             if cmd_lower in ('quit', 'exit'):
                 break
             elif cmd == "":
@@ -3110,6 +3007,11 @@ def control_interface():
                 print(f"Status: {'ON' if duel_detector.active else 'OFF'}")
                 print(f"Cooldown: {duel_detector.switch_cooldown}s")
                 print(f"Min holdetid: {duel_detector.min_hold_time}s")
+                manager = duel_detector.geometry_manager
+                geometry_source = manager.sources.get(manager.current_map) if manager else None
+                print(f"Collision geometry: {geometry_source or 'unknown (heuristic fallback)'}")
+                analyzer = duel_detector.ai_analyzer
+                print(f"Kill model: {'validated' if analyzer and analyzer.models_loaded else 'untrained (heuristic fallback)'}")
                 print(f"Switch margin: {duel_detector.switch_margin}")
                 print(f"Aktuel target: {duel_detector.current_target_sid} EMA={duel_detector.current_target_score_ema:.2f}")
                 print(f"Kill focus: {duel_detector.kill_focus_sid} (t={max(0.0, duel_detector.kill_focus_until - time.time()):.1f}s)")
@@ -3117,7 +3019,7 @@ def control_interface():
                 print(f"Death switch: {duel_detector.death_switch_target} (t={max(0.0, duel_detector.death_switch_active_until - time.time()):.1f}s)")
                 print(f"Kill prediction: {'ENABLED' if duel_detector.kill_prediction_active else 'DISABLED'} (threshold: {duel_detector.prediction_confidence_threshold})")
                 print(f"High tension duels: {len(duel_detector.high_tension_duels)} active")
-                
+
                 # Duel tracking status
                 if duel_detector._is_duel_active():
                     elapsed = (datetime.now() - duel_detector.active_duel_start_time).total_seconds()
@@ -3130,7 +3032,7 @@ def control_interface():
                     print(f"Duel tracking: AKTIV - {p1_name} vs {p2_name} (watching {target_name}, {elapsed:.1f}s)")
                 else:
                     print(f"Duel tracking: INAKTIV")
-                
+
                 if duel_detector.freezetime_start:
                     left = duel_detector.numbers_lockout_seconds - (datetime.now() - duel_detector.freezetime_start).total_seconds()
                     left = max(0.0, left)
